@@ -18,7 +18,7 @@ export default function Home() {
         <div className="flex flex-col gap-5">
           <Link href="/pages/Room">
             <button className="w-full py-4 rounded-2xl bg-purple-500 hover:bg-purple-400 transition-all duration-200 text-white text-lg font-semibold shadow-lg hover:scale-[1.02] active:scale-[0.98]">
-              Chat ao vivo
+              Chat ao vivo (em desenvolvimento)
             </button>
           </Link>
 

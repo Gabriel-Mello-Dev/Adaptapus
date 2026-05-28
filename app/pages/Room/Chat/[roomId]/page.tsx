@@ -308,7 +308,7 @@ D) Lisboa`}
       "
               >
                 {resposta}
-                ({votes[index] || 0} votos)
+                ({votes[index] || 0} votos )
               </button>
             ))}
           </div>

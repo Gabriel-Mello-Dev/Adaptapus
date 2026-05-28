@@ -1,82 +1,58 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { GoogleGenAI } from "@google/genai";
 
-const apiKey = process.env.GEMINI_API_KEY!;
+import OpenAI from "openai";
 
-const ai = new GoogleGenAI({ apiKey });
+const client = new OpenAI({
+  baseURL: "https://openrouter.ai/api/v1",
 
-const MODELS = [
-  "models/gemini-3-flash-preview",
-  "models/gemini-2.0-flash",
-  "models/gemini-1.5-flash",
-];
-
-async function gerarComFallback(contents: any) {
-  for (const model of MODELS) {
-    try {
-      console.log("Tentando modelo:", model);
-
-      const response = await ai.models.generateContent({
-        model,
-        contents,
-      });
-
-      return response;
-    } catch (err: any) {
-      if (err?.status === 503) {
-        console.log("Modelo ocupado, tentando próximo...");
-        continue;
-      }
-
-      throw err;
-    }
-  }
-
-  throw new Error("Todos os modelos falharam");
-}
+  apiKey: process.env.OPENROUTER_API_KEY,
+});
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
+
     const { questao, tema } = body;
 
-    const contents = [
-      {
-        role: "user",
-        parts: [
-          {
-            text: `Adapte a questão para o tema: ${tema}.
+    const completion = await client.chat.completions.create({
+      model: "openrouter/free",
+      messages: [
+        {
+          role: "user",
+
+          content: `
+Adapte a questão para o tema: ${tema}
+
 REGRAS CRÍTICAS:
-- NÃO alterar pergunta.
-- NÃO alterar alternativas.
-- NÃO alterar resposta correta.
+- NÃO alterar resposta correta
+- Manter múltipla escolha
+- Retorne SOMENTE no formato abaixo
 
 FORMATO:
 titulo # corpo # alt1 § alt2 § alt3 § alt4 # correta:indice
 
 Questão:
-${questao}`,
-          },
-        ],
-      },
-    ];
+${questao}
+            `,
+        },
+      ],
+    });
 
-    const response = await gerarComFallback(contents);
+    const text = completion.choices[0].message.content;
 
-    const text =
-      response.candidates?.[0]?.content?.parts?.[0]?.text ??
-      "Sem resposta";
-
-    return Response.json({ text });
+    return Response.json({
+      text,
+    });
   } catch (err: any) {
     console.error("Erro API:", err);
 
     return new Response(
       JSON.stringify({
-        error: "Erro ao gerar questão",
-        detalhe: err?.message,
+        error: err?.message || "Erro ao gerar questão",
       }),
-      { status: 500 }
+      {
+        status: 500,
+      },
     );
   }
 }

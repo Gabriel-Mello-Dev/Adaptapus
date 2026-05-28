@@ -20,6 +20,9 @@ export default function ChatPage() {
   const [question, setQuestion] = useState<any>(null);
   const [tema, setTema] = useState("");
   const [questao, setQuestao] = useState("");
+  const [votes, setVotes] = useState<any>({});
+  const [gerandoQuestao, setGerandoQuestao] = useState(false);
+  const [javotou, setJavotou] = useState(false);
   const mockUsers = ["Gabriel", "Lucas", "Ana", "Pedro", "Maria", "João"];
 
   // USER FIXO
@@ -52,9 +55,14 @@ export default function ChatPage() {
       setQuestion(question);
     });
 
+    socket.on("vote-update", (votes) => {
+      setVotes(votes);
+    });
+
     return () => {
       socket.off("message");
       socket.off("question");
+      socket.off("vote-update");
     };
   }, [roomId]);
 
@@ -90,6 +98,9 @@ export default function ChatPage() {
     if (!questao.trim()) return;
 
     try {
+      setGerandoQuestao(true);
+      console.log("Adaptando questão...");
+
       const res = await fetch("/api/gemini", {
         method: "POST",
         body: JSON.stringify({
@@ -101,7 +112,6 @@ export default function ChatPage() {
       const data = await res.json();
 
       const partes = data.text.split("#");
-
       const question = {
         title: partes[0]?.trim(),
 
@@ -111,6 +121,7 @@ export default function ChatPage() {
 
         correta: Number(partes[3]?.replace("correta:", "").trim()),
       };
+      console.log("questão:", question);
 
       socket.emit("question", {
         roomId,
@@ -118,21 +129,23 @@ export default function ChatPage() {
       });
     } catch (error) {
       console.error(error);
+      console.log("adaptar questão deu errado");
+    } finally {
+      setGerandoQuestao(false);
     }
   }
 
   //Responder
-
   function responder(index: number) {
-    if (!question) return;
-
-    const acertou = index === question.correta;
-
-    if (acertou) {
-      alert("✅ Você acertou!");
-    } else {
-      alert("❌ Você errou!");
+    if (javotou) {
+      return;
     }
+
+    socket.emit("vote", {
+      roomId,
+      answer: index,
+    });
+    setJavotou(true);
   }
 
   return (
@@ -263,7 +276,7 @@ D) Lisboa`}
           transition-all
         "
             >
-              {perguntando ? "Adaptando questão..." : "Adaptar Questão"}
+              {gerandoQuestao ? "Adaptando questão..." : "Adaptar Questão"}{" "}
             </button>
           </div>
         </div>
@@ -295,6 +308,7 @@ D) Lisboa`}
       "
               >
                 {resposta}
+                ({votes[index] || 0} votos )
               </button>
             ))}
           </div>
@@ -371,7 +385,7 @@ D) Lisboa`}
               shadow-lg
             "
           >
-            Enviar
+            Enviar 
           </button>
         </div>
       </div>

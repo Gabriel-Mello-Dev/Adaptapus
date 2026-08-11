@@ -10,11 +10,19 @@ import { useQuestion } from "../../../../hooks/useQuestion";
 
 const socket = io(process.env.NEXT_PUBLIC_SOCKET_SERVER!);
 
+// Variações de texto exibidas ENQUANTO a IA está gerando a questão
+const LOADING_MESSAGES = [
+  "Adaptando sua questão...",
+  "Questão sendo adaptada...",
+  "Ajustando as alternativas...",
+  "Quase pronto...",
+];
+
 export default function ChatPage() {
   const params = useParams();
 
   const roomId = params.roomId as string;
-
+  const [modeloIA, setModeloIA] = useState("");
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<string[]>([]);
   const [question, setQuestion] = useState<any>(null);
@@ -26,6 +34,11 @@ export default function ChatPage() {
     null,
   );
   const [javotou, setJavotou] = useState(false);
+
+  // VOTAÇÃO FINALIZADA
+  const [votingFinalizado, setVotingFinalizado] = useState(false);
+  const [resultadoFinal, setResultadoFinal] = useState<any>(null);
+
   const mockUsers = ["Gabriel", "Lucas", "Ana", "Pedro", "Maria", "João"];
 
   // USER FIXO
@@ -45,6 +58,27 @@ export default function ChatPage() {
   // HOOK DA QUESTÃO
   const { perguntando } = useQuestion();
 
+  // TEXTO DE CARREGAMENTO (fade in/out ENQUANTO está gerando a questão)
+  const [loadingIndex, setLoadingIndex] = useState(0);
+  const [loadingVisible, setLoadingVisible] = useState(true);
+
+  useEffect(() => {
+    if (!gerandoQuestao) return;
+
+    const interval = setInterval(() => {
+      setLoadingVisible(false);
+
+      const troca = setTimeout(() => {
+        setLoadingIndex((prev) => (prev + 1) % LOADING_MESSAGES.length);
+        setLoadingVisible(true);
+      }, 350);
+
+      return () => clearTimeout(troca);
+    }, 2400);
+
+    return () => clearInterval(interval);
+  }, [gerandoQuestao]);
+
   useEffect(() => {
     if (!roomId) return;
 
@@ -56,22 +90,33 @@ export default function ChatPage() {
 
     socket.on("question", (question) => {
       setQuestion(question);
+      setRespostaSelecionada(null);
+      setJavotou(false);
+      setVotes({});
+      setVotingFinalizado(false);
+      setResultadoFinal(null);
     });
 
     socket.on("vote-update", (votes) => {
       setVotes(votes);
     });
 
+    socket.on("resultado-votacao", (resultado) => {
+      setVotingFinalizado(true);
+      setResultadoFinal(resultado);
+    });
+
     return () => {
       socket.off("message");
       socket.off("question");
       socket.off("vote-update");
+      socket.off("resultado-votacao");
     };
   }, [roomId]);
 
   if (!roomId) {
     return (
-      <div className="min-h-screen bg-purple-950 text-white flex items-center justify-center">
+      <div className="min-h-screen bg-[#160a29] text-white flex items-center justify-center">
         Carregando...
       </div>
     );
@@ -94,10 +139,9 @@ export default function ChatPage() {
     setMessage("");
   }
 
-  // GERAR QUESTÃO
+  // GERAR QUESTÃO (só roda quando o admin clica no botão)
   async function criarPergunta() {
     if (!tema.trim()) return;
-
     if (!questao.trim()) return;
 
     try {
@@ -115,15 +159,14 @@ export default function ChatPage() {
       const data = await res.json();
 
       const partes = data.text.split("#");
+      setModeloIA(data.modelo || "outro");
+
       const question = {
         title: partes[0]?.trim(),
-
         text: partes[1]?.trim(),
-
         respostas: partes[2]
           ?.split(/\s*§\s*/)
           .filter((a: string) => a.trim() !== ""),
-
         correta: Number(partes[3]?.replace("correta:", "").trim()),
       };
       console.log("questão:", question);
@@ -141,14 +184,14 @@ export default function ChatPage() {
   }
 
   function selecionarResposta(index: number) {
-    if (javotou) return;
+    if (javotou || votingFinalizado) return;
 
     setRespostaSelecionada(index);
   }
 
-  //Responder
+  // Responder
   function confirmarResposta() {
-    if (respostaSelecionada === null) return;
+    if (respostaSelecionada === null || votingFinalizado) return;
 
     socket.emit("vote", {
       roomId,
@@ -158,32 +201,39 @@ export default function ChatPage() {
     setJavotou(true);
   }
 
+  // ADMIN: finalizar votação e revelar resultado
+  function finalizarVotacao() {
+    if (!question || votingFinalizado) return;
+
+    socket.emit("finalizar-votacao", { roomId });
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-950 via-purple-900 to-violet-950 text-white flex flex-col items-center p-6">
+    <div className="min-h-screen bg-[#150829] text-white flex flex-col items-center p-6">
       {/* TOPO */}
-      <div className="w-full max-w-5xl mb-8">
-        <div className="bg-white/10 backdrop-blur-xl border border-white/10 rounded-3xl p-6 shadow-2xl">
+      <div className="w-full max-w-3xl mb-6">
+        <div className="bg-[#1e1038] border border-[#332156] rounded-2xl p-6">
           <div className="flex flex-col gap-4">
             <div>
-              <h1 className="text-4xl font-black">Sala de Chat</h1>
+              <h1 className="text-3xl font-bold">Sala de Chat</h1>
 
-              <p className="text-purple-200 mt-1">
+              <p className="text-purple-300 mt-1 text-sm">
                 Converse em tempo real com seus amigos
               </p>
             </div>
 
             {/* CÓDIGO */}
-            <div className="bg-gradient-to-r from-fuchsia-600 to-violet-600 rounded-2xl p-5 shadow-lg">
-              <p className="text-sm text-purple-100 mb-2">Código da sala</p>
+            <div className="bg-[#2a1750] border border-[#3d2769] rounded-xl p-4">
+              <p className="text-sm text-purple-300 mb-2">Código da sala</p>
 
               <div className="flex items-center justify-between gap-4">
-                <span className="text-4xl font-black tracking-[0.3em]">
+                <span className="text-3xl font-bold tracking-[0.25em]">
                   {roomId}
                 </span>
 
                 <button
                   onClick={() => navigator.clipboard.writeText(roomId)}
-                  className="bg-white/20 hover:bg-white/30 transition px-4 py-2 rounded-xl font-semibold"
+                  className="bg-white/10 hover:bg-white/20 transition px-4 py-2 rounded-lg text-sm font-medium"
                 >
                   Copiar
                 </button>
@@ -191,52 +241,50 @@ export default function ChatPage() {
             </div>
 
             {/* USER */}
-            <div className="bg-white/5 border border-white/10 rounded-2xl px-4 py-3">
+            <div className="bg-[#1a0e30] border border-[#332156] rounded-xl px-4 py-3">
               <p className="text-sm text-purple-300">Você entrou como</p>
 
-              <h2 className="text-2xl font-bold">{user.nome}</h2>
+              <h2 className="text-xl font-semibold">{user.nome}</h2>
             </div>
 
             {/* ADMIN */}
             {isAdmin && (
-              <div className="bg-green-500/10 border border-green-500/20 text-green-200 rounded-2xl p-4 text-sm">
-                👑 Você é o administrador da sala
+              <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-200 rounded-xl p-3 text-sm">
+                Você é o administrador da sala
               </div>
             )}
 
             {/* MOCK */}
-            <div className="bg-yellow-500/10 border border-yellow-500/20 text-yellow-200 rounded-2xl p-4 text-sm">
-              ⚠️ Os nomes ainda estão mockados temporariamente para testes
+            <div className="bg-amber-500/10 border border-amber-500/20 text-amber-200 rounded-xl p-3 text-sm">
+              Os nomes ainda estão mockados temporariamente para testes
             </div>
           </div>
         </div>
       </div>
 
-      {/* BOTÃO ADMIN */}
+      {/* PAINEL ADMIN */}
       {isAdmin && (
-        <div className="w-full max-w-5xl mb-6 bg-white/10 backdrop-blur-xl border border-white/10 rounded-3xl p-6 shadow-2xl">
-          <h2 className="text-2xl font-black mb-5">Painel do Administrador</h2>
+        <div className="w-full max-w-3xl mb-6 bg-[#1e1038] border border-[#332156] rounded-2xl p-6">
+          <h2 className="text-xl font-bold mb-4">Painel do Administrador</h2>
 
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-3">
             {/* TEMA */}
             <input
               value={tema}
               onChange={(e) => setTema(e.target.value)}
               placeholder="Tema da adaptação"
               className="
-          bg-white/10
-          border
-          border-white/10
-          text-white
-          placeholder:text-purple-300
-          px-5
-          py-4
-          rounded-2xl
-          outline-none
-          focus:ring-2
-          focus:ring-purple-400
-          text-lg
-        "
+                bg-[#2a1750]
+                border
+                border-[#3d2769]
+                text-white
+                placeholder:text-purple-400
+                px-4
+                py-3
+                rounded-xl
+                outline-none
+                focus:border-purple-400
+              "
             />
 
             {/* QUESTÃO */}
@@ -254,106 +302,197 @@ B) Paris
 C) Roma
 D) Lisboa`}
               className="
-          bg-white/10
-          border
-          border-white/10
-          text-white
-          placeholder:text-purple-300
-          px-5
-          py-4
-          rounded-2xl
-          outline-none
-          focus:ring-2
-          focus:ring-purple-400
-          text-lg
-          resize-none
-          whitespace-pre-wrap
-        "
+                bg-[#2a1750]
+                border
+                border-[#3d2769]
+                text-white
+                placeholder:text-purple-400
+                px-4
+                py-3
+                rounded-xl
+                outline-none
+                focus:border-purple-400
+                resize-none
+                whitespace-pre-wrap
+              "
             />
 
             <button
               onClick={criarPergunta}
+              disabled={gerandoQuestao}
               className="
-          bg-gradient-to-r
-          from-yellow-500
-          to-orange-500
-          py-4
-          rounded-2xl
-          font-bold
-          text-lg
-          shadow-xl
-          hover:scale-[1.02]
-          transition-all
-        "
+                bg-purple-600
+                hover:bg-purple-500
+                disabled:opacity-50
+                disabled:hover:bg-purple-600
+                transition
+                py-3
+                rounded-xl
+                font-semibold
+              "
             >
-              {gerandoQuestao ? "Adaptando questão..." : "Adaptar Questão"}{" "}
+              {gerandoQuestao ? "Adaptando questão..." : "Adaptar questão"}
             </button>
-          </div>
-        </div>
-      )}
 
-      {/* QUESTÃO */}
-      {question && (
-        <div className="w-full max-w-5xl mb-6 bg-white/10 backdrop-blur-xl border border-white/10 rounded-3xl p-6 shadow-2xl">
-          <h2 className="text-3xl font-black mb-4">{question.title}</h2>
-
-          <p className="text-lg text-purple-100 mb-6">{question.text}</p>
-
-          <div className="space-y-3">
-            {question.respostas?.map((resposta: string, index: number) => (
+            {/* FINALIZAR VOTAÇÃO */}
+            {question && (
               <button
-                key={index}
-                onClick={() => selecionarResposta(index)}
+                onClick={finalizarVotacao}
+                disabled={votingFinalizado}
                 className="
-        w-full
-        text-left
-        bg-white/10
-        hover:bg-white/20
-        border
-        border-white/10
-        transition-all
-        p-4
-        rounded-2xl
-        text-lg
-      "
+                  bg-amber-600
+                  hover:bg-amber-500
+                  disabled:opacity-50
+                  disabled:hover:bg-amber-600
+                  transition
+                  py-3
+                  rounded-xl
+                  font-semibold
+                "
               >
-                {resposta}({votes[index] || 0} votos )
+                {votingFinalizado ? "Votação finalizada" : "Finalizar votação"}
               </button>
-            ))}
+            )}
           </div>
-
-          <button
-            onClick={confirmarResposta}
-            disabled={respostaSelecionada === null || javotou}
-            className="
-    mt-4
-    w-full
-    bg-gradient-to-r
-    from-green-500
-    to-emerald-500
-    py-4
-    rounded-2xl
-    font-bold
-    text-lg
-    disabled:opacity-50
-  "
-          >
-            {javotou ? "Resposta confirmada" : "Confirmar resposta"}
-          </button>
         </div>
       )}
+
+      {/* QUESTÃO — sempre visível */}
+      <div className="w-full max-w-3xl mb-6 bg-[#1e1038] border border-[#332156] rounded-2xl p-6 min-h-[220px] flex flex-col justify-center">
+        {gerandoQuestao ? (
+          // Só mostra o texto animado ENQUANTO está gerando
+          <div className="flex flex-col items-center justify-center py-10 text-center">
+            <p
+              className={`text-lg text-purple-200 transition-opacity duration-300 ${
+                loadingVisible ? "opacity-100" : "opacity-0"
+              }`}
+            >
+              {LOADING_MESSAGES[loadingIndex]}
+            </p>
+            <p className="text-sm text-purple-400 mt-2">
+              Aguardando a próxima pergunta da sala
+            </p>
+          </div>
+        ) : !question ? (
+          // Estado ocioso: nenhuma questão foi pedida ainda
+          <div className="flex flex-col items-center justify-center py-10 text-center">
+            <p className="text-lg text-purple-200">
+              Nenhuma questão ativa no momento
+            </p>
+            <p className="text-sm text-purple-400 mt-2">
+              Aguardando o administrador iniciar uma questão
+            </p>
+          </div>
+        ) : (
+          <div>
+            <h2 className="text-2xl font-bold mb-3">{question.title}</h2>
+
+            <p className="text-purple-200 mb-5">{question.text}</p>
+
+            <div className="space-y-2">
+              {question.respostas?.map((resposta: string, index: number) => {
+                const selecionada = respostaSelecionada === index;
+                const ehCorreta =
+                  votingFinalizado && resultadoFinal?.correta === index;
+                const marcadaErrada =
+                  votingFinalizado &&
+                  selecionada &&
+                  resultadoFinal?.correta !== index;
+
+                return (
+                  <button
+                    key={index}
+                    onClick={() => selecionarResposta(index)}
+                    disabled={votingFinalizado}
+                    className={`
+                      w-full
+                      text-left
+                      border
+                      transition
+                      p-3
+                      rounded-xl
+                      ${
+                        ehCorreta
+                          ? "bg-emerald-600/30 border-emerald-400"
+                          : marcadaErrada
+                          ? "bg-red-600/30 border-red-400"
+                          : selecionada
+                          ? "bg-purple-600/30 border-purple-400"
+                          : "bg-[#2a1750] border-[#3d2769] hover:bg-[#33195e]"
+                      }
+                    `}
+                  >
+                    {resposta} ({votes[index] || 0} votos)
+                  </button>
+                );
+              })}
+            </div>
+
+            <button
+              onClick={confirmarResposta}
+              disabled={respostaSelecionada === null || javotou || votingFinalizado}
+              className="
+                mt-4
+                w-full
+                bg-emerald-600
+                hover:bg-emerald-500
+                disabled:opacity-50
+                disabled:hover:bg-emerald-600
+                transition
+                py-3
+                rounded-xl
+                font-semibold
+              "
+            >
+              {votingFinalizado
+                ? "Votação encerrada"
+                : javotou
+                ? "Resposta confirmada"
+                : "Confirmar resposta"}
+            </button>
+
+            {/* RESULTADO DA VOTAÇÃO */}
+            {votingFinalizado && resultadoFinal && (
+              <div
+                className={`mt-4 p-4 rounded-xl border ${
+                  resultadoFinal.maioriaAcertou
+                    ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-200"
+                    : "bg-red-500/10 border-red-500/30 text-red-200"
+                }`}
+              >
+                <p className="font-semibold text-lg mb-1">
+                  {resultadoFinal.maioriaAcertou
+                    ? "A maioria da sala acertou! 🎉"
+                    : "A maioria da sala errou! 😬"}
+                </p>
+                <p className="text-sm opacity-80">
+                  {resultadoFinal.acertos} acertaram · {resultadoFinal.erros}{" "}
+                  erraram
+                </p>
+              </div>
+            )}
+
+            <div className="mt-4 pt-3 border-t border-[#332156]">
+              <p className="text-xs text-purple-400/70">
+                Gerado por:{" "}
+                <span className="text-purple-300/80">{modeloIA}</span>
+              </p>
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* CHAT */}
-      <div className="w-full max-w-5xl flex-1 bg-white/10 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl overflow-hidden flex flex-col">
+      <div className="w-full max-w-3xl flex-1 bg-[#1e1038] border border-[#332156] rounded-2xl overflow-hidden flex flex-col">
         {/* HEADER */}
-        <div className="bg-black/20 border-b border-white/10 px-6 py-4">
-          <h2 className="text-2xl font-bold">Chat ao vivo</h2>
+        <div className="bg-[#180b2e] border-b border-[#332156] px-5 py-3">
+          <h2 className="text-lg font-semibold">Chat ao vivo</h2>
         </div>
 
         {/* MENSAGENS */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-4">
+        <div className="flex-1 overflow-y-auto p-5 space-y-3">
           {messages.length === 0 && (
-            <div className="text-center text-purple-300 mt-10">
+            <div className="text-center text-purple-400 mt-10 text-sm">
               Nenhuma mensagem ainda...
             </div>
           )}
@@ -361,17 +500,15 @@ D) Lisboa`}
           {messages.map((msg, index) => (
             <div
               key={index}
-              className="bg-white/10 border border-white/10 rounded-2xl px-5 py-4 max-w-[80%] shadow-lg"
+              className="bg-[#2a1750] border border-[#3d2769] rounded-xl px-4 py-3 max-w-[80%]"
             >
-              <p className="whitespace-pre-line text-lg leading-relaxed">
-                {msg}
-              </p>
+              <p className="whitespace-pre-line leading-relaxed">{msg}</p>
             </div>
           ))}
         </div>
 
         {/* INPUT */}
-        <div className="p-4 border-t border-white/10 flex gap-3 bg-black/10">
+        <div className="p-4 border-t border-[#332156] flex gap-3 bg-[#180b2e]">
           <input
             value={message}
             onChange={(e) => setMessage(e.target.value)}
@@ -382,18 +519,16 @@ D) Lisboa`}
             }}
             className="
               flex-1
-              bg-white/10
+              bg-[#2a1750]
               border
-              border-white/10
+              border-[#3d2769]
               text-white
-              placeholder:text-purple-300
-              px-5
-              py-4
-              rounded-2xl
+              placeholder:text-purple-400
+              px-4
+              py-3
+              rounded-xl
               outline-none
-              focus:ring-2
-              focus:ring-purple-400
-              text-lg
+              focus:border-purple-400
             "
             placeholder="Digite uma mensagem..."
           />
@@ -401,16 +536,12 @@ D) Lisboa`}
           <button
             onClick={sendMessage}
             className="
-              bg-gradient-to-r
-              from-purple-500
-              to-fuchsia-500
-              hover:scale-105
-              transition-all
-              px-8
-              rounded-2xl
-              font-bold
-              text-lg
-              shadow-lg
+              bg-purple-600
+              hover:bg-purple-500
+              transition
+              px-6
+              rounded-xl
+              font-semibold
             "
           >
             Enviar

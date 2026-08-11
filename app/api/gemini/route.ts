@@ -1,3 +1,4 @@
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import OpenAI from "openai";
@@ -14,13 +15,26 @@ export async function POST(request: Request) {
 
     const { questao, tema } = body;
 
-    const completion = await client.chat.completions.create({
-      model: "openrouter/free",
-      messages: [
-        {
-          role: "user",
+    const models = [
+      "deepseek/deepseek-v4-flash:free",
+      "google/gemma-4-31b-it:free",
+      "google/gemma-4-26b-a4b-it:free",
+      "openrouter/free",
+    ];
 
-          content: `
+    let completion = null;
+    let lastError = null;
+
+    for (const model of models) {
+      try {
+        completion = await client.chat.completions.create({
+          model,
+
+          messages: [
+            {
+              role: "user",
+
+              content: `
 Adapte a questão para o tema: ${tema}
 
 REGRAS CRÍTICAS:
@@ -33,10 +47,24 @@ titulo # corpo # alt1 § alt2 § alt3 § alt4 # correta:indice
 
 Questão:
 ${questao}
-            `,
-        },
-      ],
-    });
+              `,
+            },
+          ],
+        });
+
+        console.log("Modelo usado:", model);
+
+        break;
+      } catch (err) {
+        console.log(`Erro no modelo ${model}:`, err);
+
+        lastError = err;
+      }
+    }
+
+    if (!completion) {
+      throw lastError;
+    }
 
     const text = completion.choices[0].message.content;
 
@@ -56,3 +84,4 @@ ${questao}
     );
   }
 }
+

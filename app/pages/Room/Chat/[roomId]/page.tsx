@@ -22,6 +22,9 @@ export default function ChatPage() {
   const [questao, setQuestao] = useState("");
   const [votes, setVotes] = useState<any>({});
   const [gerandoQuestao, setGerandoQuestao] = useState(false);
+  const [respostaSelecionada, setRespostaSelecionada] = useState<number | null>(
+    null,
+  );
   const [javotou, setJavotou] = useState(false);
   const mockUsers = ["Gabriel", "Lucas", "Ana", "Pedro", "Maria", "João"];
 
@@ -117,7 +120,9 @@ export default function ChatPage() {
 
         text: partes[1]?.trim(),
 
-        respostas: partes[2]?.split("§").map((a: string) => a.trim()),
+        respostas: partes[2]
+          ?.split(/\s*§\s*/)
+          .filter((a: string) => a.trim() !== ""),
 
         correta: Number(partes[3]?.replace("correta:", "").trim()),
       };
@@ -135,16 +140,21 @@ export default function ChatPage() {
     }
   }
 
+  function selecionarResposta(index: number) {
+    if (javotou) return;
+
+    setRespostaSelecionada(index);
+  }
+
   //Responder
-  function responder(index: number) {
-    if (javotou) {
-      return;
-    }
+  function confirmarResposta() {
+    if (respostaSelecionada === null) return;
 
     socket.emit("vote", {
       roomId,
-      answer: index,
+      answer: respostaSelecionada,
     });
+
     setJavotou(true);
   }
 
@@ -293,7 +303,7 @@ D) Lisboa`}
             {question.respostas?.map((resposta: string, index: number) => (
               <button
                 key={index}
-                onClick={() => responder(index)}
+                onClick={() => selecionarResposta(index)}
                 className="
         w-full
         text-left
@@ -307,11 +317,29 @@ D) Lisboa`}
         text-lg
       "
               >
-                {resposta}
-                ({votes[index] || 0} votos )
+                {resposta}({votes[index] || 0} votos )
               </button>
             ))}
           </div>
+
+          <button
+            onClick={confirmarResposta}
+            disabled={respostaSelecionada === null || javotou}
+            className="
+    mt-4
+    w-full
+    bg-gradient-to-r
+    from-green-500
+    to-emerald-500
+    py-4
+    rounded-2xl
+    font-bold
+    text-lg
+    disabled:opacity-50
+  "
+          >
+            {javotou ? "Resposta confirmada" : "Confirmar resposta"}
+          </button>
         </div>
       )}
 
@@ -385,7 +413,7 @@ D) Lisboa`}
               shadow-lg
             "
           >
-            Enviar 
+            Enviar
           </button>
         </div>
       </div>

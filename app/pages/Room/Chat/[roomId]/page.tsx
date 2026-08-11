@@ -6,11 +6,8 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { io } from "socket.io-client";
 
-import { useQuestion } from "../../../../hooks/useQuestion";
-
 const socket = io(process.env.NEXT_PUBLIC_SOCKET_SERVER!);
 
-// Variações de texto exibidas ENQUANTO a IA está gerando a questão
 const LOADING_MESSAGES = [
   "Adaptando sua questão...",
   "Questão sendo adaptada...",
@@ -22,107 +19,181 @@ export default function ChatPage() {
   const params = useParams();
 
   const roomId = params.roomId as string;
-  const [modeloIA, setModeloIA] = useState("");
+
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<string[]>([]);
+
   const [question, setQuestion] = useState<any>(null);
+
   const [tema, setTema] = useState("");
   const [questao, setQuestao] = useState("");
+
   const [votes, setVotes] = useState<any>({});
+
   const [gerandoQuestao, setGerandoQuestao] = useState(false);
+
   const [respostaSelecionada, setRespostaSelecionada] = useState<number | null>(
     null,
   );
+
   const [javotou, setJavotou] = useState(false);
 
-  // VOTAÇÃO FINALIZADA
   const [votingFinalizado, setVotingFinalizado] = useState(false);
   const [resultadoFinal, setResultadoFinal] = useState<any>(null);
 
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  const [loadingIndex, setLoadingIndex] = useState(0);
+  const [loadingVisible, setLoadingVisible] = useState(true);
+
+  const [copiado, setCopiado] = useState(false);
+
   const mockUsers = ["Gabriel", "Lucas", "Ana", "Pedro", "Maria", "João"];
 
-  // USER FIXO
   const [user] = useState(() => ({
     nome: mockUsers[Math.floor(Math.random() * mockUsers.length)],
   }));
 
-  // ADMIN
-  const [isAdmin, setIsAdmin] = useState(false);
-
+  /*
+   * ADMIN
+   */
   useEffect(() => {
     const adm = localStorage.getItem("adm") === "true";
 
     setIsAdmin(adm);
   }, []);
 
-  // HOOK DA QUESTÃO
-  const { perguntando } = useQuestion();
-
-  // TEXTO DE CARREGAMENTO (fade in/out ENQUANTO está gerando a questão)
-  const [loadingIndex, setLoadingIndex] = useState(0);
-  const [loadingVisible, setLoadingVisible] = useState(true);
-
+  /*
+   * ANIMAÇÃO DE CARREGAMENTO
+   *
+   * Esse estado agora é atualizado tanto pelo administrador
+   * quanto pelos usuários através do Socket.IO.
+   */
   useEffect(() => {
-    if (!gerandoQuestao) return;
+    if (!gerandoQuestao) {
+      setLoadingIndex(0);
+      setLoadingVisible(true);
+      return;
+    }
 
     const interval = setInterval(() => {
       setLoadingVisible(false);
 
-      const troca = setTimeout(() => {
-        setLoadingIndex((prev) => (prev + 1) % LOADING_MESSAGES.length);
+      setTimeout(() => {
+        setLoadingIndex(
+          (prev) => (prev + 1) % LOADING_MESSAGES.length,
+        );
+
         setLoadingVisible(true);
       }, 350);
-
-      return () => clearTimeout(troca);
     }, 2400);
 
     return () => clearInterval(interval);
   }, [gerandoQuestao]);
 
+  /*
+   * SOCKET
+   */
   useEffect(() => {
     if (!roomId) return;
 
     socket.emit("join-room", roomId);
 
-    socket.on("message", (message: string) => {
+    /*
+     * CHAT
+     */
+    const handleMessage = (message: string) => {
       setMessages((prev) => [...prev, message]);
-    });
+    };
 
-    socket.on("question", (question) => {
-      setQuestion(question);
+    /*
+     * IA COMEÇOU A GERAR
+     *
+     * Esse evento é enviado pelo administrador
+     * e recebido por todos os usuários da sala.
+     */
+    const handleQuestionGenerating = () => {
+      setGerandoQuestao(true);
+
+      setQuestion(null);
       setRespostaSelecionada(null);
       setJavotou(false);
+
       setVotes({});
       setVotingFinalizado(false);
       setResultadoFinal(null);
-    });
 
-    socket.on("vote-update", (votes) => {
-      setVotes(votes);
-    });
+      setLoadingIndex(0);
+      setLoadingVisible(true);
+    };
 
-    socket.on("resultado-votacao", (resultado) => {
+    /*
+     * QUESTÃO PRONTA
+     */
+    const handleQuestion = (newQuestion: any) => {
+      setGerandoQuestao(false);
+
+      setQuestion(newQuestion);
+
+      setRespostaSelecionada(null);
+      setJavotou(false);
+
+      setVotes({});
+
+      setVotingFinalizado(false);
+      setResultadoFinal(null);
+    };
+
+    /*
+     * VOTOS
+     */
+    const handleVoteUpdate = (newVotes: any) => {
+      setVotes(newVotes);
+    };
+
+    /*
+     * RESULTADO FINAL
+     */
+    const handleResultadoVotacao = (resultado: any) => {
       setVotingFinalizado(true);
       setResultadoFinal(resultado);
-    });
+    };
+
+    socket.on("message", handleMessage);
+    socket.on("question-generating", handleQuestionGenerating);
+    socket.on("question", handleQuestion);
+    socket.on("vote-update", handleVoteUpdate);
+    socket.on("resultado-votacao", handleResultadoVotacao);
 
     return () => {
-      socket.off("message");
-      socket.off("question");
-      socket.off("vote-update");
-      socket.off("resultado-votacao");
+      socket.off("message", handleMessage);
+      socket.off("question-generating", handleQuestionGenerating);
+      socket.off("question", handleQuestion);
+      socket.off("vote-update", handleVoteUpdate);
+      socket.off("resultado-votacao", handleResultadoVotacao);
     };
   }, [roomId]);
 
-  if (!roomId) {
-    return (
-      <div className="min-h-screen bg-[#160a29] text-white flex items-center justify-center">
-        Carregando...
-      </div>
-    );
+  /*
+   * COPIAR CÓDIGO
+   */
+  async function copiarCodigo() {
+    try {
+      await navigator.clipboard.writeText(roomId);
+
+      setCopiado(true);
+
+      setTimeout(() => {
+        setCopiado(false);
+      }, 1800);
+    } catch (error) {
+      console.error("Erro ao copiar código:", error);
+    }
   }
 
-  // CHAT
+  /*
+   * CHAT
+   */
   function sendMessage() {
     if (!message.trim()) return;
 
@@ -133,65 +204,124 @@ export default function ChatPage() {
 
     socket.emit("message", {
       roomId,
-      message: user.nome + ": " + message + "\n🕒 " + timeStamp,
+      message: user.nome + ": " + message + "\n" + timeStamp,
     });
 
     setMessage("");
   }
 
-  // GERAR QUESTÃO (só roda quando o admin clica no botão)
+  /*
+   * GERAR QUESTÃO
+   *
+   * Somente o administrador chama essa função.
+   */
   async function criarPergunta() {
     if (!tema.trim()) return;
     if (!questao.trim()) return;
+    if (gerandoQuestao) return;
 
     try {
       setGerandoQuestao(true);
+
+      /*
+       * Avisa TODOS os usuários da sala que a IA começou.
+       */
+      socket.emit("question-generating", {
+        roomId,
+      });
+
       console.log("Adaptando questão...");
 
       const res = await fetch("/api/gemini", {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
           questao,
           tema,
         }),
       });
 
+      if (!res.ok) {
+        throw new Error("Erro ao gerar questão");
+      }
+
       const data = await res.json();
 
       const partes = data.text.split("#");
-      setModeloIA(data.modelo || "outro");
 
-      const question = {
+      /*
+       * O modelo agora vem da API.
+       */
+      const modelo = data.modelo || "outro";
+
+      const novaQuestion = {
         title: partes[0]?.trim(),
+
         text: partes[1]?.trim(),
+
         respostas: partes[2]
           ?.split(/\s*§\s*/)
           .filter((a: string) => a.trim() !== ""),
-        correta: Number(partes[3]?.replace("correta:", "").trim()),
-      };
-      console.log("questão:", question);
 
+        correta: Number(
+          partes[3]?.replace("correta:", "").trim(),
+        ),
+
+        /*
+         * IMPORTANTE:
+         * o modelo vai dentro da própria questão.
+         *
+         * Assim todos os usuários recebem o modelo.
+         */
+        modeloIA: modelo,
+      };
+
+      console.log("Questão:", novaQuestion);
+
+      /*
+       * Envia a questão completa para todos.
+       */
       socket.emit("question", {
         roomId,
-        question,
+        question: novaQuestion,
       });
     } catch (error) {
       console.error(error);
-      console.log("adaptar questão deu errado");
-    } finally {
+
+      /*
+       * Se der erro, libera a tela.
+       */
       setGerandoQuestao(false);
+
+      socket.emit("question-error", {
+        roomId,
+      });
     }
   }
 
+  /*
+   * SELECIONAR RESPOSTA
+   */
   function selecionarResposta(index: number) {
-    if (javotou || votingFinalizado) return;
+    if (javotou || votingFinalizado || gerandoQuestao) return;
 
     setRespostaSelecionada(index);
   }
 
-  // Responder
+  /*
+   * CONFIRMAR RESPOSTA
+   */
   function confirmarResposta() {
-    if (respostaSelecionada === null || votingFinalizado) return;
+    if (
+      respostaSelecionada === null ||
+      javotou ||
+      votingFinalizado ||
+      gerandoQuestao
+    ) {
+      return;
+    }
 
     socket.emit("vote", {
       roomId,
@@ -201,21 +331,74 @@ export default function ChatPage() {
     setJavotou(true);
   }
 
-  // ADMIN: finalizar votação e revelar resultado
+  /*
+   * ADMIN: FINALIZAR VOTAÇÃO
+   */
   function finalizarVotacao() {
     if (!question || votingFinalizado) return;
 
-    socket.emit("finalizar-votacao", { roomId });
+    socket.emit("finalizar-votacao", {
+      roomId,
+    });
+  }
+
+  /*
+   * SEM ROOM
+   */
+  if (!roomId) {
+    return (
+      <div className="min-h-screen bg-[#160a29] text-white flex items-center justify-center">
+        Carregando...
+      </div>
+    );
   }
 
   return (
     <div className="min-h-screen bg-[#150829] text-white flex flex-col items-center p-6">
+
+      {/* MODAL DE COPIADO */}
+      {copiado && (
+        <div
+          className="
+            fixed
+            top-5
+            left-1/2
+            -translate-x-1/2
+            z-50
+            flex
+            items-center
+            gap-2
+            bg-[#24133f]
+            border
+            border-[#4b3275]
+            shadow-xl
+            rounded-xl
+            px-4
+            py-2.5
+            text-sm
+            text-white
+          "
+        >
+          <img
+            src="/favicon.ico"
+            alt=""
+            className="w-4 h-4"
+          />
+
+          <span>Copiado</span>
+        </div>
+      )}
+
       {/* TOPO */}
       <div className="w-full max-w-3xl mb-6">
         <div className="bg-[#1e1038] border border-[#332156] rounded-2xl p-6">
+
           <div className="flex flex-col gap-4">
+
             <div>
-              <h1 className="text-3xl font-bold">Sala de Chat</h1>
+              <h1 className="text-3xl font-bold">
+                Sala de Chat
+              </h1>
 
               <p className="text-purple-300 mt-1 text-sm">
                 Converse em tempo real com seus amigos
@@ -224,27 +407,47 @@ export default function ChatPage() {
 
             {/* CÓDIGO */}
             <div className="bg-[#2a1750] border border-[#3d2769] rounded-xl p-4">
-              <p className="text-sm text-purple-300 mb-2">Código da sala</p>
+
+              <p className="text-sm text-purple-300 mb-2">
+                Código da sala
+              </p>
 
               <div className="flex items-center justify-between gap-4">
+
                 <span className="text-3xl font-bold tracking-[0.25em]">
                   {roomId}
                 </span>
 
                 <button
-                  onClick={() => navigator.clipboard.writeText(roomId)}
-                  className="bg-white/10 hover:bg-white/20 transition px-4 py-2 rounded-lg text-sm font-medium"
+                  onClick={copiarCodigo}
+                  className="
+                    bg-white/10
+                    hover:bg-white/20
+                    transition
+                    px-4
+                    py-2
+                    rounded-lg
+                    text-sm
+                    font-medium
+                  "
                 >
                   Copiar
                 </button>
+
               </div>
             </div>
 
             {/* USER */}
             <div className="bg-[#1a0e30] border border-[#332156] rounded-xl px-4 py-3">
-              <p className="text-sm text-purple-300">Você entrou como</p>
 
-              <h2 className="text-xl font-semibold">{user.nome}</h2>
+              <p className="text-sm text-purple-300">
+                Você entrou como
+              </p>
+
+              <h2 className="text-xl font-semibold">
+                {user.nome}
+              </h2>
+
             </div>
 
             {/* ADMIN */}
@@ -258,6 +461,7 @@ export default function ChatPage() {
             <div className="bg-amber-500/10 border border-amber-500/20 text-amber-200 rounded-xl p-3 text-sm">
               Os nomes ainda estão mockados temporariamente para testes
             </div>
+
           </div>
         </div>
       </div>
@@ -265,13 +469,18 @@ export default function ChatPage() {
       {/* PAINEL ADMIN */}
       {isAdmin && (
         <div className="w-full max-w-3xl mb-6 bg-[#1e1038] border border-[#332156] rounded-2xl p-6">
-          <h2 className="text-xl font-bold mb-4">Painel do Administrador</h2>
+
+          <h2 className="text-xl font-bold mb-4">
+            Painel do Administrador
+          </h2>
 
           <div className="flex flex-col gap-3">
+
             {/* TEMA */}
             <input
               value={tema}
               onChange={(e) => setTema(e.target.value)}
+              disabled={gerandoQuestao}
               placeholder="Tema da adaptação"
               className="
                 bg-[#2a1750]
@@ -284,6 +493,7 @@ export default function ChatPage() {
                 rounded-xl
                 outline-none
                 focus:border-purple-400
+                disabled:opacity-50
               "
             />
 
@@ -291,6 +501,7 @@ export default function ChatPage() {
             <textarea
               value={questao}
               onChange={(e) => setQuestao(e.target.value)}
+              disabled={gerandoQuestao}
               rows={10}
               placeholder={`Cole a questão aqui
 
@@ -314,12 +525,18 @@ D) Lisboa`}
                 focus:border-purple-400
                 resize-none
                 whitespace-pre-wrap
+                disabled:opacity-50
               "
             />
 
+            {/* ADAPTAR */}
             <button
               onClick={criarPergunta}
-              disabled={gerandoQuestao}
+              disabled={
+                gerandoQuestao ||
+                !tema.trim() ||
+                !questao.trim()
+              }
               className="
                 bg-purple-600
                 hover:bg-purple-500
@@ -331,14 +548,16 @@ D) Lisboa`}
                 font-semibold
               "
             >
-              {gerandoQuestao ? "Adaptando questão..." : "Adaptar questão"}
+              {gerandoQuestao
+                ? "Adaptando questão..."
+                : "Adaptar questão"}
             </button>
 
             {/* FINALIZAR VOTAÇÃO */}
             {question && (
               <button
                 onClick={finalizarVotacao}
-                disabled={votingFinalizado}
+                disabled={votingFinalizado || gerandoQuestao}
                 className="
                   bg-amber-600
                   hover:bg-amber-500
@@ -350,87 +569,142 @@ D) Lisboa`}
                   font-semibold
                 "
               >
-                {votingFinalizado ? "Votação finalizada" : "Finalizar votação"}
+                {votingFinalizado
+                  ? "Votação finalizada"
+                  : "Finalizar votação"}
               </button>
             )}
+
           </div>
         </div>
       )}
 
-      {/* QUESTÃO — sempre visível */}
+      {/* QUESTÃO */}
       <div className="w-full max-w-3xl mb-6 bg-[#1e1038] border border-[#332156] rounded-2xl p-6 min-h-[220px] flex flex-col justify-center">
+
+        {/* GERANDO */}
         {gerandoQuestao ? (
-          // Só mostra o texto animado ENQUANTO está gerando
+
           <div className="flex flex-col items-center justify-center py-10 text-center">
+
             <p
-              className={`text-lg text-purple-200 transition-opacity duration-300 ${
-                loadingVisible ? "opacity-100" : "opacity-0"
-              }`}
+              className={`
+                text-lg
+                text-purple-200
+                transition-opacity
+                duration-300
+                ${
+                  loadingVisible
+                    ? "opacity-100"
+                    : "opacity-0"
+                }
+              `}
             >
               {LOADING_MESSAGES[loadingIndex]}
             </p>
+
             <p className="text-sm text-purple-400 mt-2">
-              Aguardando a próxima pergunta da sala
+              Aguarde enquanto a inteligência artificial adapta a questão
             </p>
+
           </div>
+
         ) : !question ? (
-          // Estado ocioso: nenhuma questão foi pedida ainda
+
+          /* SEM QUESTÃO */
           <div className="flex flex-col items-center justify-center py-10 text-center">
+
             <p className="text-lg text-purple-200">
               Nenhuma questão ativa no momento
             </p>
+
             <p className="text-sm text-purple-400 mt-2">
               Aguardando o administrador iniciar uma questão
             </p>
+
           </div>
+
         ) : (
+
+          /* QUESTÃO ATIVA */
           <div>
-            <h2 className="text-2xl font-bold mb-3">{question.title}</h2>
 
-            <p className="text-purple-200 mb-5">{question.text}</p>
+            <h2 className="text-2xl font-bold mb-3">
+              {question.title}
+            </h2>
 
+            <p className="text-purple-200 mb-5">
+              {question.text}
+            </p>
+
+            {/* ALTERNATIVAS */}
             <div className="space-y-2">
-              {question.respostas?.map((resposta: string, index: number) => {
-                const selecionada = respostaSelecionada === index;
-                const ehCorreta =
-                  votingFinalizado && resultadoFinal?.correta === index;
-                const marcadaErrada =
-                  votingFinalizado &&
-                  selecionada &&
-                  resultadoFinal?.correta !== index;
 
-                return (
-                  <button
-                    key={index}
-                    onClick={() => selecionarResposta(index)}
-                    disabled={votingFinalizado}
-                    className={`
-                      w-full
-                      text-left
-                      border
-                      transition
-                      p-3
-                      rounded-xl
-                      ${
-                        ehCorreta
-                          ? "bg-emerald-600/30 border-emerald-400"
-                          : marcadaErrada
-                          ? "bg-red-600/30 border-red-400"
-                          : selecionada
-                          ? "bg-purple-600/30 border-purple-400"
-                          : "bg-[#2a1750] border-[#3d2769] hover:bg-[#33195e]"
+              {question.respostas?.map(
+                (resposta: string, index: number) => {
+
+                  const selecionada =
+                    respostaSelecionada === index;
+
+                  const ehCorreta =
+                    votingFinalizado &&
+                    resultadoFinal?.correta === index;
+
+                  const marcadaErrada =
+                    votingFinalizado &&
+                    selecionada &&
+                    resultadoFinal?.correta !== index;
+
+                  return (
+                    <button
+                      key={index}
+                      onClick={() =>
+                        selecionarResposta(index)
                       }
-                    `}
-                  >
-                    {resposta} ({votes[index] || 0} votos)
-                  </button>
-                );
-              })}
+                      disabled={
+                        votingFinalizado ||
+                        gerandoQuestao
+                      }
+                      className={`
+                        w-full
+                        text-left
+                        border
+                        transition
+                        p-3
+                        rounded-xl
+
+                        ${
+                          ehCorreta
+                            ? "bg-emerald-600/30 border-emerald-400"
+                            : marcadaErrada
+                            ? "bg-red-600/30 border-red-400"
+                            : selecionada
+                            ? "bg-purple-600/30 border-purple-400"
+                            : "bg-[#2a1750] border-[#3d2769] hover:bg-[#33195e]"
+                        }
+                      `}
+                    >
+                      {resposta}
+
+                      <span className="text-purple-300/70 ml-1">
+                        ({votes[index] || 0} votos)
+                      </span>
+                    </button>
+                  );
+                },
+              )}
+
             </div>
 
+            {/* CONFIRMAR */}
             <button
               onClick={confirmarResposta}
-              disabled={respostaSelecionada === null || javotou || votingFinalizado}
+              disabled={
+                respostaSelecionada === null ||
+                javotou ||
+                votingFinalizado ||
+                gerandoQuestao
+              }
               className="
                 mt-4
                 w-full
@@ -451,46 +725,71 @@ D) Lisboa`}
                 : "Confirmar resposta"}
             </button>
 
-            {/* RESULTADO DA VOTAÇÃO */}
+            {/* RESULTADO */}
             {votingFinalizado && resultadoFinal && (
               <div
-                className={`mt-4 p-4 rounded-xl border ${
-                  resultadoFinal.maioriaAcertou
-                    ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-200"
-                    : "bg-red-500/10 border-red-500/30 text-red-200"
-                }`}
+                className={`
+                  mt-4
+                  p-4
+                  rounded-xl
+                  border
+
+                  ${
+                    resultadoFinal.maioriaAcertou
+                      ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-200"
+                      : "bg-red-500/10 border-red-500/30 text-red-200"
+                  }
+                `}
               >
+
                 <p className="font-semibold text-lg mb-1">
+
                   {resultadoFinal.maioriaAcertou
-                    ? "A maioria da sala acertou! 🎉"
-                    : "A maioria da sala errou! 😬"}
+                    ? "A maioria da sala acertou!"
+                    : "A maioria da sala errou!"}
+
                 </p>
+
                 <p className="text-sm opacity-80">
-                  {resultadoFinal.acertos} acertaram · {resultadoFinal.erros}{" "}
-                  erraram
+                  {resultadoFinal.acertos} acertaram
+                  {" · "}
+                  {resultadoFinal.erros} erraram
                 </p>
+
               </div>
             )}
 
+            {/* MODELO */}
             <div className="mt-4 pt-3 border-t border-[#332156]">
+
               <p className="text-xs text-purple-400/70">
                 Gerado por:{" "}
-                <span className="text-purple-300/80">{modeloIA}</span>
+                <span className="text-purple-300/80">
+                  {question.modeloIA || "outro"}
+                </span>
               </p>
+
             </div>
+
           </div>
         )}
       </div>
 
       {/* CHAT */}
       <div className="w-full max-w-3xl flex-1 bg-[#1e1038] border border-[#332156] rounded-2xl overflow-hidden flex flex-col">
+
         {/* HEADER */}
         <div className="bg-[#180b2e] border-b border-[#332156] px-5 py-3">
-          <h2 className="text-lg font-semibold">Chat ao vivo</h2>
+
+          <h2 className="text-lg font-semibold">
+            Chat ao vivo
+          </h2>
+
         </div>
 
         {/* MENSAGENS */}
         <div className="flex-1 overflow-y-auto p-5 space-y-3">
+
           {messages.length === 0 && (
             <div className="text-center text-purple-400 mt-10 text-sm">
               Nenhuma mensagem ainda...
@@ -500,15 +799,27 @@ D) Lisboa`}
           {messages.map((msg, index) => (
             <div
               key={index}
-              className="bg-[#2a1750] border border-[#3d2769] rounded-xl px-4 py-3 max-w-[80%]"
+              className="
+                bg-[#2a1750]
+                border
+                border-[#3d2769]
+                rounded-xl
+                px-4
+                py-3
+                max-w-[80%]
+              "
             >
-              <p className="whitespace-pre-line leading-relaxed">{msg}</p>
+              <p className="whitespace-pre-line leading-relaxed">
+                {msg}
+              </p>
             </div>
           ))}
+
         </div>
 
         {/* INPUT */}
         <div className="p-4 border-t border-[#332156] flex gap-3 bg-[#180b2e]">
+
           <input
             value={message}
             onChange={(e) => setMessage(e.target.value)}
@@ -546,8 +857,10 @@ D) Lisboa`}
           >
             Enviar
           </button>
+
         </div>
       </div>
+
     </div>
   );
 }

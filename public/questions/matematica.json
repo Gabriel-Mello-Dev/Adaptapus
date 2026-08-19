@@ -1,0 +1,56 @@
+[
+  {
+    "id": "enem-2025-mat-137",
+    "numero": 137,
+    "materia": "Matemática",
+    "enunciado": "Em um laboratório, um recipiente contém 10 litros de uma solução composta apenas pelas substâncias S1 e S2. Dessa solução, 99,95% é de S1. Uma quantidade de S1 será retirada dessa solução, mantendo a quantidade inicial de S2, de modo que 99,90% da nova solução seja de S1. Qual é a quantidade de S1, em litro, que será retirada?",
+    "alternativas": {
+      "A": "0,0050",
+      "B": "0,0100",
+      "C": "0,5000",
+      "D": "4,9775",
+      "E": "5,0000"
+    },
+    "resposta": "E"
+  },
+  {
+    "id": "enem-2025-mat-138",
+    "numero": 138,
+    "materia": "Matemática",
+    "enunciado": "Uma distribuidora de combustível possui caminhões-tanque com capacidade de 30 000 litros cada. Em qualquer transporte realizado por esses caminhões, um mesmo volume de combustível é descartado, pois fica com muitas impurezas. Esse volume descartado independe da quantidade transportada. Um posto de combustível encomendou 10 000 litros de gasolina dessa distribuidora, que enviou 10 200 litros, considerando o volume descartado no transporte. Mesmo assim, a quantidade de gasolina entregue ao posto foi de 9 900 litros. Em um novo pedido, esse posto solicitou que fosse entregue exatamente o dobro do volume de gasolina encomendado no pedido anterior. Utilizando o mesmo caminhão da entrega anterior, qual é o volume mínimo de gasolina, em litro, que a distribuidora deverá enviar para garantir a entrega da quantidade encomendada nesse novo pedido?",
+    "alternativas": {
+      "A": "20 100",
+      "B": "20 200",
+      "C": "20 300",
+      "D": "20 400",
+      "E": "20 600"
+    },
+    "resposta": "C"
+  },
+  {
+    "id": "enem-2025-mat-139",
+    "numero": 139,
+    "materia": "Matemática",
+    "enunciado": "Uma empresa de tecnologia vai padronizar a velocidade de conexão de internet que oferece a seus clientes em dez cidades. A direção da empresa decide que seu novo padrão de velocidade de referência será a mediana dos valores das velocidades de referência de conexões nessas dez cidades. Esses valores, em megabyte por segundo (MB/s), são apresentados no quadro.",
+    "dados": {
+      "C1": 390,
+      "C2": 380,
+      "C3": 320,
+      "C4": 390,
+      "C5": 340,
+      "C6": 380,
+      "C7": 390,
+      "C8": 400,
+      "C9": 350,
+      "C10": 360
+    },
+    "alternativas": {
+      "A": "360",
+      "B": "370",
+      "C": "380",
+      "D": "390",
+      "E": "400"
+    },
+    "resposta": "C"
+  }
+]

@@ -15,6 +15,21 @@ const LOADING_MESSAGES = [
   "Quase pronto...",
 ];
 
+type Questao = {
+  id: string;
+  numero: number;
+  materia: string;
+  enunciado: string;
+  alternativas: {
+    A: string;
+    B: string;
+    C: string;
+    D: string;
+    E: string;
+  };
+  resposta: string;
+};
+
 export default function ChatPage() {
   const params = useParams();
 
@@ -23,14 +38,27 @@ export default function ChatPage() {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<string[]>([]);
 
+  /*
+   * QUESTÕES DO ENEM
+   */
+  const [questoes, setQuestoes] = useState<Questao[]>([]);
+  const [indiceQuestao, setIndiceQuestao] = useState(0);
+  const [carregandoQuestoes, setCarregandoQuestoes] = useState(true);
+
+  /*
+   * QUESTÃO ADAPTADA
+   */
   const [question, setQuestion] = useState<any>(null);
 
+  /*
+   * TEMA DA ADAPTAÇÃO
+   */
   const [tema, setTema] = useState("");
-  const [questao, setQuestao] = useState("");
 
+  /*
+   * VOTAÇÃO
+   */
   const [votes, setVotes] = useState<any>({});
-
-  const [gerandoQuestao, setGerandoQuestao] = useState(false);
 
   const [respostaSelecionada, setRespostaSelecionada] = useState<number | null>(
     null,
@@ -41,13 +69,27 @@ export default function ChatPage() {
   const [votingFinalizado, setVotingFinalizado] = useState(false);
   const [resultadoFinal, setResultadoFinal] = useState<any>(null);
 
+  /*
+   * ADMIN
+   */
   const [isAdmin, setIsAdmin] = useState(false);
+
+  /*
+   * IA
+   */
+  const [gerandoQuestao, setGerandoQuestao] = useState(false);
 
   const [loadingIndex, setLoadingIndex] = useState(0);
   const [loadingVisible, setLoadingVisible] = useState(true);
 
+  /*
+   * COPIAR
+   */
   const [copiado, setCopiado] = useState(false);
 
+  /*
+   * USUÁRIO MOCK
+   */
   const mockUsers = ["Gabriel", "Lucas", "Ana", "Pedro", "Maria", "João"];
 
   const [user] = useState(() => ({
@@ -64,10 +106,34 @@ export default function ChatPage() {
   }, []);
 
   /*
+   * CARREGAR QUESTÕES
+   */
+  useEffect(() => {
+    async function carregarQuestoes() {
+      try {
+        setCarregandoQuestoes(true);
+
+        const response = await fetch("/questions/matematica.json");
+
+        if (!response.ok) {
+          throw new Error("Erro ao carregar questões");
+        }
+
+        const data: Questao[] = await response.json();
+
+        setQuestoes(data);
+      } catch (error) {
+        console.error("Erro ao carregar questões:", error);
+      } finally {
+        setCarregandoQuestoes(false);
+      }
+    }
+
+    carregarQuestoes();
+  }, []);
+
+  /*
    * ANIMAÇÃO DE CARREGAMENTO
-   *
-   * Esse estado agora é atualizado tanto pelo administrador
-   * quanto pelos usuários através do Socket.IO.
    */
   useEffect(() => {
     if (!gerandoQuestao) {
@@ -80,9 +146,7 @@ export default function ChatPage() {
       setLoadingVisible(false);
 
       setTimeout(() => {
-        setLoadingIndex(
-          (prev) => (prev + 1) % LOADING_MESSAGES.length,
-        );
+        setLoadingIndex((prev) => (prev + 1) % LOADING_MESSAGES.length);
 
         setLoadingVisible(true);
       }, 350);
@@ -108,9 +172,6 @@ export default function ChatPage() {
 
     /*
      * IA COMEÇOU A GERAR
-     *
-     * Esse evento é enviado pelo administrador
-     * e recebido por todos os usuários da sala.
      */
     const handleQuestionGenerating = () => {
       setGerandoQuestao(true);
@@ -142,6 +203,20 @@ export default function ChatPage() {
 
       setVotingFinalizado(false);
       setResultadoFinal(null);
+
+      /*
+       * Se a questão possuir número original,
+       * sincroniza o índice local.
+       */
+      if (newQuestion?.numero) {
+        const index = questoes.findIndex(
+          (questao) => questao.numero === newQuestion.numero,
+        );
+
+        if (index !== -1) {
+          setIndiceQuestao(index);
+        }
+      }
     };
 
     /*
@@ -172,7 +247,7 @@ export default function ChatPage() {
       socket.off("vote-update", handleVoteUpdate);
       socket.off("resultado-votacao", handleResultadoVotacao);
     };
-  }, [roomId]);
+  }, [roomId, questoes]);
 
   /*
    * COPIAR CÓDIGO
@@ -211,34 +286,60 @@ export default function ChatPage() {
   }
 
   /*
-   * GERAR QUESTÃO
+   * ADAPTAR QUESTÃO
    *
-   * Somente o administrador chama essa função.
+   * Pega automaticamente a questão atual
+   * do JSON e envia para a IA junto com o tema.
    */
   async function criarPergunta() {
+    if (!isAdmin) return;
+
     if (!tema.trim()) return;
-    if (!questao.trim()) return;
+
     if (gerandoQuestao) return;
+
+    const questaoAtual = questoes[indiceQuestao];
+
+    if (!questaoAtual) return;
 
     try {
       setGerandoQuestao(true);
 
       /*
-       * Avisa TODOS os usuários da sala que a IA começou.
+       * Avisa todos da sala.
        */
       socket.emit("question-generating", {
         roomId,
       });
 
-      console.log("Adaptando questão...");
+      console.log("Adaptando questão:", questaoAtual.numero);
 
+      /*
+       * Envia a questão original da API
+       * para o endpoint da IA.
+       */
       const res = await fetch("/api/gemini", {
         method: "POST",
+
         headers: {
           "Content-Type": "application/json",
         },
+
         body: JSON.stringify({
-          questao,
+          questao: `
+Questão ${questaoAtual.numero}
+
+${questaoAtual.enunciado}
+
+A) ${questaoAtual.alternativas.A}
+B) ${questaoAtual.alternativas.B}
+C) ${questaoAtual.alternativas.C}
+D) ${questaoAtual.alternativas.D}
+E) ${questaoAtual.alternativas.E}
+
+Resposta correta: ${questaoAtual.resposta}
+            `.trim(),
+
           tema,
         }),
       });
@@ -251,12 +352,15 @@ export default function ChatPage() {
 
       const partes = data.text.split("#");
 
-      /*
-       * O modelo agora vem da API.
-       */
       const modelo = data.modelo || "outro";
 
       const novaQuestion = {
+        id: questaoAtual.id,
+
+        numero: questaoAtual.numero,
+
+        materia: questaoAtual.materia,
+
         title: partes[0]?.trim(),
 
         text: partes[1]?.trim(),
@@ -265,23 +369,19 @@ export default function ChatPage() {
           ?.split(/\s*§\s*/)
           .filter((a: string) => a.trim() !== ""),
 
-        correta: Number(
-          partes[3]?.replace("correta:", "").trim(),
-        ),
+        correta: Number(partes[3]?.replace("correta:", "").trim()),
 
-        /*
-         * IMPORTANTE:
-         * o modelo vai dentro da própria questão.
-         *
-         * Assim todos os usuários recebem o modelo.
-         */
         modeloIA: modelo,
+
+        temaAdaptacao: tema,
+
+        respostaOriginal: questaoAtual.resposta,
       };
 
-      console.log("Questão:", novaQuestion);
+      console.log("Questão adaptada:", novaQuestion);
 
       /*
-       * Envia a questão completa para todos.
+       * Envia para todos.
        */
       socket.emit("question", {
         roomId,
@@ -290,9 +390,6 @@ export default function ChatPage() {
     } catch (error) {
       console.error(error);
 
-      /*
-       * Se der erro, libera a tela.
-       */
       setGerandoQuestao(false);
 
       socket.emit("question-error", {
@@ -301,11 +398,41 @@ export default function ChatPage() {
     }
   }
 
+  function proximaQuestao() {
+    if (!isAdmin) return;
+
+    if (!votingFinalizado) return;
+
+    if (indiceQuestao >= questoes.length - 1) {
+      return;
+    }
+
+    const novoIndice = indiceQuestao + 1;
+
+    setIndiceQuestao(novoIndice);
+
+    setQuestion(null);
+
+    setTema("");
+
+    setRespostaSelecionada(null);
+
+    setJavotou(false);
+
+    setVotes({});
+
+    setVotingFinalizado(false);
+
+    setResultadoFinal(null);
+  }
+
   /*
    * SELECIONAR RESPOSTA
    */
   function selecionarResposta(index: number) {
-    if (javotou || votingFinalizado || gerandoQuestao) return;
+    if (javotou || votingFinalizado || gerandoQuestao) {
+      return;
+    }
 
     setRespostaSelecionada(index);
   }
@@ -332,10 +459,13 @@ export default function ChatPage() {
   }
 
   /*
-   * ADMIN: FINALIZAR VOTAÇÃO
+   * ADMIN:
+   * FINALIZAR VOTAÇÃO
    */
   function finalizarVotacao() {
-    if (!question || votingFinalizado) return;
+    if (!question || votingFinalizado) {
+      return;
+    }
 
     socket.emit("finalizar-votacao", {
       roomId,
@@ -353,9 +483,19 @@ export default function ChatPage() {
     );
   }
 
+  /*
+   * CARREGANDO QUESTÕES
+   */
+  if (carregandoQuestoes) {
+    return (
+      <div className="min-h-screen bg-[#160a29] text-white flex items-center justify-center">
+        Carregando questões do ENEM...
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#150829] text-white flex flex-col items-center p-6">
-
       {/* MODAL DE COPIADO */}
       {copiado && (
         <div
@@ -379,11 +519,7 @@ export default function ChatPage() {
             text-white
           "
         >
-          <img
-            src="/favicon.ico"
-            alt=""
-            className="w-4 h-4"
-          />
+          <img src="/favicon.ico" alt="" className="w-4 h-4" />
 
           <span>Copiado</span>
         </div>
@@ -392,13 +528,9 @@ export default function ChatPage() {
       {/* TOPO */}
       <div className="w-full max-w-3xl mb-6">
         <div className="bg-[#1e1038] border border-[#332156] rounded-2xl p-6">
-
           <div className="flex flex-col gap-4">
-
             <div>
-              <h1 className="text-3xl font-bold">
-                Sala de Chat
-              </h1>
+              <h1 className="text-3xl font-bold">Sala de Chat</h1>
 
               <p className="text-purple-300 mt-1 text-sm">
                 Converse em tempo real com seus amigos
@@ -407,13 +539,9 @@ export default function ChatPage() {
 
             {/* CÓDIGO */}
             <div className="bg-[#2a1750] border border-[#3d2769] rounded-xl p-4">
-
-              <p className="text-sm text-purple-300 mb-2">
-                Código da sala
-              </p>
+              <p className="text-sm text-purple-300 mb-2">Código da sala</p>
 
               <div className="flex items-center justify-between gap-4">
-
                 <span className="text-3xl font-bold tracking-[0.25em]">
                   {roomId}
                 </span>
@@ -433,21 +561,14 @@ export default function ChatPage() {
                 >
                   Copiar
                 </button>
-
               </div>
             </div>
 
             {/* USER */}
             <div className="bg-[#1a0e30] border border-[#332156] rounded-xl px-4 py-3">
+              <p className="text-sm text-purple-300">Você entrou como</p>
 
-              <p className="text-sm text-purple-300">
-                Você entrou como
-              </p>
-
-              <h2 className="text-xl font-semibold">
-                {user.nome}
-              </h2>
-
+              <h2 className="text-xl font-semibold">{user.nome}</h2>
             </div>
 
             {/* ADMIN */}
@@ -457,11 +578,15 @@ export default function ChatPage() {
               </div>
             )}
 
+            {/* QUANTIDADE */}
+            <div className="bg-blue-500/10 border border-blue-500/20 text-blue-200 rounded-xl p-3 text-sm">
+              {questoes.length} questões de Matemática carregadas
+            </div>
+
             {/* MOCK */}
             <div className="bg-amber-500/10 border border-amber-500/20 text-amber-200 rounded-xl p-3 text-sm">
               Os nomes ainda estão mockados temporariamente para testes
             </div>
-
           </div>
         </div>
       </div>
@@ -469,91 +594,82 @@ export default function ChatPage() {
       {/* PAINEL ADMIN */}
       {isAdmin && (
         <div className="w-full max-w-3xl mb-6 bg-[#1e1038] border border-[#332156] rounded-2xl p-6">
-
-          <h2 className="text-xl font-bold mb-4">
-            Painel do Administrador
-          </h2>
+          <h2 className="text-xl font-bold mb-4">Painel do Administrador</h2>
 
           <div className="flex flex-col gap-3">
+            {/* QUESTÃO ATUAL */}
+            <div className="bg-[#2a1750] border border-[#3d2769] rounded-xl p-4">
+              <p className="text-sm text-purple-400">Questão atual</p>
+
+              <p className="text-2xl font-bold mt-1">
+                Questão {questoes[indiceQuestao]?.numero}
+              </p>
+
+              <p className="text-sm text-purple-400 mt-1">
+                {indiceQuestao + 1} de {questoes.length}
+              </p>
+            </div>
 
             {/* TEMA */}
-            <input
-              value={tema}
-              onChange={(e) => setTema(e.target.value)}
-              disabled={gerandoQuestao}
-              placeholder="Tema da adaptação"
-              className="
-                bg-[#2a1750]
-                border
-                border-[#3d2769]
-                text-white
-                placeholder:text-purple-400
-                px-4
-                py-3
-                rounded-xl
-                outline-none
-                focus:border-purple-400
-                disabled:opacity-50
-              "
-            />
+            <div>
+              <label className="text-sm text-purple-300 block mb-2">
+                Tema da adaptação
+              </label>
 
-            {/* QUESTÃO */}
-            <textarea
-              value={questao}
-              onChange={(e) => setQuestao(e.target.value)}
-              disabled={gerandoQuestao}
-              rows={10}
-              placeholder={`Cole a questão aqui
+              <input
+                value={tema}
+                onChange={(e) => setTema(e.target.value)}
+                disabled={gerandoQuestao || !!question}
+                placeholder="Exemplo: Naruto, futebol, tecnologia, anime..."
+                className="
+                  w-full
+                  bg-[#2a1750]
+                  border
+                  border-[#3d2769]
+                  text-white
+                  placeholder:text-purple-400
+                  px-4
+                  py-3
+                  rounded-xl
+                  outline-none
+                  focus:border-purple-400
+                  disabled:opacity-50
+                "
+              />
+            </div>
 
-Exemplo:
+            {/* QUESTÃO ORIGINAL */}
+            <div className="bg-[#2a1750] border border-[#3d2769] rounded-xl p-4">
+              <p className="text-sm text-purple-400 mb-2">Questão original</p>
 
-Qual a capital da França?
-A) Berlim
-B) Paris
-C) Roma
-D) Lisboa`}
-              className="
-                bg-[#2a1750]
-                border
-                border-[#3d2769]
-                text-white
-                placeholder:text-purple-400
-                px-4
-                py-3
-                rounded-xl
-                outline-none
-                focus:border-purple-400
-                resize-none
-                whitespace-pre-wrap
-                disabled:opacity-50
-              "
-            />
+              <p className="text-sm text-purple-200 line-clamp-4">
+                {questoes[indiceQuestao]?.enunciado}
+              </p>
+            </div>
 
             {/* ADAPTAR */}
-            <button
-              onClick={criarPergunta}
-              disabled={
-                gerandoQuestao ||
-                !tema.trim() ||
-                !questao.trim()
-              }
-              className="
-                bg-purple-600
-                hover:bg-purple-500
-                disabled:opacity-50
-                disabled:hover:bg-purple-600
-                transition
-                py-3
-                rounded-xl
-                font-semibold
-              "
-            >
-              {gerandoQuestao
-                ? "Adaptando questão..."
-                : "Adaptar questão"}
-            </button>
+            {!question && (
+              <button
+                onClick={criarPergunta}
+                disabled={
+                  gerandoQuestao || !tema.trim() || !questoes[indiceQuestao]
+                }
+                className="
+                  bg-purple-600
+                  hover:bg-purple-500
+                  disabled:opacity-50
+                  disabled:hover:bg-purple-600
+                  transition
+                  py-3
+                  rounded-xl
+                  font-semibold
+                "
+              >
+                {gerandoQuestao ? "Adaptando questão..." : "Adaptar questão"}
+              </button>
+            )}
 
-            {/* FINALIZAR VOTAÇÃO */}
+            {/* FINALIZAR */}
             {question && (
               <button
                 onClick={finalizarVotacao}
@@ -569,35 +685,47 @@ D) Lisboa`}
                   font-semibold
                 "
               >
-                {votingFinalizado
-                  ? "Votação finalizada"
-                  : "Finalizar votação"}
+                {votingFinalizado ? "Votação finalizada" : "Finalizar votação"}
               </button>
             )}
 
+            {/* PRÓXIMA */}
+            {votingFinalizado && (
+              <button
+                onClick={proximaQuestao}
+                disabled={indiceQuestao >= questoes.length - 1}
+                className="
+                  bg-purple-600
+                  hover:bg-purple-500
+                  disabled:opacity-50
+                  disabled:hover:bg-purple-600
+                  transition
+                  py-3
+                  rounded-xl
+                  font-semibold
+                "
+              >
+                {indiceQuestao >= questoes.length - 1
+                  ? "Última questão"
+                  : "Próxima questão"}
+              </button>
+            )}
           </div>
         </div>
       )}
 
       {/* QUESTÃO */}
       <div className="w-full max-w-3xl mb-6 bg-[#1e1038] border border-[#332156] rounded-2xl p-6 min-h-[220px] flex flex-col justify-center">
-
         {/* GERANDO */}
         {gerandoQuestao ? (
-
           <div className="flex flex-col items-center justify-center py-10 text-center">
-
             <p
               className={`
                 text-lg
                 text-purple-200
                 transition-opacity
                 duration-300
-                ${
-                  loadingVisible
-                    ? "opacity-100"
-                    : "opacity-0"
-                }
+                ${loadingVisible ? "opacity-100" : "opacity-0"}
               `}
             >
               {LOADING_MESSAGES[loadingIndex]}
@@ -606,66 +734,52 @@ D) Lisboa`}
             <p className="text-sm text-purple-400 mt-2">
               Aguarde enquanto a inteligência artificial adapta a questão
             </p>
-
           </div>
-
         ) : !question ? (
-
           /* SEM QUESTÃO */
           <div className="flex flex-col items-center justify-center py-10 text-center">
-
             <p className="text-lg text-purple-200">
               Nenhuma questão ativa no momento
             </p>
 
             <p className="text-sm text-purple-400 mt-2">
-              Aguardando o administrador iniciar uma questão
+              O administrador deve escolher um tema e adaptar a questão
             </p>
-
           </div>
-
         ) : (
-
           /* QUESTÃO ATIVA */
           <div>
+            <div className="flex items-center justify-between gap-4 mb-3">
+              <h2 className="text-2xl font-bold">{question.title}</h2>
 
-            <h2 className="text-2xl font-bold mb-3">
-              {question.title}
-            </h2>
+              <span className="text-sm text-purple-400">
+                {question.materia}
+              </span>
+            </div>
 
-            <p className="text-purple-200 mb-5">
+            <p className="text-purple-200 mb-5 whitespace-pre-line">
               {question.text}
             </p>
 
             {/* ALTERNATIVAS */}
             <div className="space-y-2">
+              {question.respostas?.map((resposta: string, index: number) => {
+                const selecionada = respostaSelecionada === index;
 
-              {question.respostas?.map(
-                (resposta: string, index: number) => {
+                const ehCorreta =
+                  votingFinalizado && resultadoFinal?.correta === index;
 
-                  const selecionada =
-                    respostaSelecionada === index;
+                const marcadaErrada =
+                  votingFinalizado &&
+                  selecionada &&
+                  resultadoFinal?.correta !== index;
 
-                  const ehCorreta =
-                    votingFinalizado &&
-                    resultadoFinal?.correta === index;
-
-                  const marcadaErrada =
-                    votingFinalizado &&
-                    selecionada &&
-                    resultadoFinal?.correta !== index;
-
-                  return (
-                    <button
-                      key={index}
-                      onClick={() =>
-                        selecionarResposta(index)
-                      }
-                      disabled={
-                        votingFinalizado ||
-                        gerandoQuestao
-                      }
-                      className={`
+                return (
+                  <button
+                    key={index}
+                    onClick={() => selecionarResposta(index)}
+                    disabled={votingFinalizado || gerandoQuestao}
+                    className={`
                         w-full
                         text-left
                         border
@@ -677,23 +791,21 @@ D) Lisboa`}
                           ehCorreta
                             ? "bg-emerald-600/30 border-emerald-400"
                             : marcadaErrada
-                            ? "bg-red-600/30 border-red-400"
-                            : selecionada
-                            ? "bg-purple-600/30 border-purple-400"
-                            : "bg-[#2a1750] border-[#3d2769] hover:bg-[#33195e]"
+                              ? "bg-red-600/30 border-red-400"
+                              : selecionada
+                                ? "bg-purple-600/30 border-purple-400"
+                                : "bg-[#2a1750] border-[#3d2769] hover:bg-[#33195e]"
                         }
                       `}
-                    >
-                      {resposta}
+                  >
+                    {resposta}
 
-                      <span className="text-purple-300/70 ml-1">
-                        ({votes[index] || 0} votos)
-                      </span>
-                    </button>
-                  );
-                },
-              )}
-
+                    <span className="text-purple-300/70 ml-1">
+                      ({votes[index] || 0} votos)
+                    </span>
+                  </button>
+                );
+              })}
             </div>
 
             {/* CONFIRMAR */}
@@ -721,33 +833,30 @@ D) Lisboa`}
               {votingFinalizado
                 ? "Votação encerrada"
                 : javotou
-                ? "Resposta confirmada"
-                : "Confirmar resposta"}
+                  ? "Resposta confirmada"
+                  : "Confirmar resposta"}
             </button>
 
             {/* RESULTADO */}
             {votingFinalizado && resultadoFinal && (
               <div
                 className={`
-                  mt-4
-                  p-4
-                  rounded-xl
-                  border
+                    mt-4
+                    p-4
+                    rounded-xl
+                    border
 
-                  ${
-                    resultadoFinal.maioriaAcertou
-                      ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-200"
-                      : "bg-red-500/10 border-red-500/30 text-red-200"
-                  }
-                `}
+                    ${
+                      resultadoFinal.maioriaAcertou
+                        ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-200"
+                        : "bg-red-500/10 border-red-500/30 text-red-200"
+                    }
+                  `}
               >
-
                 <p className="font-semibold text-lg mb-1">
-
                   {resultadoFinal.maioriaAcertou
                     ? "A maioria da sala acertou!"
                     : "A maioria da sala errou!"}
-
                 </p>
 
                 <p className="text-sm opacity-80">
@@ -755,13 +864,11 @@ D) Lisboa`}
                   {" · "}
                   {resultadoFinal.erros} erraram
                 </p>
-
               </div>
             )}
 
             {/* MODELO */}
             <div className="mt-4 pt-3 border-t border-[#332156]">
-
               <p className="text-xs text-purple-400/70">
                 Gerado por:{" "}
                 <span className="text-purple-300/80">
@@ -769,27 +876,28 @@ D) Lisboa`}
                 </span>
               </p>
 
+              {question.temaAdaptacao && (
+                <p className="text-xs text-purple-400/70 mt-1">
+                  Tema:{" "}
+                  <span className="text-purple-300/80">
+                    {question.temaAdaptacao}
+                  </span>
+                </p>
+              )}
             </div>
-
           </div>
         )}
       </div>
 
       {/* CHAT */}
       <div className="w-full max-w-3xl flex-1 bg-[#1e1038] border border-[#332156] rounded-2xl overflow-hidden flex flex-col">
-
         {/* HEADER */}
         <div className="bg-[#180b2e] border-b border-[#332156] px-5 py-3">
-
-          <h2 className="text-lg font-semibold">
-            Chat ao vivo
-          </h2>
-
+          <h2 className="text-lg font-semibold">Chat ao vivo</h2>
         </div>
 
         {/* MENSAGENS */}
         <div className="flex-1 overflow-y-auto p-5 space-y-3">
-
           {messages.length === 0 && (
             <div className="text-center text-purple-400 mt-10 text-sm">
               Nenhuma mensagem ainda...
@@ -800,26 +908,22 @@ D) Lisboa`}
             <div
               key={index}
               className="
-                bg-[#2a1750]
-                border
-                border-[#3d2769]
-                rounded-xl
-                px-4
-                py-3
-                max-w-[80%]
-              "
+                  bg-[#2a1750]
+                  border
+                  border-[#3d2769]
+                  rounded-xl
+                  px-4
+                  py-3
+                  max-w-[80%]
+                "
             >
-              <p className="whitespace-pre-line leading-relaxed">
-                {msg}
-              </p>
+              <p className="whitespace-pre-line leading-relaxed">{msg}</p>
             </div>
           ))}
-
         </div>
 
         {/* INPUT */}
         <div className="p-4 border-t border-[#332156] flex gap-3 bg-[#180b2e]">
-
           <input
             value={message}
             onChange={(e) => setMessage(e.target.value)}
@@ -857,10 +961,8 @@ D) Lisboa`}
           >
             Enviar
           </button>
-
         </div>
       </div>
-
     </div>
   );
 }

@@ -1,0 +1,15 @@
+[
+  {
+    "id": 1,
+    "materia": "Matemática",
+    "enunciado": "Em um laboratório, um recipiente contém 10 litros de uma solução composta apenas pelas substâncias S1 e S2. Dessa solução, 99,95% é de S1. Uma quantidade de S1 será retirada dessa solução, mantendo a quantidade inicial de S2, de modo que 99,90% da nova solução seja de S1. Qual é a quantidade de S1, em litro, que será retirada?",
+    "alternativas": {
+      "A": "0,0050",
+      "B": "0,0100",
+      "C": "0,5000",
+      "D": "4,9775",
+      "E": "5,0000"
+    },
+    "resposta": "E"
+  }
+]

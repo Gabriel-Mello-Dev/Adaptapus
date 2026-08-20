@@ -10,6 +10,19 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  --color-purpleMain: #170132;
+  --color-purpleSecond: #361542;
+  --color-purpleThird: #573E54;
+
+  --color-greenMain: #85AE72;
+  --color-greenSecond: #BCE1AB;
+
+  --color-orangeMain: #FDA615;
+  --color-orangeSecond: #FEBC3F;
+  --color-orangeThird: #FED26A;
+
+  --color-whiteMain: #FFF4FF;
 }
 
 @media (prefers-color-scheme: dark) {

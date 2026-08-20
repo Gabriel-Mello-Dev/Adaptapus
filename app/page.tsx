@@ -9,7 +9,7 @@ export default function Home() {
       <Header />
       <main className="min-h-160 flex  flex-col items-center justify-center p-6">
           <h1 className="text-4xl font-bold text-greenMain text-center mb-8">
-            Adaptil- Menu Principal
+            Adaptil
           </h1>
           <h2 className="text-2xl font-bold text-greenMain text-center mb-8">
             O que vamos fazer hoje?

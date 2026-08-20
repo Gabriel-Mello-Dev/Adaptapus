@@ -5,7 +5,7 @@ export default function Header() {
     return (
         <header className="w-full bg-purpleMain flex flex-row gap-4 px-16 p-4 justify-between items-center h-1/6">
             <Link href="/">
-                <h1 className="text-2xl text-greenMain rounded-md border-2 border-purpleSecond">
+                <h1 className="text-2xl text-greenMain rounded-md">
                     Home
                 </h1>
             </Link>

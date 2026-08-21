@@ -38,26 +38,14 @@ export default function ChatPage() {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<string[]>([]);
 
-  /*
-   * QUESTÕES DO ENEM
-   */
   const [questoes, setQuestoes] = useState<Questao[]>([]);
   const [indiceQuestao, setIndiceQuestao] = useState(0);
   const [carregandoQuestoes, setCarregandoQuestoes] = useState(true);
 
-  /*
-   * QUESTÃO ADAPTADA
-   */
   const [question, setQuestion] = useState<any>(null);
 
-  /*
-   * TEMA DA ADAPTAÇÃO
-   */
   const [tema, setTema] = useState("");
 
-  /*
-   * VOTAÇÃO
-   */
   const [votes, setVotes] = useState<any>({});
 
   const [respostaSelecionada, setRespostaSelecionada] = useState<number | null>(
@@ -69,36 +57,26 @@ export default function ChatPage() {
   const [votingFinalizado, setVotingFinalizado] = useState(false);
   const [resultadoFinal, setResultadoFinal] = useState<any>(null);
 
-  /*
-   * ADMIN
-   */
   const [isAdmin, setIsAdmin] = useState(false);
 
-  /*
-   * IA
-   */
   const [gerandoQuestao, setGerandoQuestao] = useState(false);
 
   const [loadingIndex, setLoadingIndex] = useState(0);
   const [loadingVisible, setLoadingVisible] = useState(true);
 
-  /*
-   * COPIAR
-   */
   const [copiado, setCopiado] = useState(false);
 
-  /*
-   * USUÁRIO MOCK
-   */
   const mockUsers = ["Gabriel", "Lucas", "Ana", "Pedro", "Maria", "João"];
+  const [materias, setMaterias] = useState<{ nome: string; arquivo: string }[]>(
+    [],
+  );
 
+  const [materiaSelecionada, setMateriaSelecionada] =
+    useState("matematica.json");
   const [user] = useState(() => ({
     nome: mockUsers[Math.floor(Math.random() * mockUsers.length)],
   }));
 
-  /*
-   * ADMIN
-   */
   useEffect(() => {
     const adm = localStorage.getItem("adm") === "true";
 
@@ -109,11 +87,31 @@ export default function ChatPage() {
    * CARREGAR QUESTÕES
    */
   useEffect(() => {
+    async function carregarMaterias() {
+      try {
+        const response = await fetch("/questions/index.json");
+
+        if (!response.ok) {
+          throw new Error("Erro ao carregar matérias");
+        }
+
+        const data = await response.json();
+
+        setMaterias(data);
+      } catch (error) {
+        console.error("Erro ao carregar matérias:", error);
+      }
+    }
+
+    carregarMaterias();
+  }, []);
+
+  useEffect(() => {
     async function carregarQuestoes() {
       try {
         setCarregandoQuestoes(true);
 
-        const response = await fetch("/questions/matematica.json");
+        const response = await fetch(`/questions/${materiaSelecionada}`);
 
         if (!response.ok) {
           throw new Error("Erro ao carregar questões");
@@ -122,15 +120,26 @@ export default function ChatPage() {
         const data: Questao[] = await response.json();
 
         setQuestoes(data);
+        setIndiceQuestao(0);
+        setQuestion(null);
+        setTema("");
+        setRespostaSelecionada(null);
+        setJavotou(false);
+        setVotes({});
+        setVotingFinalizado(false);
+        setResultadoFinal(null);
       } catch (error) {
         console.error("Erro ao carregar questões:", error);
+        setQuestoes([]);
       } finally {
         setCarregandoQuestoes(false);
       }
     }
 
-    carregarQuestoes();
-  }, []);
+    if (materiaSelecionada) {
+      carregarQuestoes();
+    }
+  }, [materiaSelecionada]);
 
   /*
    * ANIMAÇÃO DE CARREGAMENTO
@@ -580,7 +589,10 @@ Resposta correta: ${questaoAtual.resposta}
 
             {/* QUANTIDADE */}
             <div className="bg-blue-500/10 border border-blue-500/20 text-blue-200 rounded-xl p-3 text-sm">
-              {questoes.length} questões de Matemática carregadas
+              {questoes.length} questões de{" "}
+              {materias.find((m) => m.arquivo === materiaSelecionada)?.nome ||
+                "matéria"}{" "}
+              carregadas{" "}
             </div>
 
             {/* MOCK */}
@@ -595,6 +607,41 @@ Resposta correta: ${questaoAtual.resposta}
       {isAdmin && (
         <div className="w-full max-w-3xl mb-6 bg-[#1e1038] border border-[#332156] rounded-2xl p-6">
           <h2 className="text-xl font-bold mb-4">Painel do Administrador</h2>
+
+          <div>
+            <label className="text-sm text-purple-300 block mb-2">
+              Matéria
+            </label>
+
+            <select
+              value={materiaSelecionada}
+              onChange={(e) => setMateriaSelecionada(e.target.value)}
+              disabled={gerandoQuestao || !!question}
+              className="
+      w-full
+      bg-[#2a1750]
+      border
+      border-[#3d2769]
+      text-white
+      px-4
+      py-3
+      rounded-xl
+      outline-none
+      focus:border-purple-400
+      disabled:opacity-50
+    "
+            >
+              {materias.map((materia) => (
+                <option
+                  key={materia.arquivo}
+                  value={materia.arquivo}
+                  className="bg-[#2a1750]"
+                >
+                  {materia.nome}
+                </option>
+              ))}
+            </select>
+          </div>
 
           <div className="flex flex-col gap-3">
             {/* QUESTÃO ATUAL */}

@@ -52,5 +52,328 @@
       "E": "400"
     },
     "resposta": "C"
+  },
+  {
+    "id": "enem-2025-mat-141",
+    "numero": 141,
+    "materia": "Matemática",
+    "enunciado": "Uma fábrica utilizou uma impressora 3D para produzir o protótipo de uma peça. O protótipo tem forma de um poliedro convexo, obtido pela justaposição de dois sólidos distintos, um com a forma de um prisma hexagonal regular reto e o outro com a forma de um tronco de pirâmide hexagonal reta. A base maior do tronco de pirâmide coincide com uma das bases do prisma. Após a impressão do protótipo, ele foi encaminhado ao setor de customização para realização da pintura de sua superfície. O critério definido para realização da pintura considera que faces congruentes entre si devem ser pintadas com uma mesma cor, e faces não congruentes entre si devem apresentar cores distintas. Qual é a quantidade de cores utilizadas para pintar o protótipo?",
+    "alternativas": {
+      "A": "9",
+      "B": "8",
+      "C": "6",
+      "D": "4",
+      "E": "3"
+    },
+    "resposta": "D"
+  },
+  {
+    "id": "enem-2025-mat-143",
+    "numero": 143,
+    "materia": "Matemática",
+    "enunciado": "No atletismo, um grande desafio da prova de 100 metros rasos é a sua conclusão num tempo abaixo da marca de referência dos 10,00 segundos. Vários atletas já alcançaram esse feito. Em 2009, o jamaicano Usain Bolt estabeleceu o recorde mundial masculino dessa prova, com o tempo de 9,58 segundos. Qual é a diferença, em segundo, entre a marca de referência e a marca estabelecida por Usain Bolt em 2009?",
+    "alternativas": {
+      "A": "0,02",
+      "B": "0,42",
+      "C": "0,52",
+      "D": "1,02",
+      "E": "1,42"
+    },
+    "resposta": "B"
+  },
+  {
+    "id": "enem-2025-mat-146",
+    "numero": 146,
+    "materia": "Matemática",
+    "enunciado": "Uma pessoa pretende instalar um kit de gás natural veicular (GNV) em seu carro. Na loja que escolheu para realizar a compra e instalação desse kit, havia cinco modelos de cilindro para armazenamento do gás, cujas capacidades, em metro cúbico, eram, respectivamente: 10, 14, 17, 21 e 25. O preço do cilindro é proporcional à sua capacidade. Esse carro rodará 30 km diariamente, 7 dias por semana, e o consumo do GNV é de 1 m3 a cada 13 km rodados. A pessoa escolherá o modelo de cilindro de menor preço e que garanta apenas um abastecimento semanal. Nessas condições, qual será a capacidade, em metro cúbico, do cilindro escolhido por essa pessoa?",
+    "alternativas": {
+      "A": "10",
+      "B": "14",
+      "C": "17",
+      "D": "21",
+      "E": "25"
+    },
+    "resposta": "C"
+  },
+  {
+    "id": "enem-2025-mat-152",
+    "numero": 152,
+    "materia": "Matemática",
+    "enunciado": "Uma fábrica de tijolos ecológicos com 3 funcionários, cada um trabalhando 6 horas diárias, produz 720 unidades por dia. Para atender ao crescimento da demanda por esse tipo de tijolo, essa fábrica passou a ter 5 funcionários, cada um trabalhando 9 horas por dia, aumentando, assim, sua capacidade de produção. Todos os funcionários produzem igual quantidade de tijolos a cada hora, independentemente de trabalharem 6 ou 9 horas diárias. O número de tijolos fabricados diariamente após o aumento da capacidade de produção é",
+    "alternativas": {
+      "A": "800",
+      "B": "1 080",
+      "C": "1 200",
+      "D": "1 800",
+      "E": "2 520"
+    },
+    "resposta": "D"
+  },
+  {
+    "id": "enem-2025-mat-153",
+    "numero": 153,
+    "materia": "Matemática",
+    "enunciado": "Para acompanhar o fluxo de visitantes em seu prédio, uma empresa estabeleceu um código de identificação para a visitação. De acordo com a regra estabelecida, cada visitante será identificado com um código sequencial numérico com 7 dígitos, determinado, da esquerda para a direita, da seguinte forma: o primeiro dígito indica o andar ao qual o visitante se dirige, que é um número de 1 a 4; os dois próximos dígitos correspondem ao número do setor da empresa ao qual o visitante se destina. Esse número varia de 01 a 20; os três dígitos seguintes correspondem ao número do funcionário da empresa com quem o visitante irá se reunir. Esse número varia de 001 a 135; o último dígito indica se o visitante chegou à empresa pela manhã, dígito 0, ou à tarde, dígito 1. Um visitante chegou à empresa às 10 horas da manhã para se reunir com o funcionário identificado pelo número 109, que trabalha no setor 08 da empresa, localizado no 2º andar. O código de identificação desse visitante é",
+    "alternativas": {
+      "A": "0109082",
+      "B": "0281090",
+      "C": "1010982",
+      "D": "2081090",
+      "E": "2810910"
+    },
+    "resposta": "D"
+  },
+  {
+    "id": "enem-2025-mat-154",
+    "numero": 154,
+    "materia": "Matemática",
+    "enunciado": "Quatro candidatos se apresentaram para realizar a prova de um concurso. Antes de iniciar a prova, os celulares dos quatro candidatos foram recolhidos pelo aplicador, que os guardou, cada um, dentro de um envelope preto. Ao término da prova, o aplicador devolveu os quatro envelopes com os celulares aos quatro candidatos, de maneira aleatória, já que não havia feito a identificação dos envelopes. A probabilidade de que todos os candidatos tenham recebido de volta os envelopes com os seus respectivos celulares é",
+    "alternativas": {
+      "A": "1 2",
+      "B": "1 10",
+      "C": "1 16",
+      "D": "1 24",
+      "E": "1 256"
+    },
+    "resposta": "D"
+  },
+  {
+    "id": "enem-2025-mat-157",
+    "numero": 157,
+    "materia": "Matemática",
+    "enunciado": "Em um estudo clínico, 55 mulheres foram distribuídas, aleatoriamente, em 5 grupos de 11 pessoas. Para testar uma nova medicação, será escolhido um grupo no qual a maioria das mulheres tenham idades entre 20 e 30 anos. Os demais grupos tomarão placebo ou medicações já existentes no mercado. O quadro, parcialmente preenchido, informa alguns dados relativos às idades das mulheres desses grupos. Mesmo com o quadro incompleto, foi possível selecionar um desses grupos porque, apenas com os dados apresentados no quadro, foi identificado um grupo que, certamente, atendia ao critério de escolha. O grupo escolhido foi o",
+    "dados": {
+      "grupos": {
+        "1": {
+          "menor_idade": 25,
+          "maior_idade": 10
+        },
+        "2": {
+          "menor_idade": 25,
+          "maior_idade": 9
+        },
+        "3": {
+          "menor_idade": 25,
+          "maior_idade": 4
+        },
+        "4": {
+          "menor_idade": 25,
+          "maior_idade": 1
+        },
+        "5": {
+          "menor_idade": 20,
+          "maior_idade": 35
+        }
+      }
+    },
+    "alternativas": {
+      "A": "1",
+      "B": "2",
+      "C": "3",
+      "D": "4",
+      "E": "5"
+    },
+    "resposta": "D"
+  },
+  {
+    "id": "enem-2025-mat-161",
+    "numero": 161,
+    "materia": "Matemática",
+    "enunciado": "Uma empresa produziu, em um determinado mês, 110 toneladas de plástico a partir de derivados de petróleo e 80 toneladas a partir de plásticos reciclados. O custo para reciclar uma tonelada de plástico é de R$ 500,00, que equivale a 5% do custo para produzir a mesma quantidade de plástico a partir de derivados de petróleo. Para o mês seguinte, a meta dessa empresa é produzir a mesma quantidade de plástico que foi produzida nesse mês, mas com redução de, pelo menos, 50% no custo de produção. Para que no mês seguinte a empresa atinja a meta, a quantidade mínima de toneladas de plástico que devem ser produzidas a partir de reciclagem deverá ser",
+    "alternativas": {
+      "A": "135",
+      "B": "140",
+      "C": "155",
+      "D": "160",
+      "E": "175"
+    },
+    "resposta": "B"
+  },
+  {
+    "id": "enem-2025-mat-162",
+    "numero": 162,
+    "materia": "Matemática",
+    "enunciado": "Dez casais fundaram um grupo de dança e decidiram constituir uma diretoria com três cargos: presidente, secretário e tesoureiro. Para maior representatividade, decidiu-se que no máximo uma pessoa por casal poderá ocupar um cargo nessa diretoria. Quantas diretorias diferentes podem ser constituídas por esses 10 casais?",
+    "alternativas": {
+      "A": "10 × 9 × 8",
+      "B": "20 × 18 × 16",
+      "C": "20 × 19 × 18",
+      "D": "10 × 9 × 8 × 2",
+      "E": "20 × 18 × 16 × 2"
+    },
+    "resposta": "B"
+  },
+  {
+    "id": "enem-2025-mat-164",
+    "numero": 164,
+    "materia": "Matemática",
+    "enunciado": "O cortisol é um hormônio produzido pelas glândulas adrenais e pode ser considerado um importante marcador do estresse fisiológico. Em um estudo desenvolvido com enfermeiros, foi verificado que a concentração de cortisol salivar em um dia de trabalho, denotada por T, era, em média, 1,59 vezes a concentração de cortisol salivar em um dia de folga, denotada por F. Nesse estudo, a relação obtida entre T e F foi",
+    "alternativas": {
+      "A": "T = 1,59 + F",
+      "B": "F = 1,59 + T",
+      "C": "T/F = 1,59",
+      "D": "F/T = 1,59",
+      "E": "F ⋅ T = 1,59"
+    },
+    "resposta": "C"
+  },
+  {
+    "id": "enem-2025-mat-165",
+    "numero": 165,
+    "materia": "Matemática",
+    "enunciado": "Um estacionamento possui 120 vagas para veículos, e todas essas vagas estão ocupadas. Cada cliente paga uma mensalidade para utilizar uma vaga, que é calculada com base nas despesas mensais do estacionamento e no lucro pretendido. As despesas mensais do estacionamento são: R$ 14 240,00 com manutenção mais R$ 36,00 de seguro por veículo. O lucro do estacionamento é determinado pela diferença do valor arrecadado com as mensalidades pelas despesas efetuadas. A partir do mês seguinte, o valor do seguro por veículo aumentará em 20%, e as despesas com manutenção permanecerão sem alterações. Com isso, o dono do estacionamento reajustará as mensalidades para obter um lucro mensal de R$ 10 000,00. Apesar desse reajuste, todas as vagas continuarão ocupadas. O valor, em real, da mensalidade reajustada será",
+    "alternativas": {
+      "A": "185,60",
+      "B": "226,09",
+      "C": "245,20",
+      "D": "268,93",
+      "E": "285,60"
+    },
+    "resposta": "C"
+  },
+  {
+    "id": "enem-2025-mat-166",
+    "numero": 166,
+    "materia": "Matemática",
+    "enunciado": "O dono de uma sorveteria armazena sorvete em potes de 20 000 cm3. Ele serve o sorvete em taças, em porções de 250 mL. A quantidade de taças que ele consegue servir a partir de um pote cheio de sorvete é",
+    "alternativas": {
+      "A": "5",
+      "B": "8",
+      "C": "50",
+      "D": "80",
+      "E": "800"
+    },
+    "resposta": "D"
+  },
+  {
+    "id": "enem-2025-mat-169",
+    "numero": 169,
+    "materia": "Matemática",
+    "enunciado": "Três dados cúbicos, com faces numeradas de 1 a 6, foram utilizados em um jogo. Artur escolheu dois dados, e João ficou com o terceiro. O jogo consiste em ambos lançarem seus dados, observarem os números nas faces voltadas para cima e compararem o maior número obtido por Artur com o número obtido por João. Vence o jogador que obtiver o maior número. Em caso de empate, a vitória é de João. O jogador que tem a maior probabilidade de vitória é",
+    "alternativas": {
+      "A": "Artur, com probabilidade de 2 3",
+      "B": "João, com probabilidade de 4 9",
+      "C": "Artur, com probabilidade de 91 216",
+      "D": "João, com probabilidade de 91 216",
+      "E": "Artur, com probabilidade de 125 216"
+    },
+    "resposta": "E"
+  },
+  {
+    "id": "enem-2025-mat-170",
+    "numero": 170,
+    "materia": "Matemática",
+    "enunciado": "A luminância de um objeto é a grandeza que descreve a quantidade de luz produzida ou refletida por sua superfície. Ela está definida como a razão entre a intensidade luminosa, medida em candela (cd), e o quadrado da distância do objeto até o foco de luz, medida em metro (m). A unidade de medida da luminância de um objeto é",
+    "alternativas": {
+      "A": "cd/m2",
+      "B": "m/cd2",
+      "C": "cd/m",
+      "D": "m/cd",
+      "E": "m cd"
+    },
+    "resposta": "A"
+  },
+  {
+    "id": "enem-2025-mat-173",
+    "numero": 173,
+    "materia": "Matemática",
+    "enunciado": "Em um país, a primeira etapa para obtenção da carteira de motorista é a contratação de três produtos: pacote com 20 aulas teóricas; pacote com 10 aulas práticas; aluguel do veículo para realização das aulas práticas. Uma pessoa que pretende obter a carteira de motorista pesquisou o valor do aluguel do veículo e os valores de cada aula teórica e de cada aula prática em três autoescolas. O quadro apresenta esses valores. Ela contratará os três produtos numa mesma autoescola de modo que o custo total nessa primeira etapa seja o menor possível. A autoescola que será contratada é a",
+    "dados": {
+      "autoescolas": {
+        "I": {
+          "valor_aula_teorica": 10,
+          "valor_aula_pratica": 80,
+          "aluguel_veiculo": 400
+        },
+        "II": {
+          "valor_aula_teorica": 30,
+          "valor_aula_pratica": 50,
+          "aluguel_veiculo": 200
+        },
+        "III": {
+          "valor_aula_teorica": 20,
+          "valor_aula_pratica": 40,
+          "aluguel_veiculo": 400
+        }
+      }
+    },
+    "alternativas": {
+      "A": "I, com o custo total de R$ 1 400,00.",
+      "B": "II, com o custo total de R$ 280,00.",
+      "C": "II, com o custo total de R$ 1 300,00.",
+      "D": "III, com o custo total de R$ 460,00.",
+      "E": "III, com o custo total de R$ 1 200,00."
+    },
+    "resposta": "E"
+  },
+  {
+    "id": "enem-2025-mat-175",
+    "numero": 175,
+    "materia": "Matemática",
+    "enunciado": "Um confeiteiro passou a produzir tortas em formato de cilindro circular reto, com raio da base variando entre 12 cm e 16 cm e altura de 6 cm. Essas tortas deverão ser embaladas em caixas com formato de prisma reto de base quadrada, de modo que seja possível acomodar a torta em seu interior e ainda restar pelo menos 1 cm de distância entre a torta e as superfícies internas da caixa, lateral e superior. Ele dispõe, originalmente, de caixas no formato pretendido, cujas dimensões internas são 14 cm de comprimento do lado da base e 7 cm de altura, que não atendem às suas necessidades. Portanto, ele comprará novas caixas, com o mesmo formato das caixas originais, mas com comprimento do lado da base maior, que sejam adequadas para embalar todos os tipos de torta que produz. A aresta da base das novas caixas deve ser, no mínimo, quantos centímetros maior do que a das caixas originais?",
+    "alternativas": {
+      "A": "4",
+      "B": "12",
+      "C": "16",
+      "D": "18",
+      "E": "20"
+    },
+    "resposta": "E"
+  },
+  {
+    "id": "enem-2025-mat-176",
+    "numero": 176,
+    "materia": "Matemática",
+    "enunciado": "Um empresário utiliza máquinas cuja pressão interna P, em atmosfera, depende do tempo contínuo de utilização t, em hora, e de um parâmetro positivo K, que define o modelo da máquina, segundo a expressão: P = 4 ⋅ log[−K ⋅ (t + 1) ⋅ (t − 19)]. O fabricante dessas máquinas recomenda ao usuário que a pressão interna desse tipo de máquina não ultrapasse 10 atmosferas durante seu funcionamento. O empresário pretende comprar novas máquinas desse tipo que deverão funcionar, diariamente, por um período contínuo de 10 horas. Para isso, precisa definir o modelo de máquina a ser adquirida escolhendo o maior valor possível do parâmetro K, atendendo à recomendação do fabricante. O maior valor a ser escolhido para K é",
+    "alternativas": {
+      "A": "100,5",
+      "B": "108",
+      "C": "10 84 25",
+      "D": "10 99 25",
+      "E": "25 × 10−2"
+    },
+    "resposta": "A"
+  },
+  {
+    "id": "enem-2025-mat-178",
+    "numero": 178,
+    "materia": "Matemática",
+    "enunciado": "Um carro que custa 60 mil reais é comercializado por uma revendedora que oferece duas opções de pagamento, todas sem entrada e sem juros: opção 1: pagamento em n parcelas iguais; opção 2: pagamento em 6 parcelas a mais do que na opção 1 e, com isso, o valor de cada parcela se torna R$ 500,00 menor do que o valor da parcela na opção 1. Nas duas opções de pagamento, o valor total a ser pago pelo carro é o mesmo. Qual é a quantidade n de parcelas contidas na opção 1 de pagamento?",
+    "alternativas": {
+      "A": "18",
+      "B": "24",
+      "C": "30",
+      "D": "42",
+      "E": "48"
+    },
+    "resposta": null
+  },
+  {
+    "id": "enem-2025-mat-179",
+    "numero": 179,
+    "materia": "Matemática",
+    "enunciado": "Um pai comprou oito presentes diferentes (dentre os quais, uma bicicleta e um celular) para dar a seus três filhos. Ele pretende distribuir os presentes de modo que o filho mais velho e o mais novo recebam três presentes cada um, e o do meio receba os dois presentes restantes. O mais velho ganhará, entre seus presentes, ou uma bicicleta ou um celular, mas não ambos. De quantas maneiras distintas a distribuição dos presentes pode ser feita?",
+    "alternativas": {
+      "A": "36",
+      "B": "53",
+      "C": "300",
+      "D": "360",
+      "E": "560"
+    },
+    "resposta": "C"
+  },
+  {
+    "id": "enem-2025-mat-180",
+    "numero": 180,
+    "materia": "Matemática",
+    "enunciado": "A final de um campeonato de futebol foi disputada em 2 tempos regulamentares, de 45 minutos cada, sem acréscimos, com uma prorrogação de 30 minutos, também sem acréscimos. Um jogador entrou no início do segundo tempo, com um equipamento para medir a distância percorrida durante sua participação no jogo. Ao final do segundo tempo regulamentar, esse jogador havia percorrido 4,5 km. Ele manteve na prorrogação a mesma velocidade média que havia mantido no segundo tempo regulamentar. A distância percorrida por esse jogador durante sua participação na partida, em quilômetro, foi",
+    "alternativas": {
+      "A": "4,5",
+      "B": "6,0",
+      "C": "7,5",
+      "D": "9,0",
+      "E": "12,0"
+    },
+    "resposta": "C"
   }
 ]

@@ -1,0 +1,30 @@
+[
+  {
+    "nome": "Matemática",
+    "arquivo": "matematica.json"
+  },
+  {
+    "nome": "Física",
+    "arquivo": "fisica.json"
+  },
+  {
+    "nome": "Química",
+    "arquivo": "quimica.json"
+  },
+  {
+    "nome": "Biologia",
+    "arquivo": "biologia.json"
+  },
+  {
+    "nome": "História",
+    "arquivo": "historia.json"
+  },
+  {
+    "nome": "Geografia",
+    "arquivo": "geografia.json"
+  },
+  {
+    "nome": "Português",
+    "arquivo": "portugues.json"
+  }
+]

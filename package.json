@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@google/genai": "^1.39.0",
+    "@supabase/ssr": "^0.12.4",
+    "@supabase/supabase-js": "^2.112.3",
     "@vercel/analytics": "^2.0.1",
     "express": "^5.2.1",
     "next": "16.1.3",

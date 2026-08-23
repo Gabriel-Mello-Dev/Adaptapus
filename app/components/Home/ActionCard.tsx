@@ -21,9 +21,18 @@ export default function ActionCard({
 }: ActionCardProps) {
 
     const variants = {
-        orange: "bg-orangeMain",
-        green: "bg-greenMain",
-        purple: "bg-purpleSecond",
+        orange: {
+            background: "bg-orangeMain",
+            icon: "text-orangeMain",
+        },
+        green: {
+            background: "bg-greenMain",
+            icon: "text-greenMain",
+        },
+        purple: {
+            background: "bg-purpleSecond",
+            icon: "text-purpleSecond",
+        },
     };
 
     return (
@@ -32,7 +41,7 @@ export default function ActionCard({
             className={`
                 group
                 ${fullWidth ? "col-span-2" : ""}
-                ${variants[variant]}
+                ${variants[variant].background}
                 flex
                 min-h-28
                 items-center
@@ -50,7 +59,7 @@ export default function ActionCard({
         >
             <div className="flex items-center gap-5">
 
-                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-white/90 text-orangeMain">
+                <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-white/90 ${variants[variant].icon}`}>
                     {icon}
                 </div>
 

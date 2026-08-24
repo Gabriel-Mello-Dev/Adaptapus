@@ -1,45 +1,69 @@
-import Link from "next/link"
+import Link from "next/link";
+import Image from "next/image";
+import {
+    Home,
+    Brain,
+    LogIn,
+    Plus,
+    User
+} from "lucide-react";
 
 export default function Header() {
-
     return (
-        <header className="w-full bg-purpleMain flex flex-row gap-4 px-16 p-4 justify-between items-center h-1/6">
-            <Link href="/">
-                <h1 className="text-2xl text-greenMain rounded-md">
-                    Home
-                </h1>
-            </Link>
+        <header className="w-full bg-purpleMain shadow-lg">
+            <nav className="mx-auto flex h-20 max-w-7xl items-center justify-between px-8">
 
-            <Link href="/pages/Adaptar">
-                <h1 className="text-2xl text-greenMain">
-                    Adaptil
-                </h1>
-            </Link>
+                <div className="flex items-center gap-3">
+                    <Link
+                        href="/"
+                        className="flex items-center gap-2 rounded-xl bg-white/10 px-4 py-2 text-greenMain transition hover:bg-white/15"
+                    >
+                        <Home size={22} />
+                        <span className="font-semibold">Home</span>
+                    </Link>
 
-            <Link href="/pages/Room">
-                <h1 className="text-2xl text-greenMain">
-                    Entrar na Sala
-                </h1>
-            </Link>
+                    <Link
+                        href="/pages/Adaptar"
+                        className="flex items-center gap-2 px-4 py-2 text-greenMain transition hover:opacity-80"
+                    >
+                        <Brain size={22} />
+                        <span className="font-semibold">Adaptil</span>
+                    </Link>
 
-            <Link href="/pages/Room">
-                <h1 className="text-2xl text-greenMain">
-                    Criar Sala
-                </h1>
-            </Link>
+                    <Link
+                        href="/pages/Room"
+                        className="flex items-center gap-2 px-4 py-2 text-greenMain transition hover:opacity-80"
+                    >
+                        <LogIn size={22} />
+                        <span className="font-semibold">Entrar na Sala</span>
+                    </Link>
 
-            <Link href="/">
-                <h1 className="text-2xl text-greenMain">
-                    Perfil
-                </h1>
-            </Link>
+                    <Link
+                        href="/pages/Room"
+                        className="flex items-center gap-2 px-4 py-2 text-greenMain transition hover:opacity-80"
+                    >
+                        <Plus size={22} />
+                        <span className="font-semibold">Criar Sala</span>
+                    </Link>
 
-            {/* Logo */}
-            <img
-            src="/imgs/logoAdaptil.png"
-            alt="Logo Adaptil"
-            className="w-14 transition-transform duration-300 hover:scale-105 hover:translate-x-1"
-            />
+                    <Link
+                        href="/"
+                        className="flex items-center gap-2 px-4 py-2 text-greenMain transition hover:opacity-80"
+                    >
+                        <User size={22} />
+                        <span className="font-semibold">Perfil</span>
+                    </Link>
+                </div>
+
+                <Image
+                    src="/imgs/logoAdaptil.png"
+                    alt="Logo Adaptil"
+                    height={56}
+                    width={56}
+                    className="w-14 transition-transform duration-300 hover:scale-105"
+                />
+
+            </nav>
         </header>
-    )
+    );
 }

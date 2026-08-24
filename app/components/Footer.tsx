@@ -1,13 +1,29 @@
-export default function Footer() {
+import Image from "next/image";
 
-    return(
-        <footer className="w-full bg-purpleMain p-4 min-h-1/6 flex justify-between items-center">
-            <p className="text-xl text-greenSecond">
-                Adaptil™
-            </p>
-            <p className="text-xl text-greenSecond">
-                @Copyright - 2026 - Todos os direitos reservados
-            </p>
+export default function Footer() {
+    return (
+        <footer className="w-full bg-purpleMain">
+            <div className="mx-auto flex min-h-20 max-w-7xl items-center justify-between px-8">
+
+                <div className="flex items-center gap-2">
+                    <Image
+                        src="/imgs/logoAdaptil.png"
+                        alt="Adaptil"
+                        className="w-7"
+                        height={28}
+                        width={28}
+                    />
+
+                    <span className="text-sm text-greenSecond">
+                        Adaptil™
+                    </span>
+                </div>
+
+                <p className="text-sm text-greenSecond">
+                    @Copyright - 2026 - Todos os direitos reservados
+                </p>
+
+            </div>
         </footer>
-    )
-};
+    );
+}

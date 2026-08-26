@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+
+Disallow: /pages/Room/Chat/
+
+Sitemap: https://adaptil.vercel.app/sitemap.xml

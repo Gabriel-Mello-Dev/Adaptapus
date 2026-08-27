@@ -56,7 +56,7 @@ export default function Header() {
                 </div>
 
                 <Image
-                    src="/imgs/logoAdaptil.png"
+                    src="/imgs/logoAdaptapus.png"
                     alt="Logo Adaptil"
                     height={56}
                     width={56}

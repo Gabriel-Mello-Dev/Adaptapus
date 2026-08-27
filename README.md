@@ -1,7 +1,7 @@
 # Adaptil
 
 <p align="center">
-  <img src="public/imgs/logoAdaptil.png" alt="Logo Adaptil" width="180">
+  <img src="public/imgs/logoAdaptapus.png" alt="Logo Adaptil" width="180">
 </p>
 
 **Adaptil** é uma plataforma educacional que utiliza **Inteligência Artificial para adaptar questões acadêmicas a temas de interesse do aluno**.

@@ -7,7 +7,7 @@ export function QuestionHeader() {
         
         {/* Logo */}
         <Image
-          src="/imgs/logoAdaptil.png"
+          src="/imgs/logoAdaptapus.png"
           alt="Logo Adaptil"
           className="w-24 mx-auto mb-4 transition-transform duration-300 hover:scale-105 hover:translate-x-1"
           height={96}

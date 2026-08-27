@@ -1,13 +1,17 @@
+import Image from "next/image";
+
 export function QuestionHeader() {
   return (
     <header className="w-full flex justify-center mt-10 px-4">
       <div className="w-full max-w-2xl backdrop-blur-md bg-white/5 border border-white/10 rounded-2xl p-6 text-center shadow-lg">
         
         {/* Logo */}
-        <img
+        <Image
           src="/imgs/logoAdaptil.png"
           alt="Logo Adaptil"
           className="w-24 mx-auto mb-4 transition-transform duration-300 hover:scale-105 hover:translate-x-1"
+          height={96}
+          width={96}
         />
 
         {/* Título */}

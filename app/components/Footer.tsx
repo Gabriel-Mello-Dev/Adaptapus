@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export default function Footer() {
     return (
-        <footer className="w-full bg-purpleMain">
+        <footer className="w-full bg-brownMain text-goldMain">
             <div className="mx-auto flex min-h-20 max-w-7xl items-center justify-between px-8">
 
                 <div className="flex items-center gap-2">
@@ -14,12 +14,12 @@ export default function Footer() {
                         width={28}
                     />
 
-                    <span className="text-sm text-greenSecond">
-                        Adaptil™
+                    <span className="text-sm">
+                        Adaptapus™
                     </span>
                 </div>
 
-                <p className="text-sm text-greenSecond">
+                <p className="text-sm">
                     @Copyright - 2026 - Todos os direitos reservados
                 </p>
 

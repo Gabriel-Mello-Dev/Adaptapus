@@ -7,7 +7,7 @@ interface ActionCardProps {
     title: string;
     description: string;
     icon: ReactNode;
-    variant: "orange" | "green" | "purple";
+    variant: "gold" | "orange" | "brown";
     fullWidth?: boolean;
 }
 
@@ -21,17 +21,17 @@ export default function ActionCard({
 }: ActionCardProps) {
 
     const variants = {
+        gold: {
+            background: "bg-goldMain",
+            icon: "text-goldMain",
+        },
         orange: {
             background: "bg-orangeMain",
             icon: "text-orangeMain",
         },
-        green: {
-            background: "bg-greenMain",
-            icon: "text-greenMain",
-        },
-        purple: {
-            background: "bg-purpleSecond",
-            icon: "text-purpleSecond",
+        brown: {
+            background: "bg-brownSecond",
+            icon: "text-brownSecond",
         },
     };
 

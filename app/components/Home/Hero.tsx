@@ -14,24 +14,24 @@ export default function Hero() {
                 {/* Hero */}
                 <section className="mx-auto flex max-w-7xl flex-col items-center px-6 pb-6 pt-10 text-center bg-whiteMain">
 
-                    <h1 className="text-6xl font-bold text-orangeSecond">
+                    <h1 className="text-6xl font-bold text-orangeMain">
                         Adaptapus
                     </h1>
 
                     <div className="my-2 flex items-center gap-4">
-                        <span className="h-px w-20 bg-orangeSecond/40" />
+                        <span className="h-px w-20 bg-orangeMain/40" />
                         <Brain
                             size={28}
-                            className="text-orangeSecond"
+                            className="text-orangeMain"
                         />
-                        <span className="h-px w-20 bg-orangeSecond/40" />
+                        <span className="h-px w-20 bg-orangeMain/40" />
                     </div>
 
-                    <h2 className="text-3xl font-bold text-brownThird">
+                    <h2 className="text-3xl font-bold text-blueMain">
                         Aprender do seu jeito. Evoluir sempre.
                     </h2>
 
-                    <p className="mt-4 max-w-2xl text-lg leading-relaxed text-brownThird/90">
+                    <p className="mt-4 max-w-2xl text-lg leading-relaxed text-blueMain/90">
                         Adapte questões, crie salas de estudo e aprenda
                         de forma personalizada e colaborativa.
                     </p>
@@ -51,7 +51,7 @@ export default function Hero() {
                                 title="Adaptar Questões"
                                 description="Personalize questões de acordo com o seu objetivo."
                                 icon={<Brain size={30} />}
-                                variant="gold"
+                                variant="orange"
                                 fullWidth
                             />
 
@@ -60,7 +60,7 @@ export default function Hero() {
                                 title="Entrar na Sala"
                                 description="Entre em uma sala com código."
                                 icon={<LogIn size={30} />}
-                                variant="orange"
+                                variant="blue"
                             />
 
                             <ActionCard
@@ -68,7 +68,7 @@ export default function Hero() {
                                 title="Criar Sala"
                                 description="Crie sua sala e convide amigos."
                                 icon={<Plus size={30} />}
-                                variant="brown"
+                                variant="green"
                             />
 
                         </div>

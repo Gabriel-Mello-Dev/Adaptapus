@@ -3,8 +3,9 @@
 import { useState } from "react";
 import { createClient } from "@/app/libs/supabase/client";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
-export default function CadastroPage() {
+export default function SignUp() {
   const supabase = createClient();
   const router = useRouter();
 
@@ -216,6 +217,19 @@ export default function CadastroPage() {
 
         </form>
       </div>
+
+  
+<div className="mt-6 text-center text-sm text-gray-500">
+  Ja tem uma conta?{" "}
+  <Link
+    href="/pages/SignIn"
+    className="font-semibold text-blue-600 hover:text-blue-700"
+  >
+    Entrar
+  </Link>
+</div>
+
+
     </main>
   );
 }

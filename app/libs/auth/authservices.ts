@@ -1,11 +1,12 @@
-import {redirect} from "next/navigation";
-import {createClient} from "@/app/libs/supabase/server";
+import { createClient } from "@/app/libs/supabase/client";
 
-export const checkLoggedUser = async() => {
-    const supabase = await createClient();
-    const {data: {user}} = await supabase.auth.getUser();
+export const checkLoggedUser = async () => {
+  const supabase = createClient();
 
-    if(!user) {
-        redirect("/login");
-    }
-}
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  return user;
+};
+

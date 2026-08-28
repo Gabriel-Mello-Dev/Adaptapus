@@ -9,6 +9,7 @@ interface ActionCardProps {
     icon: ReactNode;
     variant: "orange" | "blue" | "green";
     fullWidth?: boolean;
+    onClick?: () => void;
 }
 
 export default function ActionCard({
@@ -18,6 +19,7 @@ export default function ActionCard({
     icon,
     variant,
     fullWidth = false,
+    onClick
 }: ActionCardProps) {
 
     const variants = {
@@ -36,8 +38,10 @@ export default function ActionCard({
     };
 
     return (
-        <Link
-            href={href}
+        <>
+        {onClick ? (
+            <button
+            onClick={onClick}
             className={`
                 group
                 ${fullWidth ? "col-span-2" : ""}
@@ -79,6 +83,53 @@ export default function ActionCard({
                 size={28}
                 className="transition-transform duration-300 group-hover:translate-x-1"
             />
-        </Link>
+        </button>
+        ) : ( 
+            <Link
+                href={href}
+                className={`
+                group
+                ${fullWidth ? "col-span-2" : ""}
+                ${variants[variant].background}
+                flex
+                min-h-28
+                items-center
+                justify-between
+                rounded-2xl
+                px-7
+                py-5
+                text-white
+                shadow-md
+                transition-all
+                duration-300
+                hover:-translate-y-1
+                hover:shadow-xl
+                `}
+            >
+                <div className="flex items-center gap-5">
+
+                    <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-white/90 ${variants[variant].icon}`}>
+                        {icon}
+                    </div>
+
+                    <div>
+                        <h3 className="text-xl font-bold">
+                            {title}
+                        </h3>
+
+                        <p className="mt-1 text-sm opacity-90">
+                            {description}
+                        </p>
+                    </div>
+
+                </div>
+
+                <ArrowRight
+                    size={28}
+                    className="transition-transform duration-300 group-hover:translate-x-1"
+                />
+            </Link>
+        )}  
+    </>
     );
 }

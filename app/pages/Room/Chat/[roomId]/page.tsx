@@ -3,8 +3,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { redirect, useParams } from "next/navigation";
 import { io } from "socket.io-client";
+import { checkLoggedUser } from "@/app/libs/auth/authservices";
 
 const socket = io(process.env.NEXT_PUBLIC_SOCKET_SERVER!);
 
@@ -81,6 +82,19 @@ export default function ChatPage() {
     const adm = localStorage.getItem("adm") === "true";
 
     setIsAdmin(adm);
+  }, []);
+
+  useEffect(() => {
+    async function verificarUsuario() {
+      const user = await checkLoggedUser();
+
+      if (!user) {
+        console.log("não logado");
+        redirect("/pages/SignIn");
+      }
+    }
+
+    verificarUsuario();
   }, []);
 
   /*

@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -7,8 +9,52 @@ import {
     Plus,
     User
 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { createClient } from "@/app/libs/supabase/client";
 
 export default function Header() {
+    const [nome, setNome] = useState<string | null>(null);
+
+    useEffect(() => {
+        const supabase = createClient();
+
+        async function pegarUsuario() {
+            const {
+                data: { user }
+            } = await supabase.auth.getUser();
+
+            if (!user) {
+                setNome(null);
+                return;
+            }
+
+            const { data, error } = await supabase
+                .from("usuarios")
+                .select("nome")
+                .eq("uid", user.id)
+                .single();
+
+            if (error) {
+                console.error("Erro ao buscar usuário:", error);
+                return;
+            }
+
+            setNome(data?.nome ?? null);
+        }
+
+        pegarUsuario();
+
+        const {
+            data: { subscription }
+        } = supabase.auth.onAuthStateChange(() => {
+            pegarUsuario();
+        });
+
+        return () => {
+            subscription.unsubscribe();
+        };
+    }, []);
+
     return (
         <header className="w-full bg-orangeMain shadow-lg text-whiteSecond">
             <nav className="mx-auto flex h-20 max-w-7xl items-center justify-between px-8">
@@ -55,13 +101,21 @@ export default function Header() {
                     </Link>
                 </div>
 
-                <Image
-                    src="/imgs/logoAdaptapus.png"
-                    alt="Logo Adaptapus"
-                    height={56}
-                    width={56}
-                    className="w-14 transition-transform duration-300 hover:scale-105"
-                />
+                <div className="flex items-center gap-3">
+                    {nome && (
+                        <span className="font-semibold">
+                            {nome}
+                        </span>
+                    )}
+
+                    <Image
+                        src="/imgs/logoAdaptapus.png"
+                        alt="Logo Adaptapus"
+                        height={56}
+                        width={56}
+                        className="w-14 transition-transform duration-300 hover:scale-105"
+                    />
+                </div>
 
             </nav>
         </header>

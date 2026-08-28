@@ -1,34 +1,61 @@
-/* eslint-disable @next/next/no-async-client-component */
 "use client";
-import { useState } from "react";
-import {useEffect} from 'react';
-import {redirect} from "next/navigation";
+
+import { useState, useEffect } from "react";
+import { redirect } from "next/navigation";
+
 import { useQuestion } from "../../hooks/useQuestion";
 import QuestionCard from "../../components/QuestionCard";
+import { checkLoggedUser } from "../../libs/auth/authservices";
 
-import {checkLoggedUser} from '../../libs/auth/authservices';
-import router from "next/router";
-
- export default function Home() {
-  const { title, text, respostas, perguntando, gerarPergunta, verificar } =
-    useQuestion();
+export default function Home() {
+  const {
+    title,
+    text,
+    respostas,
+    perguntando,
+    modeloIA,
+    gerarPergunta,
+    verificar,
+    limparPergunta,
+  } = useQuestion();
 
   const [questao, setQuestao] = useState("");
   const [tema, setTema] = useState("");
+  const [materia, setMateria] = useState("matematica");
+
   const [respostaEscolhida, setRespostaEscolhida] = useState(0);
 
-useEffect(() => {
+  useEffect(() => {
     async function verificarUsuario() {
       const user = await checkLoggedUser();
 
       if (!user) {
-        console.log("não logado")
+        console.log("não logado");
         redirect("/pages/SignIn");
       }
     }
 
     verificarUsuario();
-  }, [router]);
+  }, []);
+
+  async function handleVerificar() {
+    const acertou = await verificar(respostaEscolhida, materia);
+
+    alert(acertou ? "Acertou" : "Errou");
+
+    // Limpa a questão gerada
+    limparPergunta();
+
+    // Limpa os campos
+    setQuestao("");
+    setTema("");
+
+    // Limpa a alternativa selecionada
+    setRespostaEscolhida(0);
+  }
+  async function handleGerar() {
+    await gerarPergunta(questao, tema, materia);
+  }
 
   return (
     <QuestionCard
@@ -37,13 +64,15 @@ useEffect(() => {
       respostas={respostas}
       perguntando={perguntando}
       respostaEscolhida={respostaEscolhida}
+      materia={materia}
+      modeloIA={modeloIA}
+      questao={questao}
+      tema={tema}
       setRespostaEscolhida={setRespostaEscolhida}
       setQuestao={setQuestao}
       setTema={setTema}
-      onGerar={() => gerarPergunta(questao, tema)}
-      onVerificar={() => {
-        alert(verificar(respostaEscolhida) ? "Acertou" : "Errou");
-      }}
+      onGerar={handleGerar}
+      onVerificar={handleVerificar}
     />
   );
 }

@@ -1,8 +1,10 @@
 import Image from "next/image";
+import BackButton from "./backbuttons";
 
 export function QuestionHeader() {
   return (
     <header className="w-full flex justify-center mt-10 px-4">
+      <BackButton />
       <div className="w-full max-w-2xl backdrop-blur-md bg-white/5 border border-white/10 rounded-2xl p-6 text-center shadow-lg">
         
         {/* Logo */}

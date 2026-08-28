@@ -7,6 +7,7 @@ import { redirect, useParams } from "next/navigation";
 import { io } from "socket.io-client";
 import { checkLoggedUser } from "@/app/libs/auth/authservices";
 import { createClient } from "@/app/libs/supabase/client";
+import BackButton from "@/app/components/backbuttons";
 
 const socket = io(process.env.NEXT_PUBLIC_SOCKET_SERVER!);
 
@@ -762,6 +763,7 @@ Resposta correta: ${questaoAtual.resposta}
 
       {/* TOPO */}
       <div className="w-full max-w-3xl mb-6">
+        <BackButton />
         <div className="bg-[#1e1038] border border-[#332156] rounded-2xl p-6">
           <div className="flex flex-col gap-4">
             <div>

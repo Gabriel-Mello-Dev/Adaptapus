@@ -3,4 +3,4 @@ Allow: /
 
 Disallow: /pages/Room/Chat/
 
-Sitemap: https://adaptil.vercel.app/sitemap.xml
+Sitemap: https://adaptapus.vercel.app/sitemap.xml

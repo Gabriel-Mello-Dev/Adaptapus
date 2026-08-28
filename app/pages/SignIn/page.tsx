@@ -2,66 +2,31 @@
 
 import { useState } from "react";
 import { createClient } from "@/app/libs/supabase/client";
+import { useRouter } from "next/navigation";
 
 export default function CadastroPage() {
   const supabase = createClient();
+  const router = useRouter();
 
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
 
+  const [erro, setErro] = useState("");
+  const [sucesso, setSucesso] = useState("");
+  const [carregando, setCarregando] = useState(false);
+
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    console.log("funcionou");
+    setErro("");
+    setSucesso("");
+    setCarregando(true);
 
-    // 1. Cria a conta no Supabase Authentication
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password: senha,
-    });
-
-    if (error) {
-      console.error("Erro ao criar conta:", error);
-      return;
-    }
-
-    if (!data.user) {
-      console.error("Usuário não foi criado.");
-      return;
-    }
-
-    // 2. Cria o usuário na tabela public.usuarios
-    const { error: usuarioError } = await supabase
-      .from("usuarios")
-      .insert({
-        uid: data.user.id,
-        nome: nome,
-      });
-
-    if (usuarioError) {
-      console.error("Erro ao criar usuário na tabela:", usuarioError);
-      return;
-    }
-
-    console.log("Conta criada com sucesso!");
-  }
-
-  async function mostrarUsers(){
-            const { data, error } = await supabase
-        .from("usuarios")
-        .select("*");
-
-        if (error) {
-        console.error("Erro ao buscar usuários:", error);
-        return;
-        }
-
-        console.log("Usuários:", data);
-  }
   return (
     <main className="flex min-h-screen items-center justify-center bg-gray-100 px-4">
       <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-lg">
+
         <h1 className="mb-2 text-center text-3xl font-bold text-gray-900">
           Criar conta
         </h1>
@@ -70,14 +35,26 @@ export default function CadastroPage() {
           Cadastre-se para começar
         </p>
 
+        {erro && (
+          <div className="mb-5 rounded-lg bg-red-100 px-4 py-3 text-sm text-red-700">
+            {erro}
+          </div>
+        )}
+
+        {sucesso && (
+          <div className="mb-5 rounded-lg bg-green-100 px-4 py-3 text-sm text-green-700">
+            {sucesso}
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Nome */}
+
           <div>
             <label
               htmlFor="nome"
               className="mb-2 block text-sm font-medium text-gray-700"
             >
-              Nome 
+              Nome
             </label>
 
             <input
@@ -91,7 +68,6 @@ export default function CadastroPage() {
             />
           </div>
 
-          {/* E-mail */}
           <div>
             <label
               htmlFor="email"
@@ -111,7 +87,6 @@ export default function CadastroPage() {
             />
           </div>
 
-          {/* Senha */}
           <div>
             <label
               htmlFor="senha"
@@ -132,14 +107,15 @@ export default function CadastroPage() {
             />
           </div>
 
-          {/* Botão */}
           <button
             type="submit"
-            className="w-full rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white transition hover:bg-blue-700 active:scale-[0.98]"
+            disabled={carregando}
+            className="w-full rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Cadastrar
+            {carregando ? "Criando conta..." : "Cadastrar"}
           </button>
-          <button onClick={mostrarUsers}>Clique</button>
+
+
         </form>
       </div>
     </main>

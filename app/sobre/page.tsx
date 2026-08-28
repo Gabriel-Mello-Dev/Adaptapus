@@ -7,7 +7,7 @@ export default function Sobre() {
     <main className="relative flex flex-1 flex-col overflow-hidden">
       {/* Hero */}
       <section className="mx-auto flex max-w-7xl flex-col items-center px-6 pb-10 pt-10 text-center">
-        <h1 className="text-5xl font-bold text-greenMain">Sobre o Adaptil</h1>
+        <h1 className="text-5xl font-bold text-greenMain">Sobre o Adaptapus</h1>
 
         <div className="my-3 flex items-center gap-4">
           <span className="h-px w-20 bg-greenMain/40" />
@@ -22,7 +22,7 @@ export default function Sobre() {
         </h2>
 
         <p className="mt-4 max-w-3xl text-lg leading-relaxed text-purpleThird/90">
-          O Adaptil é uma plataforma de aprendizagem adaptativa que utiliza
+          O Adaptapus é uma plataforma de aprendizagem adaptativa que utiliza
           inteligência artificial para personalizar conteúdos didáticos e
           questões de acordo com os interesses dos estudantes.
         </p>
@@ -37,12 +37,12 @@ export default function Sobre() {
             </div>
 
             <h2 className="text-2xl font-bold text-purpleThird">
-              O que é o Adaptil?
+              O que é o Adaptapus?
             </h2>
           </div>
 
           <p className="mt-5 text-base leading-7 text-purpleThird/80">
-            O Adaptil foi desenvolvido com o objetivo de tornar o processo de
+            O Adaptapus foi desenvolvido com o objetivo de tornar o processo de
             aprendizagem mais personalizado e contextualizado. A plataforma
             permite que o estudante utilize seus próprios interesses como
             referência para adaptar conteúdos educacionais.
@@ -107,7 +107,7 @@ export default function Sobre() {
             </div>
 
             <h2 className="text-2xl font-bold text-purpleThird">
-              Para quem é o Adaptil?
+              Para quem é o Adaptapus?
             </h2>
           </div>
 
@@ -141,7 +141,7 @@ export default function Sobre() {
           </h2>
 
           <p className="mx-auto mt-4 max-w-3xl leading-7 text-white/80">
-            O Adaptil busca unir inteligência artificial, aprendizagem
+            O Adaptapus busca unir inteligência artificial, aprendizagem
             adaptativa e personalização educacional para criar uma experiência
             de estudo mais próxima dos interesses de cada estudante.
           </p>

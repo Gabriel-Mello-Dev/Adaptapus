@@ -8,7 +8,7 @@ export default function Footer() {
                 <div className="flex items-center gap-2">
                     <Image
                         src="/imgs/logoAdaptapus.png"
-                        alt="Adaptil"
+                        alt="Adaptapus"
                         className="w-7"
                         height={28}
                         width={28}

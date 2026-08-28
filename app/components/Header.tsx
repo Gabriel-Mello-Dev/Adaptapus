@@ -27,7 +27,7 @@ export default function Header() {
                         className="flex items-center gap-2 px-4 py-2 transition hover:opacity-80"
                     >
                         <Brain size={22} />
-                        <span className="font-semibold">Adaptil</span>
+                        <span className="font-semibold">Adaptapus</span>
                     </Link>
 
                     <Link
@@ -47,7 +47,7 @@ export default function Header() {
                     </Link>
 
                     <Link
-                        href="/"
+                        href="/pages/SignUp"
                         className="flex items-center gap-2 px-4 py-2 transition hover:opacity-80"
                     >
                         <User size={22} />
@@ -57,7 +57,7 @@ export default function Header() {
 
                 <Image
                     src="/imgs/logoAdaptapus.png"
-                    alt="Logo Adaptil"
+                    alt="Logo Adaptapus"
                     height={56}
                     width={56}
                     className="w-14 transition-transform duration-300 hover:scale-105"

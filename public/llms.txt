@@ -10,6 +10,7 @@ O objetivo é tornar o aprendizado mais contextualizado, acessível, interessant
 
 ## Principais soluções
 
+
 * Aprendizagem adaptativa
 * Ensino personalizado
 * Personalização de conteúdos didáticos

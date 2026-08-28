@@ -12,5 +12,61 @@
       "E": "convecção."
     },
     "resposta": "C"
+  },
+  {
+    "id": "enem-2025-fis-097",
+    "numero": 97,
+    "materia": "Física",
+    "enunciado": "Por que os olhos ficam vermelhos em algumas fotografias? Em fotos tiradas com câmeras fotográficas antigas, por vezes as pessoas aparecem com os olhos vermelhos. Isso ocorre porque a luz do flash da câmera incide diretamente no globo ocular, sendo refletida por uma região repleta de vasos sanguíneos. Disponível em: www.uol.com.br. Acesso em: 14 jun. 2017 (adaptado). Esse efeito é mais comum à noite ou em lugares pouco iluminados porque, com a pupila",
+    "alternativas": {
+      "A": "dilatada, chega mais luz à retina.",
+      "B": "retraída, chega mais luz vermelha à retina.",
+      "C": "retraída, chega mais luz vermelha aos bastonetes.",
+      "D": "retraída, chegam menos luzes azul e verde aos cones.",
+      "E": "dilatada, chegam menos luzes azul e verde aos bastonetes."
+    },
+    "resposta": "A"
+  },
+  {
+    "id": "enem-2025-fis-105",
+    "numero": 105,
+    "materia": "Física",
+    "enunciado": "A tirinha ilustra um processo físico em que uma onda sonora, produzida pela Mônica, causa a quebra das taças de cristal. O fenômeno ondulatório que provoca a quebra das taças só é possível em razão de uma característica da voz produzida pela Mônica naquele momento, que, diferentemente do que sugere a tirinha, não está relacionada à sua intensidade. Disponível em: https://artedafisicapibid.blogspot.com. Acesso em: 23 nov. 2021 (adaptado). Esse fenômeno e a característica associada à voz da Mônica são, respectivamente,",
+    "alternativas": {
+      "A": "reflexão e comprimento de onda.",
+      "B": "ressonância e frequência.",
+      "C": "interferência e velocidade.",
+      "D": "ressonância e timbre.",
+      "E": "reflexão e amplitude."
+    },
+    "resposta": "B"
+  },
+  {
+    "id": "enem-2025-fis-123",
+    "numero": 123,
+    "materia": "Física",
+    "enunciado": "O nível sonoro, em decibel (dB), é calculado pela expressão: n = 10 log(I/I₀). Uma conversa normal entre duas pessoas gera sons de níveis sonoros entre 50 e 60 dB, enquanto pessoas gritando podem gerar sons de níveis superiores a 100 dB. Supondo que, no centro de um estádio de futebol, foram realizadas medidas para avaliar o ruído médio de uma pessoa gritando a palavra “gol” em diferentes posições das arquibancadas. O valor médio obtido, considerando um grande número de medidas, foi de 100 dB. Com esse dado, estimou-se o ruído sonoro produzido por 10 000 pessoas, distribuídas aleatoriamente nas arquibancadas, enquanto gritavam, simultaneamente, a palavra “gol”. O valor médio estimado para o ruído produzido por essas pessoas, na posição central desse estádio hipotético, foi de",
+    "alternativas": {
+      "A": "60 dB.",
+      "B": "104 dB.",
+      "C": "140 dB.",
+      "D": "400 dB.",
+      "E": "800 dB."
+    },
+    "resposta": "D"
+  },
+  {
+    "id": "enem-2025-fis-124",
+    "numero": 124,
+    "materia": "Física",
+    "enunciado": "A laje de um depósito de bebidas tem 50 m² de área útil de armazenamento e foi projetada para suportar pressões de até 10⁴ Pa. O gerente do estabelecimento pretende armazenar um produto cuja densidade é 1 250 kg/m³. Considere a aceleração da gravidade igual a 10 m/s². A altura máxima, em metro, de empilhamento do produto que essa laje é capaz de suportar é",
+    "alternativas": {
+      "A": "0,16 m.",
+      "B": "0,50 m.",
+      "C": "0,80 m.",
+      "D": "1,60 m.",
+      "E": "8,00 m."
+    },
+    "resposta": "C"
   }
 ]

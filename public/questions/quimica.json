@@ -1,0 +1,86 @@
+[
+  {
+    "id": "enem-2025-qui-110",
+    "numero": 110,
+    "materia": "Química",
+    "enunciado": "A química nuclear é uma importante ferramenta na produção de substâncias utilizadas na área da saúde humana. A radiação emitida pelo cobalto-60 é utilizada na medicina como ferramenta de diagnóstico e no tratamento do câncer. No entanto, esse radioisótopo tem um tempo de armazenamento limitado, pois seu tempo de meia-vida é de 5,3 anos. Considere um frasco com uma amostra contendo 2,00 mg de cobalto-60, armazenado durante um período de 26,5 anos. A massa de cobalto-60, em miligrama, que restará ao final desse tempo é mais próxima de",
+    "alternativas": {
+      "A": "2,00 mg.",
+      "B": "1,00 mg.",
+      "C": "0,40 mg.",
+      "D": "0,13 mg.",
+      "E": "0,06 mg."
+    },
+    "resposta": "E"
+  },
+  {
+    "id": "enem-2025-qui-114",
+    "numero": 114,
+    "materia": "Química",
+    "enunciado": "O Brasil é o maior produtor mundial de nióbio (massa molar = 93 g mol⁻¹), metal utilizado na fabricação de vários tipos de aço: automotivos, estruturais e inoxidáveis. O processo utilizado na produção do nióbio é a redução aluminotérmica de Nb2O5 com excesso de 10% de Al (massa molar = 27 g mol⁻¹), em relação à quantidade estequiométrica da reação, representada pela equação química: 3 Nb2O5 (s) + 10 Al (s) → 6 Nb (s) + 5 Al2O3 (s). Uma engenheira metalúrgica estimou a massa de alumínio necessária para produzir 9,3 kg de nióbio, nas condições descritas, para a produção de um lote de peças de aço encomendado por uma indústria, considerando um rendimento de 100%. Disponível em: www.cbmm.com.br. Acesso em: 17 out. 2015 (adaptado). A massa de alumínio, em quilograma, estimada pela engenheira é mais próxima de",
+    "alternativas": {
+      "A": "2,7 kg.",
+      "B": "3,0 kg.",
+      "C": "4,1 kg.",
+      "D": "4,5 kg.",
+      "E": "5,0 kg."
+    },
+    "resposta": "E"
+  },
+  {
+    "id": "enem-2025-qui-119",
+    "numero": 119,
+    "materia": "Química",
+    "enunciado": "A dimetilamina é uma substância de elevada toxidez que entra em ebulição a 7 °C. Na madrugada de um dia frio, essa substância se espalhou por uma rodovia após um acidente de trânsito envolvendo um caminhão que transportava esse produto. Para minimizar a agressão ao meio ambiente, bem como evitar a evaporação da dimetilamina com a elevação da temperatura ao longo do dia, um químico considerou o uso de algumas substâncias ou misturas como água, vinagre, óleo de soja, sal de cozinha e bicarbonato de sódio. Dentre as opções apresentadas, o tratamento correto para minimizar esse problema é usar",
+    "alternativas": {
+      "A": "água.",
+      "B": "vinagre.",
+      "C": "óleo de soja.",
+      "D": "sal de cozinha.",
+      "E": "bicarbonato de sódio."
+    },
+    "resposta": "B"
+  },
+  {
+    "id": "enem-2025-qui-123",
+    "numero": 123,
+    "materia": "Química",
+    "enunciado": "Para a produção de titânio metálico ou dióxido de titânio puros, é necessário fazer a cloração do minério que contém dióxido de titânio, com o objetivo de separar esse óxido de outras substâncias presentes no minério. A principal reação química de cloração é representada por: TiO2 (s) + 2 Cl2 (g) → TiCl4 (g) + O2 (g) ΔH = +175 kJ/mol. Depois da cloração, o tetracloreto de titânio é condensado e convertido, novamente, a dióxido de titânio. Após o sistema atingir o equilíbrio químico, como a formação do TiCl4 pode ser favorecida?",
+    "alternativas": {
+      "A": "Aumentando a pressão total do sistema.",
+      "B": "Diminuindo a temperatura do sistema.",
+      "C": "Aumentando a pressão parcial de O2.",
+      "D": "Aumentando a pressão parcial de Cl2.",
+      "E": "Variando a quantidade de TiO2."
+    },
+    "resposta": "D"
+  },
+  {
+    "id": "enem-2025-qui-126",
+    "numero": 126,
+    "materia": "Química",
+    "enunciado": "Objetos de prata escurecem em contato com compostos contendo enxofre por causa da formação de uma fina camada de sulfeto de prata. Um método simples para clarear o objeto consiste em forrar um recipiente com papel alumínio, adicionar ao recipiente uma solução aquosa de cloreto de sódio e, enfim, mergulhar o objeto de prata enegrecido. Em cerca de três minutos, a prata volta à coloração original. As seguintes semirreações e os respectivos potenciais-padrão de redução são úteis para a compreensão dos fenômenos ocorridos. Ag2S (s) + 2 e⁻ → 2 Ag (s) + S²⁻ (aq) −0,69 V; O2 (g) + 4 H⁺ (aq) + 4 e⁻ → 2 H2O (l) +1,23 V; Al³⁺ (aq) + 3 e⁻ → Al (s) −1,68 V. Os valores das diferenças de potencial-padrão das reações que representam o escurecimento e o clareamento do objeto de prata são, respectivamente:",
+    "alternativas": {
+      "A": "+0,54 V e +2,37 V.",
+      "B": "+1,92 V e +0,99 V.",
+      "C": "−0,15 V e +5,43 V.",
+      "D": "+2,61 V e +1,29 V.",
+      "E": "+0,15 V e −1,29 V."
+    },
+    "resposta": "B"
+  },
+  {
+    "id": "enem-2025-qui-127",
+    "numero": 127,
+    "materia": "Química",
+    "enunciado": "Apaixonada por culinária e química, uma chefe de cozinha calculou que, para promover o crescimento adequado da massa durante o cozimento de um bolo a 180 °C (453 K) e 1,00 atm, ela precisaria utilizar uma quantidade de fermento químico suficiente para produzir um volume de gás igual a 4,00 L. Com esse objetivo, ela escolheu utilizar o bicarbonato de amônio, um composto que, sob aquecimento, degrada-se em três gases distintos, que são os responsáveis pelo crescimento da massa. A decomposição do bicarbonato de amônio ocorre conforme a equação química apresentada e, nas condições do cozimento, seu rendimento é de 80%. NH4HCO3 (s) → NH3 (g) + CO2 (g) + H2O (g). Considere que a mistura dos gases se comporta como gás ideal nas condições de cozimento utilizadas pela chefe. Dados: Massa molar do NH4HCO3 = 79 g ⋅ mol⁻¹ e R = 0,082 atm ⋅ L ⋅ mol⁻¹ ⋅ K⁻¹. A massa, em grama, de bicarbonato de amônio que ela deve utilizar é mais próxima de",
+    "alternativas": {
+      "A": "2,3 g.",
+      "B": "3,5 g.",
+      "C": "5,9 g.",
+      "D": "6,8 g.",
+      "E": "8,9 g."
+    },
+    "resposta": "B"
+  }
+]

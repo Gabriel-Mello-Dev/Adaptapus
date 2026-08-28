@@ -306,124 +306,124 @@ export default function ChatPage() {
   }, [roomId, questoes]);
 
   // fazer salvar progresso
-async function salvarProgresso(materia: string, acertou: boolean) {
-  type ProgressoMateria = {
-    acertos: number;
-    erros: number;
-    total: number;
-  };
+  async function salvarProgresso(materia: string, acertou: boolean) {
+    type ProgressoMateria = {
+      acertos: number;
+      erros: number;
+      total: number;
+    };
 
-  type Materia =
-    | "matematica"
-    | "fisica"
-    | "biologia"
-    | "quimica"
-    | "portugues"
-    | "ingles"
-    | "espanhol"
-    | "arte"
-    | "educacao_fisica"
-    | "historia"
-    | "geografia"
-    | "filosofia"
-    | "sociologia";
+    type Materia =
+      | "matematica"
+      | "fisica"
+      | "biologia"
+      | "quimica"
+      | "portugues"
+      | "ingles"
+      | "espanhol"
+      | "arte"
+      | "educacao_fisica"
+      | "historia"
+      | "geografia"
+      | "filosofia"
+      | "sociologia";
 
-  const materiaNormalizada = materia
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/\s+/g, "_") as Materia;
+    const materiaNormalizada = materia
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/\s+/g, "_") as Materia;
 
-  const materiasValidas: Materia[] = [
-    "matematica",
-    "fisica",
-    "biologia",
-    "quimica",
-    "portugues",
-    "ingles",
-    "espanhol",
-    "arte",
-    "educacao_fisica",
-    "historia",
-    "geografia",
-    "filosofia",
-    "sociologia",
-  ];
+    const materiasValidas: Materia[] = [
+      "matematica",
+      "fisica",
+      "biologia",
+      "quimica",
+      "portugues",
+      "ingles",
+      "espanhol",
+      "arte",
+      "educacao_fisica",
+      "historia",
+      "geografia",
+      "filosofia",
+      "sociologia",
+    ];
 
-  if (!materiasValidas.includes(materiaNormalizada)) {
-    console.error("Matéria inválida:", materia);
-    return;
-  }
-
-  try {
-    const {
-      data: { user: authUser },
-      error: authError,
-    } = await supabase.auth.getUser();
-
-    if (authError || !authUser) {
-      console.error("Usuário não está logado.");
+    if (!materiasValidas.includes(materiaNormalizada)) {
+      console.error("Matéria inválida:", materia);
       return;
     }
 
-    const { data: progresso, error: buscaError } = await supabase
-      .from("progresso_usuario")
-      .select("*")
-      .eq("uid", authUser.id)
-      .maybeSingle();
+    try {
+      const {
+        data: { user: authUser },
+        error: authError,
+      } = await supabase.auth.getUser();
 
-    if (buscaError) {
-      console.error("Erro ao buscar progresso:", buscaError);
-      return;
-    }
-
-    const atual: ProgressoMateria = progresso?.[materiaNormalizada] ?? {
-      acertos: 0,
-      erros: 0,
-      total: 0,
-    };
-
-    const novoProgresso: ProgressoMateria = {
-      acertos: atual.acertos + (acertou ? 1 : 0),
-      erros: atual.erros + (acertou ? 0 : 1),
-      total: atual.total + 1,
-    };
-
-    if (progresso) {
-      const { error: updateError } = await supabase
-        .from("progresso_usuario")
-        .update({
-          [materiaNormalizada]: novoProgresso,
-        })
-        .eq("uid", authUser.id);
-
-      if (updateError) {
-        console.error("Erro ao atualizar progresso:", updateError);
+      if (authError || !authUser) {
+        console.error("Usuário não está logado.");
         return;
       }
-    } else {
-      const { error: insertError } = await supabase
-        .from("progresso_usuario")
-        .insert({
-          uid: authUser.id,
-          [materiaNormalizada]: novoProgresso,
-        });
 
-      if (insertError) {
-        console.error("Erro ao criar progresso:", insertError);
+      const { data: progresso, error: buscaError } = await supabase
+        .from("progresso_usuario")
+        .select("*")
+        .eq("uid", authUser.id)
+        .maybeSingle();
+
+      if (buscaError) {
+        console.error("Erro ao buscar progresso:", buscaError);
         return;
       }
-    }
 
-    console.log("Progresso salvo:", {
-      materia: materiaNormalizada,
-      acertou,
-      progresso: novoProgresso,
-    });
-  } catch (error) {
-    console.error("Erro ao salvar progresso:", error);
+      const atual: ProgressoMateria = progresso?.[materiaNormalizada] ?? {
+        acertos: 0,
+        erros: 0,
+        total: 0,
+      };
+
+      const novoProgresso: ProgressoMateria = {
+        acertos: atual.acertos + (acertou ? 1 : 0),
+        erros: atual.erros + (acertou ? 0 : 1),
+        total: atual.total + 1,
+      };
+
+      if (progresso) {
+        const { error: updateError } = await supabase
+          .from("progresso_usuario")
+          .update({
+            [materiaNormalizada]: novoProgresso,
+          })
+          .eq("uid", authUser.id);
+
+        if (updateError) {
+          console.error("Erro ao atualizar progresso:", updateError);
+          return;
+        }
+      } else {
+        const { error: insertError } = await supabase
+          .from("progresso_usuario")
+          .insert({
+            uid: authUser.id,
+            [materiaNormalizada]: novoProgresso,
+          });
+
+        if (insertError) {
+          console.error("Erro ao criar progresso:", insertError);
+          return;
+        }
+      }
+
+      console.log("Progresso salvo:", {
+        materia: materiaNormalizada,
+        acertou,
+        progresso: novoProgresso,
+      });
+    } catch (error) {
+      console.error("Erro ao salvar progresso:", error);
+    }
   }
-}
 
   /*
    * COPIAR CÓDIGO
@@ -556,6 +556,36 @@ Resposta correta: ${questaoAtual.resposta}
 
       const modelo = data.modelo || "outro";
 
+      const respostas = partes[2]
+        ?.split(/\s*§\s*/)
+        .map((a: string) => a.trim())
+        .filter((a: string) => a !== "");
+
+      const respostaIA = partes[3]
+        ?.replace(/correta\s*:/i, "")
+        .trim()
+        .toUpperCase();
+
+      const mapaRespostas: Record<string, number> = {
+        A: 0,
+        B: 1,
+        C: 2,
+        D: 3,
+        E: 4,
+      };
+
+      let correta: number;
+
+      if (/^[1-5]$/.test(respostaIA)) {
+        correta = Number(respostaIA) - 1;
+      } else if (respostaIA in mapaRespostas) {
+        // IA retornou a letra
+        correta = mapaRespostas[respostaIA];
+      } else {
+        console.error("Resposta correta inválida recebida da IA:", partes[3]);
+        throw new Error("A IA retornou uma resposta correta inválida.");
+      }
+
       const novaQuestion = {
         id: questaoAtual.id,
 
@@ -567,11 +597,9 @@ Resposta correta: ${questaoAtual.resposta}
 
         text: partes[1]?.trim(),
 
-        respostas: partes[2]
-          ?.split(/\s*§\s*/)
-          .filter((a: string) => a.trim() !== ""),
+        respostas,
 
-        correta: Number(partes[3]?.replace("correta:", "").trim()),
+        correta,
 
         modeloIA: modelo,
 
@@ -579,7 +607,6 @@ Resposta correta: ${questaoAtual.resposta}
 
         respostaOriginal: questaoAtual.resposta,
       };
-
       console.log("Questão adaptada:", novaQuestion);
 
       /*
@@ -656,7 +683,9 @@ Resposta correta: ${questaoAtual.resposta}
       roomId,
       answer: respostaSelecionada,
     });
-
+    console.log("Resposta selecionada:", respostaSelecionada);
+    console.log("Resposta correta:", question.correta);
+    console.log("Acertou:", respostaSelecionada === question.correta);
     const acertou = respostaSelecionada === question.correta;
 
     await salvarProgresso(question.materia, acertou);

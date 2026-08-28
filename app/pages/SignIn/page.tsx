@@ -2,96 +2,57 @@
 
 import { useState } from "react";
 import { createClient } from "@/app/libs/supabase/client";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
-export default function CadastroPage() {
+export default function SignIn() {
   const supabase = createClient();
+  const router = useRouter();
 
-  const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
+
+  const [erro, setErro] = useState("");
+  const [carregando, setCarregando] = useState(false);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    console.log("funcionou");
+    setErro("");
+    setCarregando(true);
 
-    // 1. Cria a conta no Supabase Authentication
-    const { data, error } = await supabase.auth.signUp({
-      email,
+    const { error } = await supabase.auth.signInWithPassword({
+      email: email,
       password: senha,
     });
 
     if (error) {
-      console.error("Erro ao criar conta:", error);
+      setErro("E-mail ou senha incorretos.");
+      setCarregando(false);
       return;
     }
 
-    if (!data.user) {
-      console.error("Usuário não foi criado.");
-      return;
-    }
-
-    // 2. Cria o usuário na tabela public.usuarios
-    const { error: usuarioError } = await supabase
-      .from("usuarios")
-      .insert({
-        uid: data.user.id,
-        nome: nome,
-      });
-
-    if (usuarioError) {
-      console.error("Erro ao criar usuário na tabela:", usuarioError);
-      return;
-    }
-
-    console.log("Conta criada com sucesso!");
+    router.push("/pages/Adaptar");
   }
 
-  async function mostrarUsers(){
-            const { data, error } = await supabase
-        .from("usuarios")
-        .select("*");
-
-        if (error) {
-        console.error("Erro ao buscar usuários:", error);
-        return;
-        }
-
-        console.log("Usuários:", data);
-  }
   return (
     <main className="flex min-h-screen items-center justify-center bg-gray-100 px-4">
       <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-lg">
         <h1 className="mb-2 text-center text-3xl font-bold text-gray-900">
-          Criar conta
+          Entrar
         </h1>
 
         <p className="mb-8 text-center text-gray-500">
-          Cadastre-se para começar
+          Entre na sua conta para continuar
         </p>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Nome */}
-          <div>
-            <label
-              htmlFor="nome"
-              className="mb-2 block text-sm font-medium text-gray-700"
-            >
-              Nome 
-            </label>
-
-            <input
-              id="nome"
-              type="text"
-              value={nome}
-              onChange={(e) => setNome(e.target.value)}
-              placeholder="Seu nome"
-              required
-              className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
-            />
+        {erro && (
+          <div className="mb-5 rounded-lg bg-red-100 px-4 py-3 text-sm text-red-700">
+            {erro}
           </div>
+        )}
 
-          {/* E-mail */}
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div>
             <label
               htmlFor="email"
@@ -111,7 +72,6 @@ export default function CadastroPage() {
             />
           </div>
 
-          {/* Senha */}
           <div>
             <label
               htmlFor="senha"
@@ -132,16 +92,26 @@ export default function CadastroPage() {
             />
           </div>
 
-          {/* Botão */}
           <button
             type="submit"
-            className="w-full rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white transition hover:bg-blue-700 active:scale-[0.98]"
+            disabled={carregando}
+            className="w-full rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Cadastrar
+            {carregando ? "Entrando..." : "Entrar"}
           </button>
-          <button onClick={mostrarUsers}>Clique</button>
         </form>
       </div>
+
+      <div className="mt-6 text-center text-sm text-gray-500">
+        Não tem uma conta?{" "}
+        <Link
+          href="/pages/SignUp"
+          className="font-semibold text-blue-600 hover:text-blue-700"
+        >
+          Criar conta
+        </Link>
+      </div>
+
     </main>
   );
 }

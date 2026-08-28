@@ -3,8 +3,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { redirect, useParams } from "next/navigation";
 import { io } from "socket.io-client";
+import { checkLoggedUser } from "@/app/libs/auth/authservices";
+import { createClient } from "@/app/libs/supabase/client";
 
 const socket = io(process.env.NEXT_PUBLIC_SOCKET_SERVER!);
 
@@ -31,6 +33,8 @@ type Questao = {
 };
 
 export default function ChatPage() {
+  const supabase = createClient();
+
   const params = useParams();
 
   const roomId = params.roomId as string;
@@ -66,21 +70,64 @@ export default function ChatPage() {
 
   const [copiado, setCopiado] = useState(false);
 
-  const mockUsers = ["Gabriel", "Lucas", "Ana", "Pedro", "Maria", "João"];
   const [materias, setMaterias] = useState<{ nome: string; arquivo: string }[]>(
     [],
   );
 
   const [materiaSelecionada, setMateriaSelecionada] =
     useState("matematica.json");
-  const [user] = useState(() => ({
-    nome: mockUsers[Math.floor(Math.random() * mockUsers.length)],
-  }));
+
+  const [user, setUser] = useState({
+    nome: "",
+  });
+
+  useEffect(() => {
+    async function getUserName() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("usuarios")
+        .select("nome")
+        .eq("uid", user.id)
+        .single();
+
+      if (error) {
+        console.error("Erro ao buscar nome:", error);
+        return;
+      }
+
+      setUser({
+        nome: data.nome,
+      });
+    }
+
+    getUserName();
+  }, []);
 
   useEffect(() => {
     const adm = localStorage.getItem("adm") === "true";
 
     setIsAdmin(adm);
+  }, []);
+
+  //verfica usuario logado
+  useEffect(() => {
+    async function verificarUsuario() {
+      const user = await checkLoggedUser();
+
+      if (!user) {
+        console.log("não logado");
+        redirect("/pages/SignIn");
+      }
+    }
+
+    verificarUsuario();
   }, []);
 
   /*
@@ -258,6 +305,126 @@ export default function ChatPage() {
     };
   }, [roomId, questoes]);
 
+  // fazer salvar progresso
+async function salvarProgresso(materia: string, acertou: boolean) {
+  type ProgressoMateria = {
+    acertos: number;
+    erros: number;
+    total: number;
+  };
+
+  type Materia =
+    | "matematica"
+    | "fisica"
+    | "biologia"
+    | "quimica"
+    | "portugues"
+    | "ingles"
+    | "espanhol"
+    | "arte"
+    | "educacao_fisica"
+    | "historia"
+    | "geografia"
+    | "filosofia"
+    | "sociologia";
+
+  const materiaNormalizada = materia
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, "_") as Materia;
+
+  const materiasValidas: Materia[] = [
+    "matematica",
+    "fisica",
+    "biologia",
+    "quimica",
+    "portugues",
+    "ingles",
+    "espanhol",
+    "arte",
+    "educacao_fisica",
+    "historia",
+    "geografia",
+    "filosofia",
+    "sociologia",
+  ];
+
+  if (!materiasValidas.includes(materiaNormalizada)) {
+    console.error("Matéria inválida:", materia);
+    return;
+  }
+
+  try {
+    const {
+      data: { user: authUser },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError || !authUser) {
+      console.error("Usuário não está logado.");
+      return;
+    }
+
+    const { data: progresso, error: buscaError } = await supabase
+      .from("progresso_usuario")
+      .select("*")
+      .eq("uid", authUser.id)
+      .maybeSingle();
+
+    if (buscaError) {
+      console.error("Erro ao buscar progresso:", buscaError);
+      return;
+    }
+
+    const atual: ProgressoMateria = progresso?.[materiaNormalizada] ?? {
+      acertos: 0,
+      erros: 0,
+      total: 0,
+    };
+
+    const novoProgresso: ProgressoMateria = {
+      acertos: atual.acertos + (acertou ? 1 : 0),
+      erros: atual.erros + (acertou ? 0 : 1),
+      total: atual.total + 1,
+    };
+
+    if (progresso) {
+      const { error: updateError } = await supabase
+        .from("progresso_usuario")
+        .update({
+          [materiaNormalizada]: novoProgresso,
+        })
+        .eq("uid", authUser.id);
+
+      if (updateError) {
+        console.error("Erro ao atualizar progresso:", updateError);
+        return;
+      }
+    } else {
+      const { error: insertError } = await supabase
+        .from("progresso_usuario")
+        .insert({
+          uid: authUser.id,
+          [materiaNormalizada]: novoProgresso,
+        });
+
+      if (insertError) {
+        console.error("Erro ao criar progresso:", insertError);
+        return;
+      }
+    }
+
+    console.log("Progresso salvo:", {
+      materia: materiaNormalizada,
+      acertou,
+      progresso: novoProgresso,
+    });
+  } catch (error) {
+    console.error("Erro ao salvar progresso:", error);
+  }
+}
+
   /*
    * COPIAR CÓDIGO
    */
@@ -300,6 +467,30 @@ export default function ChatPage() {
    * Pega automaticamente a questão atual
    * do JSON e envia para a IA junto com o tema.
    */
+
+  async function salvarTema() {
+    const temaLimpo = tema.trim();
+
+    if (!temaLimpo) return;
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      console.error("Usuário não está logado.");
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from("temas_usuarios")
+      .insert({ uid: user.id, tema: temaLimpo });
+    if (!user) {
+      console.error("Usuário não está logado.");
+      return;
+    }
+  }
+
   async function criarPergunta() {
     if (!isAdmin) return;
 
@@ -313,6 +504,8 @@ export default function ChatPage() {
 
     try {
       setGerandoQuestao(true);
+
+      await salvarTema();
 
       /*
        * Avisa todos da sala.
@@ -449,7 +642,7 @@ Resposta correta: ${questaoAtual.resposta}
   /*
    * CONFIRMAR RESPOSTA
    */
-  function confirmarResposta() {
+  async function confirmarResposta() {
     if (
       respostaSelecionada === null ||
       javotou ||
@@ -463,6 +656,10 @@ Resposta correta: ${questaoAtual.resposta}
       roomId,
       answer: respostaSelecionada,
     });
+
+    const acertou = respostaSelecionada === question.correta;
+
+    await salvarProgresso(question.materia, acertou);
 
     setJavotou(true);
   }
@@ -593,11 +790,6 @@ Resposta correta: ${questaoAtual.resposta}
               {materias.find((m) => m.arquivo === materiaSelecionada)?.nome ||
                 "matéria"}{" "}
               carregadas{" "}
-            </div>
-
-            {/* MOCK */}
-            <div className="bg-amber-500/10 border border-amber-500/20 text-amber-200 rounded-xl p-3 text-sm">
-              Os nomes ainda estão mockados temporariamente para testes
             </div>
           </div>
         </div>

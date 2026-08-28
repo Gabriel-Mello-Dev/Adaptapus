@@ -8,7 +8,7 @@ export function QuestionHeader() {
         {/* Logo */}
         <Image
           src="/imgs/logoAdaptapus.png"
-          alt="Logo Adaptil"
+          alt="Logo Adaptapus"
           className="w-24 mx-auto mb-4 transition-transform duration-300 hover:scale-105 hover:translate-x-1"
           height={96}
           width={96}
@@ -16,7 +16,7 @@ export function QuestionHeader() {
 
         {/* Título */}
         <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-purple-600 bg-clip-text text-transparent">
-          Adaptil
+          Adaptapus
         </h1>
 
         {/* Subtítulo */}

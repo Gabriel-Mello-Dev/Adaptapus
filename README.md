@@ -1,10 +1,10 @@
-# Adaptil
+# Adaptapus
 
 <p align="center">
-  <img src="public/imgs/logoAdaptapus.png" alt="Logo Adaptil" width="180">
+  <img src="public/imgs/logoAdaptapus.png" alt="Logo Adaptapus" width="180">
 </p>
 
-**Adaptil** é uma plataforma educacional que utiliza **Inteligência Artificial para adaptar questões acadêmicas a temas de interesse do aluno**.
+**Adaptapus** é uma plataforma educacional que utiliza **Inteligência Artificial para adaptar questões acadêmicas a temas de interesse do aluno**.
 
 A proposta é manter o conteúdo e o objetivo pedagógico de uma questão, mas modificar sua contextualização para algo com que o estudante tenha maior identificação.
 
@@ -44,7 +44,7 @@ O objetivo não é facilitar a questão, mas **aproximar o conteúdo da realidad
 
 ## Projeto
 
-O Adaptil está sendo desenvolvido como **Projeto de TCC**, com foco na utilização de tecnologia e Inteligência Artificial como ferramentas de apoio à aprendizagem personalizada.
+O Adaptapus está sendo desenvolvido como **Projeto de TCC**, com foco na utilização de tecnologia e Inteligência Artificial como ferramentas de apoio à aprendizagem personalizada.
 
 O projeto busca investigar se a adaptação da contextualização das questões pode contribuir para aumentar o interesse e o engajamento dos estudantes durante os estudos.
 

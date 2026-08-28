@@ -1,4 +1,5 @@
-import { ActionCard } from "./index";
+import { ActionCard, JoinRoomPage, CreateRoom } from "./index";
+import { useState } from 'react'
 
 import {
     Brain,
@@ -6,7 +7,17 @@ import {
     Plus,
 } from "lucide-react";
 
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogDescription,
+} from "@/components/ui/dialog";
+
 export default function Hero() {
+
+    const [modal, setModal] = useState<"entrar" | "criar" | null>(null);
 
     return ( 
         <main className="relative flex flex-1 flex-col overflow-hidden">
@@ -61,6 +72,7 @@ export default function Hero() {
                                 description="Entre em uma sala com código."
                                 icon={<LogIn size={30} />}
                                 variant="blue"
+                                onClick={() => setModal("entrar")}
                             />
 
                             <ActionCard
@@ -69,6 +81,7 @@ export default function Hero() {
                                 description="Crie sua sala e convide amigos."
                                 icon={<Plus size={30} />}
                                 variant="green"
+                                onClick={() => setModal("criar")}
                             />
 
                         </div>
@@ -76,6 +89,37 @@ export default function Hero() {
                     </div>
 
                 </section>
+
+                <Dialog
+                        open={modal !== null}
+                        onOpenChange={(open) => {
+                            if (!open) setModal(null);
+                        }}
+                    >
+                        <DialogContent className="bg-blueMain text-white">
+                            <DialogHeader className="">
+                                <DialogTitle>
+                                    {modal === "entrar"
+                                        ? "Entrar na Sala"
+                                        : "Criar Sala"}
+                                </DialogTitle>
+
+                                <DialogDescription>
+                                    {modal === "entrar"
+                                        ? "Digite o código da sala para entrar."
+                                        : "Configure sua nova sala de estudo."}
+                                </DialogDescription>
+                            </DialogHeader>
+
+                            {/* conteúdo do modal */}
+                            {modal === "entrar"
+                            ? <JoinRoomPage/>
+                            : <CreateRoom/>
+                            }
+
+                        </DialogContent>
+                    </Dialog>
+
 
             </main>
     )

@@ -1,6 +1,7 @@
 "use client";
 
 import { createClient } from "@/app/libs/supabase/client";
+import {redirect} from "next/navigation";
 import { useRouter } from "next/navigation";
 
 export default function LogoutPage() {
@@ -10,7 +11,7 @@ export default function LogoutPage() {
   async function handleLogout() {
     await supabase.auth.signOut();
 
-    redirect("/pages/SignUp");
+    redirect("/pages/SignIn");
   }
 
   return (

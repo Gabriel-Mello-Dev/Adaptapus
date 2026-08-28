@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { redirect, useParams } from "next/navigation";
 import { io } from "socket.io-client";
 import { checkLoggedUser } from "@/app/libs/auth/authservices";
+import { createClient } from "@/app/libs/supabase/client";
 
 const socket = io(process.env.NEXT_PUBLIC_SOCKET_SERVER!);
 
@@ -32,6 +33,8 @@ type Questao = {
 };
 
 export default function ChatPage() {
+  const supabase = createClient();
+
   const params = useParams();
 
   const roomId = params.roomId as string;
@@ -67,16 +70,45 @@ export default function ChatPage() {
 
   const [copiado, setCopiado] = useState(false);
 
-  const mockUsers = ["Gabriel", "Lucas", "Ana", "Pedro", "Maria", "João"];
   const [materias, setMaterias] = useState<{ nome: string; arquivo: string }[]>(
     [],
   );
 
   const [materiaSelecionada, setMateriaSelecionada] =
     useState("matematica.json");
-  const [user] = useState(() => ({
-    nome: mockUsers[Math.floor(Math.random() * mockUsers.length)],
-  }));
+
+  const [user, setUser] = useState({
+    nome: "",
+  });
+
+  useEffect(() => {
+    async function getUserName() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("usuarios")
+        .select("nome")
+        .eq("uid", user.id)
+        .single();
+
+      if (error) {
+        console.error("Erro ao buscar nome:", error);
+        return;
+      }
+
+      setUser({
+        nome: data.nome,
+      });
+    }
+
+    getUserName();
+  }, []);
 
   useEffect(() => {
     const adm = localStorage.getItem("adm") === "true";
@@ -84,6 +116,7 @@ export default function ChatPage() {
     setIsAdmin(adm);
   }, []);
 
+  //verfica usuario logado
   useEffect(() => {
     async function verificarUsuario() {
       const user = await checkLoggedUser();
@@ -314,6 +347,30 @@ export default function ChatPage() {
    * Pega automaticamente a questão atual
    * do JSON e envia para a IA junto com o tema.
    */
+
+  async function salvarTema() {
+    const temaLimpo = tema.trim();
+
+    if (!temaLimpo) return;
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      console.error("Usuário não está logado.");
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from("temas_usuarios")
+      .insert({ uid: user.id, tema: temaLimpo });
+    if (!user) {
+      console.error("Usuário não está logado.");
+      return;
+    }
+  }
+
   async function criarPergunta() {
     if (!isAdmin) return;
 
@@ -327,6 +384,8 @@ export default function ChatPage() {
 
     try {
       setGerandoQuestao(true);
+
+      await salvarTema();
 
       /*
        * Avisa todos da sala.
@@ -607,11 +666,6 @@ Resposta correta: ${questaoAtual.resposta}
               {materias.find((m) => m.arquivo === materiaSelecionada)?.nome ||
                 "matéria"}{" "}
               carregadas{" "}
-            </div>
-
-            {/* MOCK */}
-            <div className="bg-amber-500/10 border border-amber-500/20 text-amber-200 rounded-xl p-3 text-sm">
-              Os nomes ainda estão mockados temporariamente para testes
             </div>
           </div>
         </div>

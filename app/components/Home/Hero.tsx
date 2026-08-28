@@ -1,4 +1,4 @@
-import { ActionCard } from "./index";
+import { ActionCard, JoinRoomPage, CreateRoom } from "./index";
 import { useState } from 'react'
 
 import {
@@ -96,8 +96,8 @@ export default function Hero() {
                             if (!open) setModal(null);
                         }}
                     >
-                        <DialogContent className="bg-blueMain">
-                            <DialogHeader className="bg-">
+                        <DialogContent className="bg-blueMain text-white">
+                            <DialogHeader className="">
                                 <DialogTitle>
                                     {modal === "entrar"
                                         ? "Entrar na Sala"
@@ -112,6 +112,11 @@ export default function Hero() {
                             </DialogHeader>
 
                             {/* conteúdo do modal */}
+                            {modal === "entrar"
+                            ? <JoinRoomPage/>
+                            : <CreateRoom/>
+                            }
+
                         </DialogContent>
                     </Dialog>
 

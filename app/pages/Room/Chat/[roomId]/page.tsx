@@ -305,6 +305,126 @@ export default function ChatPage() {
     };
   }, [roomId, questoes]);
 
+  // fazer salvar progresso
+async function salvarProgresso(materia: string, acertou: boolean) {
+  type ProgressoMateria = {
+    acertos: number;
+    erros: number;
+    total: number;
+  };
+
+  type Materia =
+    | "matematica"
+    | "fisica"
+    | "biologia"
+    | "quimica"
+    | "portugues"
+    | "ingles"
+    | "espanhol"
+    | "arte"
+    | "educacao_fisica"
+    | "historia"
+    | "geografia"
+    | "filosofia"
+    | "sociologia";
+
+  const materiaNormalizada = materia
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, "_") as Materia;
+
+  const materiasValidas: Materia[] = [
+    "matematica",
+    "fisica",
+    "biologia",
+    "quimica",
+    "portugues",
+    "ingles",
+    "espanhol",
+    "arte",
+    "educacao_fisica",
+    "historia",
+    "geografia",
+    "filosofia",
+    "sociologia",
+  ];
+
+  if (!materiasValidas.includes(materiaNormalizada)) {
+    console.error("Matéria inválida:", materia);
+    return;
+  }
+
+  try {
+    const {
+      data: { user: authUser },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError || !authUser) {
+      console.error("Usuário não está logado.");
+      return;
+    }
+
+    const { data: progresso, error: buscaError } = await supabase
+      .from("progresso_usuario")
+      .select("*")
+      .eq("uid", authUser.id)
+      .maybeSingle();
+
+    if (buscaError) {
+      console.error("Erro ao buscar progresso:", buscaError);
+      return;
+    }
+
+    const atual: ProgressoMateria = progresso?.[materiaNormalizada] ?? {
+      acertos: 0,
+      erros: 0,
+      total: 0,
+    };
+
+    const novoProgresso: ProgressoMateria = {
+      acertos: atual.acertos + (acertou ? 1 : 0),
+      erros: atual.erros + (acertou ? 0 : 1),
+      total: atual.total + 1,
+    };
+
+    if (progresso) {
+      const { error: updateError } = await supabase
+        .from("progresso_usuario")
+        .update({
+          [materiaNormalizada]: novoProgresso,
+        })
+        .eq("uid", authUser.id);
+
+      if (updateError) {
+        console.error("Erro ao atualizar progresso:", updateError);
+        return;
+      }
+    } else {
+      const { error: insertError } = await supabase
+        .from("progresso_usuario")
+        .insert({
+          uid: authUser.id,
+          [materiaNormalizada]: novoProgresso,
+        });
+
+      if (insertError) {
+        console.error("Erro ao criar progresso:", insertError);
+        return;
+      }
+    }
+
+    console.log("Progresso salvo:", {
+      materia: materiaNormalizada,
+      acertou,
+      progresso: novoProgresso,
+    });
+  } catch (error) {
+    console.error("Erro ao salvar progresso:", error);
+  }
+}
+
   /*
    * COPIAR CÓDIGO
    */
@@ -522,7 +642,7 @@ Resposta correta: ${questaoAtual.resposta}
   /*
    * CONFIRMAR RESPOSTA
    */
-  function confirmarResposta() {
+  async function confirmarResposta() {
     if (
       respostaSelecionada === null ||
       javotou ||
@@ -536,6 +656,10 @@ Resposta correta: ${questaoAtual.resposta}
       roomId,
       answer: respostaSelecionada,
     });
+
+    const acertou = respostaSelecionada === question.correta;
+
+    await salvarProgresso(question.materia, acertou);
 
     setJavotou(true);
   }

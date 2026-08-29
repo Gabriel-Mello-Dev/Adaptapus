@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Plus } from "lucide-react"
 
 export default function CreateRoom() {
 
@@ -40,16 +41,21 @@ export default function CreateRoom() {
             disabled={loading}
             className="
             w-full
-            bg-purple-600
-            hover:bg-purple-500
+            bg-greenMain
+            hover:bg-greenMain/90
             disabled:opacity-50
             disabled:cursor-not-allowed
             transition
             py-3
             rounded-xl
             font-semibold
+            flex
+            justify-center
+            items-center
+            gap-4
             "
         >
+            <Plus size={30} className="text-white"/>
             {loading ? "Criando sala..." : "Criar sala"}
         </button>
     )

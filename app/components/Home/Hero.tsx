@@ -110,8 +110,7 @@ export default function Hero() {
                                         : "Configure sua nova sala de estudo."}
                                 </DialogDescription>
                             </DialogHeader>
-
-                            {/* conteúdo do modal */}
+                            
                             {modal === "entrar"
                             ? <JoinRoomPage/>
                             : <CreateRoom/>

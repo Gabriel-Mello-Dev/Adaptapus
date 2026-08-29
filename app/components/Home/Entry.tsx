@@ -1,5 +1,6 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { LogIn } from "lucide-react"
 
 export default function JoinRoomPage() {
   const socketServer = process.env.NEXT_PUBLIC_SOCKET_SERVER!;
@@ -52,14 +53,14 @@ export default function JoinRoomPage() {
               border
               border-white/10
               text-white
-              placeholder:text-purple-300
+              placeholder:text-white/80
               rounded-2xl
               px-5
               py-4
               text-lg
               outline-none
               focus:ring-2
-              focus:ring-purple-400
+              focus:ring-blue-400
               transition-all
             "
           />
@@ -69,13 +70,13 @@ export default function JoinRoomPage() {
             disabled={loading}
             className="
               w-full
-              bg-gradient-to-r
-              from-purple-500
-              via-violet-500
-              to-fuchsia-500
-              hover:from-purple-400
-              hover:via-violet-400
-              hover:to-fuchsia-400
+              bg-linear-to-r
+              from-blue-700
+              via-blue-500
+              to-blue-600
+              hover:from-blue-900
+              hover:via-blue-600
+              hover:to-blue-700
               disabled:opacity-70
               disabled:cursor-not-allowed
               text-white
@@ -95,6 +96,7 @@ export default function JoinRoomPage() {
               gap-3
             "
           >
+
             {loading && (
               <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
             )}
@@ -102,6 +104,8 @@ export default function JoinRoomPage() {
             {loading
               ? "Entrando..."
               : "Entrar"}
+            <LogIn size={30} />
+            
           </button>
 
         </div>

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { createClient } from "@/app/libs/supabase/client";
 import { useRouter } from "next/navigation";
+import { BackButton } from "@/app/components";
 import Link from "next/link";
 
 export default function SignUp() {
@@ -123,14 +124,17 @@ export default function SignUp() {
   }
 
   return (
-    <main className="flex flex-col min-h-screen items-center justify-center bg-gray-100 px-4">
-      <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-lg">
+    <main className="relative flex flex-col min-h-screen items-center justify-center bg-whiteMain px-4">
+      <header className="absolute top-6 left-6">
+        <BackButton />
+      </header>
+      <div className="w-full max-w-md rounded-2xl bg-blueMain p-8 shadow-lg">
 
-        <h1 className="mb-2 text-center text-3xl font-bold text-gray-900">
+        <h1 className="mb-2 text-center text-3xl font-bold text-white">
           Criar conta
         </h1>
 
-        <p className="mb-8 text-center text-gray-500">
+        <p className="mb-8 text-center text-white/90">
           Cadastre-se para começar
         </p>
 
@@ -151,7 +155,7 @@ export default function SignUp() {
           <div>
             <label
               htmlFor="nome"
-              className="mb-2 block text-sm font-medium text-gray-700"
+              className="mb-2 block text-sm font-medium text-white/80"
             >
               Nome
             </label>
@@ -163,14 +167,14 @@ export default function SignUp() {
               onChange={(e) => setNome(e.target.value)}
               placeholder="Seu nome"
               required
-              className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+              className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-300 text-white"
             />
           </div>
 
           <div>
             <label
               htmlFor="email"
-              className="mb-2 block text-sm font-medium text-gray-700"
+              className="mb-2 block text-sm font-medium text-white/80"
             >
               E-mail
             </label>
@@ -182,14 +186,14 @@ export default function SignUp() {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="seu@email.com"
               required
-              className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+              className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-300 text-white"
             />
           </div>
 
           <div>
             <label
               htmlFor="senha"
-              className="mb-2 block text-sm font-medium text-gray-700"
+              className="mb-2 block text-sm font-medium text-white/80"
             >
               Senha
             </label>
@@ -202,14 +206,14 @@ export default function SignUp() {
               placeholder="••••••••"
               required
               minLength={6}
-              className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+              className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-300 text-white"
             />
           </div>
 
           <button
             type="submit"
             disabled={carregando}
-            className="w-full rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="w-full rounded-lg bg-greenMain px-4 py-3 font-semibold text-white transition hover:bg-greenMain/85 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {carregando ? "Criando conta..." : "Cadastrar"}
           </button>
@@ -219,15 +223,15 @@ export default function SignUp() {
       </div>
 
   
-<div className="mt-6 text-center text-sm text-gray-500">
-  Ja tem uma conta?{" "}
-  <Link
-    href="/pages/SignIn"
-    className="font-semibold text-blue-600 hover:text-blue-700"
-  >
-    Entrar
-  </Link>
-</div>
+      <div className="mt-6 text-center text-sm text-blueMain/75">
+        Ja tem uma conta?{" "}
+        <Link
+          href="/pages/SignIn"
+          className="font-semibold text-orangeMain hover:text-orangeSecond"
+        >
+          Entrar
+        </Link>
+      </div>
 
 
     </main>

@@ -7,7 +7,7 @@ import { redirect, useParams } from "next/navigation";
 import { io } from "socket.io-client";
 import { checkLoggedUser } from "@/app/libs/auth/authservices";
 import { createClient } from "@/app/libs/supabase/client";
-import BackButton from "@/app/components/backbuttons";
+import BackButton from "@/app/components/BackButton";
 
 const socket = io(process.env.NEXT_PUBLIC_SOCKET_SERVER!);
 

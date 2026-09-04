@@ -1,5 +1,5 @@
 import Image from "next/image";
-import BackButton from "./backbuttons";
+import BackButton from "./BackButton";
 
 export function QuestionHeader() {
   return (

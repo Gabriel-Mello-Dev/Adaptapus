@@ -562,7 +562,7 @@ Resposta correta: ${questaoAtual.resposta}
         .map((a: string) => a.trim())
         .filter((a: string) => a !== "");
 
-      const respostaIA = partes[3]
+      const respostaIA = partes[4]
         ?.replace(/correta\s*:/i, "")
         .trim()
         .toUpperCase();
@@ -583,7 +583,7 @@ Resposta correta: ${questaoAtual.resposta}
         // IA retornou a letra
         correta = mapaRespostas[respostaIA];
       } else {
-        console.error("Resposta correta inválida recebida da IA:", partes[3]);
+        console.error("Resposta correta inválida recebida da IA:", partes[4]);
         throw new Error("A IA retornou uma resposta correta inválida.");
       }
 

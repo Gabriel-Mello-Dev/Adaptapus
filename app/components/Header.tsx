@@ -56,7 +56,7 @@ export default function Header() {
     }, []);
 
     return (
-        <header className="w-full bg-orangeMain shadow-lg text-whiteSecond">
+        <header className="w-screen bg-orangeMain shadow-lg text-whiteSecond">
             <nav className="mx-auto flex h-20 max-w-7xl items-center justify-between px-8">
 
                 <div className="flex items-center gap-3">

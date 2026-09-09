@@ -1039,6 +1039,10 @@ Resposta correta: ${questaoAtual.resposta}
               Denunciar questão
             </button>
 
+              <DenunciaQuestao
+                aberto={denunciaQuestaoAberta}
+                fechar={() => setDenunciaQuestaoAberta(false)}
+              />
             <p className="text-purple-200 mb-5 whitespace-pre-line">
               {question.text}
             </p>

@@ -3,8 +3,8 @@
 import OpenAI from "openai";
 
 const client = new OpenAI({
-  baseURL: "https://api.groq.com/openai/v1",
-  apiKey: process.env.GROQ_API_KEY,
+  baseURL: "https://openrouter.ai/api/v1",
+  apiKey: process.env.OPENROUTER_API_KEY,
 });
 
 export async function POST(request: Request) {
@@ -13,11 +13,20 @@ export async function POST(request: Request) {
 
     const { questao, tema } = body;
 
-    const models = ["openai/gpt-oss-120b", "openai/gpt-oss-20b"];
-
+    const models = [
+      "google/gemma-4-31b-it:free",
+      "google/gemma-4-26b-a4b-it:free",
+      "nvidia/nemotron-3-ultra:free",
+      "nvidia/nemotron-3.5-lightning:free",
+      "openrouter/free",
+    ];
+    // Nome que será exibido no frontend
     const modelNames: Record<string, string> = {
-      "openai/gpt-oss-120b": "gpt-oss",
-      "openai/gpt-oss-20b": "gpt-oss",
+      "google/gemma-4-31b-it:free": "gemma",
+      "google/gemma-4-26b-a4b-it:free": "gemma",
+      "nvidia/nemotron-3-ultra:free": "nemotron",
+      "nvidia/nemotron-3.5-lightning:free": "nemotron",
+      "openrouter/free": "outro",
     };
 
     let completion = null;
@@ -43,7 +52,7 @@ REGRAS CRÍTICAS:
 3. Mantenha exatamente 4 alternativas.
 4. Preserve todos os números, valores, unidades, fórmulas, dados e informações necessários para resolver a questão.
 5. Mantenha exatamente o mesmo problema, raciocínio e resultado da questão original.
-6. NÃO faça apenas substituição de palavras. REESCREVA o contexto completo da questão para que a situação aconteça naturalmente dentro do tema.
+6. NÃO faça apenas substituição de palavras. ReESCREVA o contexto completo da questão para que a situação aconteça naturalmente dentro do tema.
 7. Todos os elementos do novo contexto devem ser coerentes com o tema e entre si.
 8. Não force o tema em elementos que não façam sentido. Se necessário, recrie completamente a situação, mantendo o mesmo problema original.
 9. Preserve o significado das unidades. Litros continuam representando volume, metros continuam representando distância, quilogramas continuam representando massa, segundos continuam representando tempo etc.
@@ -86,6 +95,7 @@ ${questao}
           ],
         });
 
+        // Guarda o nome genérico do modelo que realmente respondeu
         modeloUsado = modelNames[model] || "outro";
 
         console.log("Modelo usado:", model);
@@ -93,7 +103,7 @@ ${questao}
 
         break;
       } catch (err) {
-        console.log("Erro no modelo ${model}:", err);
+        console.log(`Erro no modelo ${model}:`, err);
 
         lastError = err;
       }

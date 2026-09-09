@@ -105,7 +105,7 @@ export default function Header() {
           {logado === false && (
             <>
               <Link
-                href="/pages/Login"
+                href="/pages/SignIn"
                 className="flex items-center gap-2 rounded-xl bg-white px-4 py-2 text-orangeMain shadow-sm transition hover:bg-white/90"
               >
                 <LogIn size={22} />

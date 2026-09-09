@@ -8,6 +8,8 @@ import { io } from "socket.io-client";
 import { checkLoggedUser } from "@/app/libs/auth/authservices";
 import { createClient } from "@/app/libs/supabase/client";
 import BackButton from "@/app/components/BackButton";
+import { DenunciaQuestao } from "@/app/components/Denuncias";
+import { DenunciaUsuario } from "@/app/components/Denuncias";
 
 const socket = io(process.env.NEXT_PUBLIC_SOCKET_SERVER!);
 
@@ -74,6 +76,9 @@ export default function ChatPage() {
   const [materias, setMaterias] = useState<{ nome: string; arquivo: string }[]>(
     [],
   );
+
+  const [denunciaQuestaoAberta, setDenunciaQuestaoAberta] = useState(false);
+  const [denunciaUsuarioAberta, setDenunciaUsuarioAberta] = useState(false);
 
   const [materiaSelecionada, setMateriaSelecionada] =
     useState("matematica.json");
@@ -1027,6 +1032,13 @@ Resposta correta: ${questaoAtual.resposta}
               </span>
             </div>
 
+            <button
+              onClick={() => setDenunciaQuestaoAberta(true)}
+              className="mb-4 text-sm text-red-400 hover:text-red-300"
+            >
+              Denunciar questão
+            </button>
+
             <p className="text-purple-200 mb-5 whitespace-pre-line">
               {question.text}
             </p>
@@ -1178,16 +1190,28 @@ Resposta correta: ${questaoAtual.resposta}
             <div
               key={index}
               className="
-                  bg-[#2a1750]
-                  border
-                  border-[#3d2769]
-                  rounded-xl
-                  px-4
-                  py-3
-                  max-w-[80%]
-                "
+      bg-[#2a1750]
+      border
+      border-[#3d2769]
+      rounded-xl
+      px-4
+      py-3
+      max-w-[80%]
+    "
             >
               <p className="whitespace-pre-line leading-relaxed">{msg}</p>
+
+              <button
+                onClick={() => setDenunciaUsuarioAberta(true)}
+                className="mt-2 text-xs text-red-400 hover:text-red-300"
+              >
+                Denunciar usuário
+              </button>
+
+              <DenunciaUsuario
+                aberto={denunciaUsuarioAberta}
+                fechar={() => setDenunciaUsuarioAberta(false)}
+              />
             </div>
           ))}
         </div>

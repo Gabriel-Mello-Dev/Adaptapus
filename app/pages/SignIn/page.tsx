@@ -33,7 +33,7 @@ export default function SignIn() {
       return;
     }
 
-    router.push("/pages/Adaptar");
+    router.push("/");
   }
 
   return (

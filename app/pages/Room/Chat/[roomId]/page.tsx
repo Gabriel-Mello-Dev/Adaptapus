@@ -562,7 +562,7 @@ Resposta correta: ${questaoAtual.resposta}
         .map((a: string) => a.trim())
         .filter((a: string) => a !== "");
 
-      const respostaIA = partes[4]
+      const respostaIA = partes[3]
         ?.replace(/correta\s*:/i, "")
         .trim()
         .toUpperCase();

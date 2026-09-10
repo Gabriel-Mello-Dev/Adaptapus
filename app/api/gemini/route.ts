@@ -1,17 +1,103 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import OpenAI from "openai";
+import { analisar } from "profanity-br";
 
 const client = new OpenAI({
   baseURL: "https://api.groq.com/openai/v1",
   apiKey: process.env.GROQ_API_KEY,
 });
 
+const termosProibidos = [
+  "pornografia",
+  "pornografico",
+  "pornografica",
+  "porno",
+  "sexo",
+  "sexual",
+  "sexuais",
+  "pênis",
+  "penis",
+  "peniano",
+  "peniana",
+  "vagina",
+  "vaginal",
+  "genital",
+  "genitais",
+  "nudez",
+  "nudes",
+  "estupro",
+  "pedofilia",
+];
+
+function encontrarTermoProibido(texto: string) {
+  const normalizado = texto
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+
+  return termosProibidos.find((termo) => {
+    const termoNormalizado = termo
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase();
+
+    return normalizado.includes(termoNormalizado);
+  });
+}
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
 
     const { questao, tema } = body;
+
+    if (!questao || !tema) {
+      return Response.json(
+        {
+          error: "Questão e tema são obrigatórios.",
+        },
+        {
+          status: 400,
+        },
+      );
+    }
+
+    // FILTRO DO TEMA
+    const analiseTema = analisar(tema);
+    const termoProibido = encontrarTermoProibido(tema);
+
+    console.log("========== FILTRO TEMA ==========");
+    console.log("Tema recebido:", tema);
+    console.log("Resultado profanity-br:", analiseTema);
+    console.log("Termo proibido:", termoProibido);
+    console.log("=================================");
+
+    if (analiseTema.hits.length > 0 || termoProibido) {
+      console.log("TEMA INVÁLIDO:", tema);
+
+      return Response.json(
+        {
+          error: "O tema contém conteúdo inadequado.",
+        },
+        {
+          status: 400,
+        },
+      );
+    }
+    // FILTRO DA QUESTÃO
+    const analiseQuestao = analisar(questao);
+
+    if (!analiseQuestao) {
+      return Response.json(
+        {
+          error: "A questão contém palavras inadequadas.",
+        },
+        {
+          status: 400,
+        },
+      );
+    }
 
     const models = ["openai/gpt-oss-120b", "openai/gpt-oss-20b"];
 
@@ -54,7 +140,11 @@ REGRAS CRÍTICAS:
 14. Mantenha aproximadamente o mesmo nível de dificuldade e a mesma estrutura de resolução.
 15. O resultado deve parecer uma questão originalmente criada sobre o tema, e não uma questão genérica com palavras substituídas.
 16. Antes de responder, verifique se o contexto é logicamente possível, se os valores e unidades fazem sentido e se a resposta continua correta.
-17. Retorne SOMENTE uma linha. Não escreva explicações, observações ou comentários.
+17. NÃO utilize palavrões, xingamentos ou linguagem vulgar.
+18. NÃO gere conteúdo sexual ou pornográfico.
+19. NÃO gere violência gráfica.
+20. NÃO gere conteúdo discriminatório.
+21. Retorne SOMENTE uma linha. Não escreva explicações, observações ou comentários.
 
 FORMATO OBRIGATÓRIO:
 
@@ -93,7 +183,7 @@ ${questao}
 
         break;
       } catch (err) {
-        console.log("Erro no modelo ${model}:", err);
+        console.log(`Erro no modelo ${model}:`, err);
 
         lastError = err;
       }
@@ -104,6 +194,20 @@ ${questao}
     }
 
     const text = completion.choices[0].message.content?.trim() || "";
+
+    // FILTRO DA RESPOSTA GERADA PELA IA
+    const analiseResposta = analisar(text);
+
+    if (!analiseResposta) {
+      return Response.json(
+        {
+          error: "A questão gerada contém palavras inadequadas.",
+        },
+        {
+          status: 400,
+        },
+      );
+    }
 
     return Response.json({
       text,

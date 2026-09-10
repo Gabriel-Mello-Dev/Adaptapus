@@ -27,7 +27,7 @@ export default function CreateRoom() {
 
         localStorage.setItem("adm", "true");
 
-        router.push(`/pages/Room/Chat/${data.roomId}`);
+        router.push(`/pages/Room/${data.roomId}`);
         } catch (error) {
         console.error(error);
         } finally {

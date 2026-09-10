@@ -710,52 +710,16 @@ Resposta correta: ${questaoAtual.resposta}
    */
   if (carregandoQuestoes) {
     return (
-      <div className="min-h-screen bg-[#160a29] text-white flex items-center justify-center">
+      <div className="min-h-screen bg-blueMain text-white flex items-center justify-center">
         Carregando questões do ENEM...
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-blueMain text-white flex flex-col items-center">
+    <div className="min-h-screen w-screen bg-whiteMain text-white flex flex-col items-center">
       <RoomHeader roomId={roomId} />
-      
-      {/* TOPO */}
-      <div className="w-full max-w-3xl mb-6">
-        <div className="bg-[#1e1038] border border-[#332156] rounded-2xl p-6">
-          <div className="flex flex-col gap-4">
-            <div>
-              <h1 className="text-3xl font-bold">Sala de Chat</h1>
-
-              <p className="text-purple-300 mt-1 text-sm">
-                Converse em tempo real com seus amigos
-              </p>
-            </div>
-
-            {/* USER */}
-            <div className="bg-[#1a0e30] border border-[#332156] rounded-xl px-4 py-3">
-              <p className="text-sm text-purple-300">Você entrou como</p>
-
-              <h2 className="text-xl font-semibold">{user.nome}</h2>
-            </div>
-
-            {/* ADMIN */}
-            {isAdmin && (
-              <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-200 rounded-xl p-3 text-sm">
-                Você é o administrador da sala
-              </div>
-            )}
-
-            {/* QUANTIDADE */}
-            <div className="bg-blue-500/10 border border-blue-500/20 text-blue-200 rounded-xl p-3 text-sm">
-              {questoes.length} questões de{" "}
-              {materias.find((m) => m.arquivo === materiaSelecionada)?.nome ||
-                "matéria"}{" "}
-              carregadas{" "}
-            </div>
-          </div>
-        </div>
-      </div>
+      <main className="grid grid-cols-2 w-full px-4 py-6">
 
       {/* PAINEL ADMIN */}
       {isAdmin && (
@@ -783,7 +747,7 @@ Resposta correta: ${questaoAtual.resposta}
       outline-none
       focus:border-purple-400
       disabled:opacity-50
-    "
+      "
             >
               {materias.map((materia) => (
                 <option
@@ -914,6 +878,44 @@ Resposta correta: ${questaoAtual.resposta}
           </div>
         </div>
       )}
+
+      {/* INFOS */}
+      <div className="w-full max-w-3xl mb-6">
+        <div className="bg-[#1e1038] border border-[#332156] rounded-2xl p-6">
+          <div className="flex flex-col gap-4">
+            <div>
+              <h1 className="text-3xl font-bold">Sala de Chat</h1>
+
+              <p className="text-purple-300 mt-1 text-sm">
+                Converse em tempo real com seus amigos
+              </p>
+            </div>
+
+            {/* USER */}
+            <div className="bg-[#1a0e30] border border-[#332156] rounded-xl px-4 py-3">
+              <p className="text-sm text-purple-300">Você entrou como</p>
+
+              <h2 className="text-xl font-semibold">{user.nome}</h2>
+            </div>
+
+            {/* ADMIN */}
+            {isAdmin && (
+              <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-200 rounded-xl p-3 text-sm">
+                Você é o administrador da sala
+              </div>
+            )}
+
+            {/* QUANTIDADE */}
+            <div className="bg-blue-500/10 border border-blue-500/20 text-blue-200 rounded-xl p-3 text-sm">
+              {questoes.length} questões de{" "}
+              {materias.find((m) => m.arquivo === materiaSelecionada)?.nome ||
+                "matéria"}{" "}
+              carregadas{" "}
+            </div>
+          </div>
+        </div>
+      </div> 
+      
 
       {/* QUESTÃO */}
       <div className="w-full max-w-3xl mb-6 bg-[#1e1038] border border-[#332156] rounded-2xl p-6 min-h-[220px] flex flex-col justify-center">
@@ -1187,6 +1189,7 @@ Resposta correta: ${questaoAtual.resposta}
           </button>
         </div>
       </div>
+    </main>
     </div>
   );
 }

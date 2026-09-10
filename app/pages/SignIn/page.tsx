@@ -5,6 +5,7 @@ import { createClient } from "@/app/libs/supabase/client";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { BackButton } from "@/app/components";
+import Image from "next/image";
 
 export default function SignIn() {
   const supabase = createClient();
@@ -42,13 +43,24 @@ export default function SignIn() {
         <BackButton />
       </header>
       <div className="w-full max-w-md rounded-2xl bg-blueMain p-8 shadow-lg">
-        <h1 className="mb-2 text-center text-3xl font-bold text-white">
-          Entrar
-        </h1>
 
-        <p className="mb-8 text-center text-white/90">
-          Entre na sua conta para continuar
-        </p>
+        <section className="mb-2 flex flex-col items-center justify-centerx">
+          <h1 className="mb-2 text-center text-3xl font-bold text-white">
+            Entrar
+          </h1>
+
+          <p className="mb-4 text-center text-white/90">
+            Entre na sua conta para continuar
+          </p>
+
+          <Image
+              src="/imgs/logoAdaptapus.png"
+              alt="Logo Adaptapus"
+              height={64}
+              width={64}
+              className="w-18 transition-transform duration-300 hover:scale-105"
+            />
+          </section>
 
         {erro && (
           <div className="mb-5 rounded-lg bg-red-100 px-4 py-3 text-sm text-red-700">

@@ -106,7 +106,7 @@ export default function Header() {
             <>
               <Link
                 href="/pages/SignIn"
-                className="flex items-center gap-2 rounded-xl bg-white px-4 py-2 text-orangeMain shadow-sm transition hover:bg-white/90"
+                className="flex items-center gap-2 rounded-xl bg-blueMain px-4 py-2 text-white shadow-sm transition hover:bg-blueMain/90"
               >
                 <LogIn size={22} />
                 <span className="font-semibold">Entrar</span>
@@ -114,7 +114,7 @@ export default function Header() {
 
               <Link
                 href="/pages/SignUp"
-                className="flex items-center gap-2 rounded-xl bg-white px-4 py-2 text-orangeMain shadow-sm transition hover:bg-white/90"
+                className="flex items-center gap-2 rounded-xl bg-greenMain px-4 py-2 text-white shadow-sm transition hover:bg-greenMain/90"
               >
                 <Plus size={22} />
                 <span className="font-semibold">Criar Conta</span>
@@ -126,15 +126,15 @@ export default function Header() {
         <div className="flex items-center gap-3">
           {/* Status do usuário */}
           {logado !== null && (
-            <div className="flex items-center gap-2 rounded-xl bg-white/10 px-3 py-2">
+            <div className="flex items-center gap-2 rounded-xl bg-white/15 px-3 py-2">
               <span
                 className={`h-2.5 w-2.5 rounded-full ${
-                  logado ? "bg-green-400" : "bg-red-400"
+                  logado ? "bg-green-400" : "bg-red-600"
                 }`}
               />
 
               {logado && nome ? (
-                <span className="font-semibold">{nome}</span>
+                <span className="font-semibold text-white">{nome}</span>
               ) : (
                 <span className="font-semibold">Não conectado</span>
               )}

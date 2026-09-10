@@ -7,9 +7,9 @@ import { redirect, useParams } from "next/navigation";
 import { io } from "socket.io-client";
 import { checkLoggedUser } from "@/app/libs/auth/authservices";
 import { createClient } from "@/app/libs/supabase/client";
-import BackButton from "@/app/components/BackButton";
 import { DenunciaQuestao } from "@/app/components/Denuncias";
 import { DenunciaUsuario } from "@/app/components/Denuncias";
+import { RoomHeader } from "@/app/components/Room";
 
 const socket = io(process.env.NEXT_PUBLIC_SOCKET_SERVER!);
 
@@ -70,8 +70,6 @@ export default function ChatPage() {
 
   const [loadingIndex, setLoadingIndex] = useState(0);
   const [loadingVisible, setLoadingVisible] = useState(true);
-
-  const [copiado, setCopiado] = useState(false);
 
   const [materias, setMaterias] = useState<{ nome: string; arquivo: string }[]>(
     [],
@@ -432,23 +430,6 @@ export default function ChatPage() {
   }
 
   /*
-   * COPIAR CÓDIGO
-   */
-  async function copiarCodigo() {
-    try {
-      await navigator.clipboard.writeText(roomId);
-
-      setCopiado(true);
-
-      setTimeout(() => {
-        setCopiado(false);
-      }, 1800);
-    } catch (error) {
-      console.error("Erro ao copiar código:", error);
-    }
-  }
-
-  /*
    * CHAT
    */
   function sendMessage() {
@@ -736,39 +717,11 @@ Resposta correta: ${questaoAtual.resposta}
   }
 
   return (
-    <div className="min-h-screen bg-[#150829] text-white flex flex-col items-center p-6">
-      {/* MODAL DE COPIADO */}
-      {copiado && (
-        <div
-          className="
-            fixed
-            top-5
-            left-1/2
-            -translate-x-1/2
-            z-50
-            flex
-            items-center
-            gap-2
-            bg-[#24133f]
-            border
-            border-[#4b3275]
-            shadow-xl
-            rounded-xl
-            px-4
-            py-2.5
-            text-sm
-            text-white
-          "
-        >
-          <img src="/favicon.ico" alt="" className="w-4 h-4" />
-
-          <span>Copiado</span>
-        </div>
-      )}
-
+    <div className="min-h-screen bg-blueMain text-white flex flex-col items-center">
+      <RoomHeader roomId={roomId} />
+      
       {/* TOPO */}
       <div className="w-full max-w-3xl mb-6">
-        <BackButton />
         <div className="bg-[#1e1038] border border-[#332156] rounded-2xl p-6">
           <div className="flex flex-col gap-4">
             <div>
@@ -777,33 +730,6 @@ Resposta correta: ${questaoAtual.resposta}
               <p className="text-purple-300 mt-1 text-sm">
                 Converse em tempo real com seus amigos
               </p>
-            </div>
-
-            {/* CÓDIGO */}
-            <div className="bg-[#2a1750] border border-[#3d2769] rounded-xl p-4">
-              <p className="text-sm text-purple-300 mb-2">Código da sala</p>
-
-              <div className="flex items-center justify-between gap-4">
-                <span className="text-3xl font-bold tracking-[0.25em]">
-                  {roomId}
-                </span>
-
-                <button
-                  onClick={copiarCodigo}
-                  className="
-                    bg-white/10
-                    hover:bg-white/20
-                    transition
-                    px-4
-                    py-2
-                    rounded-lg
-                    text-sm
-                    font-medium
-                  "
-                >
-                  Copiar
-                </button>
-              </div>
             </div>
 
             {/* USER */}

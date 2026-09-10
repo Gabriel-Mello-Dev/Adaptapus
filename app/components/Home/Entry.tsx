@@ -27,7 +27,7 @@ export default function JoinRoomPage() {
         return;
       }
 
-      router.push(`/pages/Room/Chat/${roomId}`);
+      router.push(`/pages/Room/${roomId}`);
     } catch (error) {
       console.error(error);
       alert("Erro ao entrar na sala");

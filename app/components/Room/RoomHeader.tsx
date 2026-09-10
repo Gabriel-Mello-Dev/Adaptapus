@@ -37,9 +37,9 @@ export default function RoomHeader({roomId }: {roomId: string}) {
                 flex
                 items-center
                 gap-2
-                bg-[#24133f]
+                bg-orangeSecond
                 border
-                border-[#4b3275]
+                border-orangeMain
                 shadow-xl
                 rounded-xl
                 px-4
@@ -60,8 +60,12 @@ export default function RoomHeader({roomId }: {roomId: string}) {
             </div>
         )}  
 
-        <header className="w-screen bg-blueSecond text-whiteMain flex items-center justify-between p-4 px-12 h-20">
+        <header className="w-screen bg-orangeMain text-whiteMain flex items-center justify-between p-4 px-12 h-20">
             <BackButton />
+
+            <p className="text-2xl font-bold tracking-wide">
+                Sala de Chat
+            </p>
 
             <div className="bg-greenMain rounded-xl p-4 flex items-center justify-between gap-4">
               <p className="text-sm text-white">Código da sala:</p>

@@ -10,6 +10,7 @@ interface DenunciaUsuarioProps {
   fechar: () => void;
   duid: string;
   uid: string;
+  nome: string;
 }
 
 const supabase = createClient();
@@ -19,6 +20,7 @@ export default function DenunciaUsuario({
   fechar,
   uid,
   duid,
+  nome,
 }: DenunciaUsuarioProps) {
   if (!aberto) return null;
   const [motivo, setMotivo] = useState("");
@@ -49,7 +51,7 @@ export default function DenunciaUsuario({
         <h2 className="mb-2 text-xl font-bold text-white">Denunciar usuário</h2>
 
         <p className="mb-5 text-sm text-purple-300">
-          Usuário: <span className="font-semibold text-purple-200">{uid}</span>
+          Usuário: <span className="font-semibold text-purple-200">{nome}</span>
         </p>
 
         <textarea

@@ -108,12 +108,15 @@ export default function RoomQuestionCard({
             questao={`
             Tema: ${question.temaAdaptacao || "Não informado"}
 
+            \
             Questão:
             ${question.text}
 
+            \
             Resposta correta:
             ${question.respostas?.[question.correta] || "Não informada"}
 
+            \
             I.A usada:
             ${question.modeloIA}
             `.trim()}

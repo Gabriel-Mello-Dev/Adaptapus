@@ -7,7 +7,6 @@ interface DenunciaQuestaoProps {
   aberto: boolean;
   fechar: () => void;
   questao: string;
-  uid: string;
 }
 
 const supabase = createClient();
@@ -15,7 +14,6 @@ const supabase = createClient();
 export default function DenunciaQuestao({
   aberto,
   fechar,
-  uid,
   questao,
 }: DenunciaQuestaoProps) {
   const [enviando, setEnviando] = useState(false);
@@ -23,53 +21,44 @@ export default function DenunciaQuestao({
 
   if (!aberto) return null;
 
+  const enviarDenuncia = async () => {
+    if (!motivo.trim()) return;
 
-const enviarDenuncia = async () => {
-  if (!motivo.trim()) return;
+    setEnviando(true);
 
-  setEnviando(true);
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
 
-  const {
-    data: { user },
-    error: userError,
-  } = await supabase.auth.getUser();
+    if (userError || !user) {
+      console.error("Usuário não autenticado:", userError);
+      setEnviando(false);
+      return;
+    }
 
-  if (userError || !user) {
-    console.error("Usuário não autenticado:", userError);
-    setEnviando(false);
-    return;
-  }
-
-  console.log("UID autenticado:", user.id);
-
-  const { error } = await supabase
-    .from("denuncias_questoes")
-    .insert({
+    const { error } = await supabase.from("denuncias_questoes").insert({
       uid: user.id,
       questao: questao,
       comentario: motivo.trim(),
       resolved_by: null,
     });
 
-  if (error) {
-    console.error("Erro ao enviar denúncia:", error);
+    if (error) {
+      console.error("Erro ao enviar denúncia:", error);
+      setEnviando(false);
+      return;
+    }
+
+    setMotivo("");
     setEnviando(false);
-    return;
-  }
-
-  setMotivo("");
-  setEnviando(false);
-  fechar();
-};
-
-
+    fechar();
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
       <div className="w-full max-w-md rounded-2xl border border-[#3d2769] bg-[#1e1038] p-6 shadow-2xl">
-        <h2 className="mb-2 text-xl font-bold text-white">
-          Denunciar questão
-        </h2>
+        <h2 className="mb-2 text-xl font-bold text-white">Denunciar questão</h2>
 
         <p className="mb-5 text-sm text-purple-300">
           Informe o motivo da denúncia para que a questão possa ser analisada.

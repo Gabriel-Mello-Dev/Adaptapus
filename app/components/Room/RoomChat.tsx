@@ -42,110 +42,132 @@ export default function RoomChat({ messages, onSendMessage }: RoomChatProps) {
   }
 
   return (
-    <div className="w-full max-w-3xl flex-1 bg-[#1e1038] border border-[#332156] rounded-2xl overflow-hidden flex flex-col">
-      {/* HEADER */}
-      <div className="bg-[#180b2e] border-b border-[#332156] px-5 py-3">
-        <h2 className="text-lg font-semibold">Chat ao vivo</h2>
+<div className="w-full flex-1 bg-blueMain border border-blueSecond rounded-2xl overflow-hidden flex flex-col">
+
+  {/* HEADER */}
+  <div className="bg-blueMain/80 border-b border-blueSecond px-5 py-3">
+    <h2 className="text-lg font-semibold text-whiteMain">
+      Chat ao vivo
+    </h2>
+  </div>
+
+  {/* MENSAGENS */}
+  <div className="flex-1 overflow-y-auto p-5 space-y-3">
+
+    {messages.length === 0 && (
+      <div className="text-center text-whiteMain/50 mt-10 text-sm">
+        Nenhuma mensagem ainda...
       </div>
+    )}
 
-      {/* MENSAGENS */}
-      <div className="flex-1 overflow-y-auto p-5 space-y-3">
-        {messages.length === 0 && (
-          <div className="text-center text-purple-400 mt-10 text-sm">
-            Nenhuma mensagem ainda...
-          </div>
-        )}
+    {messages.map((msg, index) => (
+      <div
+        key={`${msg.uid}-${index}`}
+        className="
+          bg-blueSecond/20
+          border
+          border-blueSecond
+          rounded-xl
+          px-4
+          py-3
+          max-w-[80%]
+        "
+      >
 
-        {messages.map((msg, index) => (
-          <div
-            key={`${msg.uid}-${index}`}
-            className="
-              bg-[#2a1750]
-              border
-              border-[#3d2769]
-              rounded-xl
-              px-4
-              py-3
-              max-w-[80%]
-            "
-          >
-            {/* USUÁRIO */}
-            <div className="flex items-center justify-between gap-3 mb-1">
-              <p className="font-semibold text-purple-300">{msg.nome}</p>
+        {/* USUÁRIO */}
+        <div className="flex items-center justify-between gap-3 mb-1">
+          <p className="font-semibold text-orangeSecond">
+            {msg.nome}
+          </p>
 
-              <span className="text-xs text-purple-400">{msg.timeStamp}</span>
-            </div>
+          <span className="text-xs text-whiteMain/50">
+            {msg.timeStamp}
+          </span>
+        </div>
 
-            {/* MENSAGEM */}
-            <p className="whitespace-pre-line leading-relaxed">{msg.message}</p>
+        {/* MENSAGEM */}
+        <p className="whitespace-pre-line leading-relaxed text-whiteMain">
+          {msg.message}
+        </p>
 
-            {/* DENÚNCIA */}
-            <button
-              onClick={() => {
-                setUsuarioDenunciado(msg.uid);
-                setDenunciaUsuarioAberta(true);
-              }}
-              className="mt-2 text-xs text-red-400 hover:text-red-300"
-            >
-              Denunciar usuário
-            </button>
-          </div>
-        ))}
-
-        {/* MODAL */}
-        {user && (
-          <DenunciaUsuario
-            aberto={denunciaUsuarioAberta}
-            uid={user.id}
-            duid={usuarioDenunciado}
-            fechar={() => {
-              setDenunciaUsuarioAberta(false);
-              setUsuarioDenunciado("");
-            }}
-          />
-        )}
-      </div>
-
-      {/* INPUT */}
-      <div className="p-4 border-t border-[#332156] flex gap-3 bg-[#180b2e]">
-        <input
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              sendMessage();
-            }
+        {/* DENÚNCIA */}
+        <button
+          onClick={() => {
+            setUsuarioDenunciado(msg.uid);
+            setDenunciaUsuarioAberta(true);
           }}
           className="
-            flex-1
-            bg-[#2a1750]
-            border
-            border-[#3d2769]
-            text-white
-            placeholder:text-purple-400
-            px-4
-            py-3
-            rounded-xl
-            outline-none
-            focus:border-purple-400
-          "
-          placeholder="Digite uma mensagem..."
-        />
-
-        <button
-          onClick={sendMessage}
-          className="
-            bg-purple-600
-            hover:bg-purple-500
+            mt-2
+            text-xs
+            text-orangeThird
+            hover:text-orangeSecond
             transition
-            px-6
-            rounded-xl
-            font-semibold
           "
         >
-          Enviar
+          Denunciar usuário
         </button>
       </div>
-    </div>
+    ))}
+
+    {/* MODAL */}
+    {user && (
+      <DenunciaUsuario
+        aberto={denunciaUsuarioAberta}
+        uid={user.id}
+        duid={usuarioDenunciado}
+        fechar={() => {
+          setDenunciaUsuarioAberta(false);
+          setUsuarioDenunciado("");
+        }}
+      />
+    )}
+  </div>
+
+  {/* INPUT */}
+  <div className="p-4 border-t border-blueSecond flex gap-3 bg-blueMain/80">
+
+    <input
+      value={message}
+      onChange={(e) => setMessage(e.target.value)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") {
+          sendMessage();
+        }
+      }}
+      className="
+        flex-1
+        bg-blueSecond/20
+        border
+        border-blueSecond
+        text-whiteMain
+        placeholder:text-whiteMain/40
+        px-4
+        py-3
+        rounded-xl
+        outline-none
+        transition
+        focus:border-orangeMain
+      "
+      placeholder="Digite uma mensagem..."
+    />
+
+    <button
+      onClick={sendMessage}
+      className="
+        bg-greenMain
+        hover:bg-greenMain/80
+        text-whiteMain
+        transition
+        px-6
+        rounded-xl
+        font-semibold
+      "
+    >
+      Enviar
+    </button>
+  </div>
+</div>
+
+
   );
 }

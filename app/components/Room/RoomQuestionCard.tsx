@@ -16,10 +16,9 @@ interface ResultadoFinal {
   acertos: number;
   erros: number;
 }
+
 interface RoomQuestionCardProps {
   question: Question | null;
-
-  uid: string;
 
   gerandoQuestao: boolean;
 
@@ -44,7 +43,6 @@ interface RoomQuestionCardProps {
 
 export default function RoomQuestionCard({
   question,
-  uid,
   gerandoQuestao,
   loadingIndex,
   loadingVisible,
@@ -61,7 +59,6 @@ export default function RoomQuestionCard({
 }: RoomQuestionCardProps) {
   return (
     <div className="w-full max-w-3xl mb-6 bg-[#1e1038] border border-[#332156] rounded-2xl p-6 min-h-[220px] flex flex-col justify-center">
-      {/* GERANDO */}
       {gerandoQuestao ? (
         <div className="flex flex-col items-center justify-center py-10 text-center">
           <p
@@ -81,7 +78,6 @@ export default function RoomQuestionCard({
           </p>
         </div>
       ) : !question ? (
-        /* SEM QUESTÃO */
         <div className="flex flex-col items-center justify-center py-10 text-center">
           <p className="text-lg text-purple-200">
             Nenhuma questão ativa no momento
@@ -92,7 +88,6 @@ export default function RoomQuestionCard({
           </p>
         </div>
       ) : (
-        /* QUESTÃO ATIVA */
         <div>
           <div className="flex items-center justify-between gap-4 mb-3">
             <h2 className="text-2xl font-bold">{question.title}</h2>
@@ -110,15 +105,24 @@ export default function RoomQuestionCard({
           <DenunciaQuestao
             aberto={denunciaQuestaoAberta}
             fechar={() => setDenunciaQuestaoAberta(false)}
-            questao={question.text}
-            uid={uid}
+            questao={`
+Tema: ${question.temaAdaptacao || "Não informado"}
+
+Questão:
+${question.text}
+
+Resposta correta:
+${question.respostas?.[question.correta] || "Não informada"}
+
+I.A usada:
+${question.modeloIA}
+            `.trim()}
           />
 
           <p className="text-purple-200 mb-5 whitespace-pre-line">
             {question.text}
           </p>
 
-          {/* ALTERNATIVAS */}
           <div className="space-y-2">
             {question.respostas?.map((resposta: string, index: number) => {
               const selecionada = respostaSelecionada === index;
@@ -137,23 +141,23 @@ export default function RoomQuestionCard({
                   onClick={() => selecionarResposta(index)}
                   disabled={votingFinalizado || gerandoQuestao}
                   className={`
-                      w-full
-                      text-left
-                      border
-                      transition
-                      p-3
-                      rounded-xl
+                    w-full
+                    text-left
+                    border
+                    transition
+                    p-3
+                    rounded-xl
 
-                      ${
-                        ehCorreta
-                          ? "bg-emerald-600/30 border-emerald-400"
-                          : marcadaErrada
-                            ? "bg-red-600/30 border-red-400"
-                            : selecionada
-                              ? "bg-purple-600/30 border-purple-400"
-                              : "bg-[#2a1750] border-[#3d2769] hover:bg-[#33195e]"
-                      }
-                    `}
+                    ${
+                      ehCorreta
+                        ? "bg-emerald-600/30 border-emerald-400"
+                        : marcadaErrada
+                          ? "bg-red-600/30 border-red-400"
+                          : selecionada
+                            ? "bg-purple-600/30 border-purple-400"
+                            : "bg-[#2a1750] border-[#3d2769] hover:bg-[#33195e]"
+                    }
+                  `}
                 >
                   {resposta}
 
@@ -165,7 +169,6 @@ export default function RoomQuestionCard({
             })}
           </div>
 
-          {/* CONFIRMAR */}
           <button
             onClick={confirmarResposta}
             disabled={
@@ -194,7 +197,6 @@ export default function RoomQuestionCard({
                 : "Confirmar resposta"}
           </button>
 
-          {/* RESULTADO */}
           {votingFinalizado && resultadoFinal && (
             <div
               className={`
@@ -222,7 +224,6 @@ export default function RoomQuestionCard({
             </div>
           )}
 
-          {/* MODELO */}
           <div className="mt-4 pt-3 border-t border-[#332156]">
             <p className="text-xs text-purple-400/70">
               Gerado por:{" "}

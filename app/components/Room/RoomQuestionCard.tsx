@@ -106,16 +106,16 @@ export default function RoomQuestionCard({
             aberto={denunciaQuestaoAberta}
             fechar={() => setDenunciaQuestaoAberta(false)}
             questao={`
-Tema: ${question.temaAdaptacao || "Não informado"}
+            Tema: ${question.temaAdaptacao || "Não informado"}
 
-Questão:
-${question.text}
+            Questão:
+            ${question.text}
 
-Resposta correta:
-${question.respostas?.[question.correta] || "Não informada"}
+            Resposta correta:
+            ${question.respostas?.[question.correta] || "Não informada"}
 
-I.A usada:
-${question.modeloIA}
+            I.A usada:
+            ${question.modeloIA}
             `.trim()}
           />
 

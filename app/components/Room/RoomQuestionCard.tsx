@@ -16,9 +16,10 @@ interface ResultadoFinal {
   acertos: number;
   erros: number;
 }
-
 interface RoomQuestionCardProps {
   question: Question | null;
+
+  uid: string;
 
   gerandoQuestao: boolean;
 
@@ -43,6 +44,7 @@ interface RoomQuestionCardProps {
 
 export default function RoomQuestionCard({
   question,
+  uid,
   gerandoQuestao,
   loadingIndex,
   loadingVisible,
@@ -93,13 +95,9 @@ export default function RoomQuestionCard({
         /* QUESTÃO ATIVA */
         <div>
           <div className="flex items-center justify-between gap-4 mb-3">
-            <h2 className="text-2xl font-bold">
-              {question.title}
-            </h2>
+            <h2 className="text-2xl font-bold">{question.title}</h2>
 
-            <span className="text-sm text-purple-400">
-              {question.materia}
-            </span>
+            <span className="text-sm text-purple-400">{question.materia}</span>
           </div>
 
           <button
@@ -112,6 +110,8 @@ export default function RoomQuestionCard({
           <DenunciaQuestao
             aberto={denunciaQuestaoAberta}
             fechar={() => setDenunciaQuestaoAberta(false)}
+            questao={question.text}
+            uid={uid}
           />
 
           <p className="text-purple-200 mb-5 whitespace-pre-line">
@@ -120,26 +120,23 @@ export default function RoomQuestionCard({
 
           {/* ALTERNATIVAS */}
           <div className="space-y-2">
-            {question.respostas?.map(
-              (resposta: string, index: number) => {
-                const selecionada =
-                  respostaSelecionada === index;
+            {question.respostas?.map((resposta: string, index: number) => {
+              const selecionada = respostaSelecionada === index;
 
-                const ehCorreta =
-                  votingFinalizado &&
-                  resultadoFinal?.correta === index;
+              const ehCorreta =
+                votingFinalizado && resultadoFinal?.correta === index;
 
-                const marcadaErrada =
-                  votingFinalizado &&
-                  selecionada &&
-                  resultadoFinal?.correta !== index;
+              const marcadaErrada =
+                votingFinalizado &&
+                selecionada &&
+                resultadoFinal?.correta !== index;
 
-                return (
-                  <button
-                    key={index}
-                    onClick={() => selecionarResposta(index)}
-                    disabled={votingFinalizado || gerandoQuestao}
-                    className={`
+              return (
+                <button
+                  key={index}
+                  onClick={() => selecionarResposta(index)}
+                  disabled={votingFinalizado || gerandoQuestao}
+                  className={`
                       w-full
                       text-left
                       border
@@ -157,16 +154,15 @@ export default function RoomQuestionCard({
                               : "bg-[#2a1750] border-[#3d2769] hover:bg-[#33195e]"
                       }
                     `}
-                  >
-                    {resposta}
+                >
+                  {resposta}
 
-                    <span className="text-purple-300/70 ml-1">
-                      ({votes[index] || 0} votos)
-                    </span>
-                  </button>
-                );
-              },
-            )}
+                  <span className="text-purple-300/70 ml-1">
+                    ({votes[index] || 0} votos)
+                  </span>
+                </button>
+              );
+            })}
           </div>
 
           {/* CONFIRMAR */}
@@ -220,8 +216,8 @@ export default function RoomQuestionCard({
               </p>
 
               <p className="text-sm opacity-80">
-                {resultadoFinal.acertos} acertaram ·{" "}
-                {resultadoFinal.erros} erraram
+                {resultadoFinal.acertos} acertaram · {resultadoFinal.erros}{" "}
+                erraram
               </p>
             </div>
           )}

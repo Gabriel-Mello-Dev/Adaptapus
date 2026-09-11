@@ -2,7 +2,7 @@ import { BackButton } from "../index";
 import Image from "next/image";
 import { useState } from "react";
 
-export default function RoomHeader({roomId }: {roomId: string}) {
+export default function RoomHeader({roomId, userName }: {roomId: string, userName: string}) {
 
     const [copiado, setCopiado] = useState(false);
 
@@ -64,8 +64,15 @@ export default function RoomHeader({roomId }: {roomId: string}) {
             <BackButton />
 
             <p className="text-2xl font-bold tracking-wide">
-                Sala de Chat
+                Sala Compartilhada
             </p>
+
+            <div className="flex justify-center items-center gap-2">
+                <span className="h-2.5 w-2.5 rounded-full bg-green-400" />
+                <span className="text-lg">
+                    {userName}
+                </span>
+            </div>
 
             <div className="bg-greenMain rounded-xl p-4 flex items-center justify-between gap-4">
               <p className="text-sm text-white">Código da sala:</p>

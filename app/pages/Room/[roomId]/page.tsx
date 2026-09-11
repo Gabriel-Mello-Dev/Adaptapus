@@ -7,9 +7,12 @@ import { redirect, useParams } from "next/navigation";
 import { io } from "socket.io-client";
 import { checkLoggedUser } from "@/app/libs/auth/authservices";
 import { createClient } from "@/app/libs/supabase/client";
-import { DenunciaQuestao } from "@/app/components/Denuncias";
-import { DenunciaUsuario } from "@/app/components/Denuncias";
-import { RoomHeader, RoomAdminPanel, RoomChat, RoomInfos, RoomQuestionCard } from "@/app/components/Room";
+import {
+  RoomHeader,
+  RoomAdminPanel,
+  RoomChat,
+  RoomQuestionCard,
+} from "@/app/components/Room";
 
 const socket = io(process.env.NEXT_PUBLIC_SOCKET_SERVER!);
 
@@ -42,9 +45,14 @@ export default function ChatPage() {
 
   const roomId = params.roomId as string;
 
-  const [message, setMessage] = useState("");
-  const [messages, setMessages] = useState<string[]>([]);
+  type ChatMessage = {
+    uid: string;
+    nome: string;
+    message: string;
+    timeStamp: string;
+  };
 
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [questoes, setQuestoes] = useState<Questao[]>([]);
   const [indiceQuestao, setIndiceQuestao] = useState(0);
   const [carregandoQuestoes, setCarregandoQuestoes] = useState(true);
@@ -76,12 +84,12 @@ export default function ChatPage() {
   );
 
   const [denunciaQuestaoAberta, setDenunciaQuestaoAberta] = useState(false);
-  const [denunciaUsuarioAberta, setDenunciaUsuarioAberta] = useState(false);
 
   const [materiaSelecionada, setMateriaSelecionada] =
     useState("matematica.json");
 
   const [user, setUser] = useState({
+    uid: "",
     nome: "",
   });
 
@@ -107,6 +115,7 @@ export default function ChatPage() {
       }
 
       setUser({
+        uid: user.id,
         nome: data.nome,
       });
     }
@@ -226,7 +235,7 @@ export default function ChatPage() {
     /*
      * CHAT
      */
-    const handleMessage = (message: string) => {
+    const handleMessage = (message: ChatMessage) => {
       setMessages((prev) => [...prev, message]);
     };
 
@@ -432,7 +441,7 @@ export default function ChatPage() {
   /*
    * CHAT
    */
-  function sendMessage() {
+  function sendMessage(message: string) {
     if (!message.trim()) return;
 
     const timeStamp = new Date().toLocaleTimeString([], {
@@ -442,10 +451,11 @@ export default function ChatPage() {
 
     socket.emit("message", {
       roomId,
-      message: user.nome + ": " + message + "\n" + timeStamp,
+      uid: user.uid,
+      nome: user.nome,
+      message,
+      timeStamp,
     });
-
-    setMessage("");
   }
 
   /*
@@ -717,62 +727,84 @@ Resposta correta: ${questaoAtual.resposta}
   }
 
   return (
-  <div className="min-h-screen w-screen bg-whiteMain text-white flex flex-col items-center">
-    <RoomHeader roomId={roomId} />
-
-    <main className="grid grid-cols-2 w-full px-4 py-6">
-      {/* PAINEL ADMIN */}
-      {isAdmin && (
-        <RoomAdminPanel
-          materias={materias}
-          materiaSelecionada={materiaSelecionada}
-          setMateriaSelecionada={setMateriaSelecionada}
-          gerandoQuestao={gerandoQuestao}
-          question={question}
-          questoes={questoes}
-          indiceQuestao={indiceQuestao}
-          tema={tema}
-          setTema={setTema}
-          criarPergunta={criarPergunta}
-          finalizarVotacao={finalizarVotacao}
-          proximaQuestao={proximaQuestao}
-          votingFinalizado={votingFinalizado}
-        />
-      )}
-
-      {/* INFOS */}
-      <RoomInfos
+    <div className="min-h-screen w-screen bg-whiteMain text-white flex flex-col items-center">
+      <RoomHeader 
+        roomId={roomId} 
         userName={user.nome}
-        isAdmin={isAdmin}
-        questoesLength={questoes.length}
-        materias={materias}
-        materiaSelecionada={materiaSelecionada}
       />
 
-      {/* QUESTÃO */}
-      <RoomQuestionCard
-        question={question}
-        gerandoQuestao={gerandoQuestao}
-        loadingIndex={loadingIndex}
-        loadingVisible={loadingVisible}
-        loadingMessages={LOADING_MESSAGES}
-        denunciaQuestaoAberta={denunciaQuestaoAberta}
-        setDenunciaQuestaoAberta={setDenunciaQuestaoAberta}
-        respostaSelecionada={respostaSelecionada}
-        selecionarResposta={selecionarResposta}
-        confirmarResposta={confirmarResposta}
-        votes={votes}
-        javotou={javotou}
-        votingFinalizado={votingFinalizado}
-        resultadoFinal={resultadoFinal}
-      />
+      <main className="w-full px-4 py-6">
+        
+        {isAdmin ? (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
+          {/* PAINEL ADMIN */}
+          
+            <RoomAdminPanel
+              materias={materias}
+              materiaSelecionada={materiaSelecionada}
+              setMateriaSelecionada={setMateriaSelecionada}
+              gerandoQuestao={gerandoQuestao}
+              question={question}
+              questoes={questoes}
+              indiceQuestao={indiceQuestao}
+              tema={tema}
+              setTema={setTema}
+              criarPergunta={criarPergunta}
+              finalizarVotacao={finalizarVotacao}
+              proximaQuestao={proximaQuestao}
+              votingFinalizado={votingFinalizado}
+            />
 
-      {/* CHAT */}
-      <RoomChat
-        messages={messages}
-        onSendMessage={sendMessage}
-      />
-    </main>
-  </div>
-);
-}
+          <div className="flex flex-col gap-6">
+            {/* QUESTÃO */}
+            <RoomQuestionCard
+              question={question}
+              gerandoQuestao={gerandoQuestao}
+              loadingIndex={loadingIndex}
+              loadingVisible={loadingVisible}
+              loadingMessages={LOADING_MESSAGES}
+              denunciaQuestaoAberta={denunciaQuestaoAberta}
+              setDenunciaQuestaoAberta={setDenunciaQuestaoAberta}
+              respostaSelecionada={respostaSelecionada}
+              selecionarResposta={selecionarResposta}
+              confirmarResposta={confirmarResposta}
+              votes={votes}
+              javotou={javotou}
+              votingFinalizado={votingFinalizado}
+              resultadoFinal={resultadoFinal}
+            />
+
+            {/* CHAT */}
+            <RoomChat messages={messages} onSendMessage={sendMessage} />
+          </div>
+        </div>
+        ) : (
+          <div className="flex flex-col gap-6 w-full">
+            {/* QUESTÃO */}
+            <RoomQuestionCard
+              question={question}
+              gerandoQuestao={gerandoQuestao}
+              loadingIndex={loadingIndex}
+              loadingVisible={loadingVisible}
+              loadingMessages={LOADING_MESSAGES}
+              denunciaQuestaoAberta={denunciaQuestaoAberta}
+              setDenunciaQuestaoAberta={setDenunciaQuestaoAberta}
+              respostaSelecionada={respostaSelecionada}
+              selecionarResposta={selecionarResposta}
+              confirmarResposta={confirmarResposta}
+              votes={votes}
+              javotou={javotou}
+              votingFinalizado={votingFinalizado}
+              resultadoFinal={resultadoFinal}
+            />
+
+            {/* CHAT */}
+            <RoomChat messages={messages} onSendMessage={sendMessage} />
+          </div>
+          )}
+
+      </main>
+    </div>
+  )
+};
+

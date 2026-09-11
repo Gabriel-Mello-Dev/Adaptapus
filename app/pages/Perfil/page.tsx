@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
 import { useEffect, useState } from "react";
@@ -11,6 +12,55 @@ export default function Perfil() {
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [carregando, setCarregando] = useState(true);
+  const [temas, setTemas] = useState<string[]>([]);
+  
+  const CarregarTemas = async () => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from("temas_usuarios")
+      .select("tema")
+      .eq("uid", user.id);
+
+    if (error) {
+      console.error("Erro ao buscar temas:", error);
+      return;
+    }
+
+    const temasUsuario = data?.map((item) => item.tema) ?? [];
+
+    setTemas(temasUsuario);
+  };
+
+    const carregarProgresso = async () => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from("progresso_usuario")
+      .select(["matematica")
+      .eq("uid", user.id);
+
+    if (error) {
+      console.error("Erro ao buscar temas:", error);
+      return;
+    }
+
+    const temasUsuario = data?.map((item) => item.tema) ?? [];
+
+    setTemas(temasUsuario);
+  };
 
   useEffect(() => {
     async function carregarPerfil() {
@@ -38,6 +88,8 @@ export default function Perfil() {
       setCarregando(false);
     }
 
+    CarregarTemas();
+
     carregarPerfil();
   }, []);
 
@@ -63,6 +115,8 @@ export default function Perfil() {
           <strong>Email:</strong> {email}
         </p>
       </div>
+
+      <h1>{temas}</h1>
 
       <button
         onClick={logout}

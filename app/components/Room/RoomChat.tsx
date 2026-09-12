@@ -76,145 +76,145 @@ export default function RoomChat({ messages, onSendMessage }: RoomChatProps) {
     }
   }, [messages]);
 
-return (
-  <div className="w-full h-96 bg-blueMain border border-blueSecond rounded-2xl overflow-hidden flex flex-col">
+  return (
+    <div className="w-full h-96 bg-blueMain border border-blueSecond rounded-2xl overflow-hidden flex flex-col">
 
-    {/* HEADER */}
-    <div className="bg-blueMain/80 border-b border-blueSecond px-5 py-3 shrink-0">
-      <h2 className="text-lg font-semibold text-whiteMain">
-        Chat ao vivo
-      </h2>
-    </div>
+      {/* HEADER */}
+      <div className="bg-blueMain/80 border-b border-blueSecond px-5 py-3 shrink-0">
+        <h2 className="text-lg font-semibold text-whiteMain">
+          Chat ao vivo
+        </h2>
+      </div>
 
-    {/* MENSAGENS */}
-    <div className="relative flex-1 min-h-0">
+      {/* MENSAGENS */}
+      <div className="relative flex-1 min-h-0">
 
-      {/* SOMBRA SUPERIOR */}
-      {temMensagensAcima && (
-        <div className="absolute top-0 left-0 right-0 h-8 z-10 pointer-events-none bg-linear-to-b from-black/30 to-transparent" />
-      )}
-
-      <div
-        ref={mensagensRef}
-        onScroll={verificarScroll}
-        className="h-full overflow-y-auto p-5 space-y-3"
-      >
-        {messages.length === 0 && (
-          <div className="text-center text-whiteMain/50 mt-10 text-sm">
-            Nenhuma mensagem ainda...
-          </div>
+        {/* SOMBRA SUPERIOR */}
+        {temMensagensAcima && (
+          <div className="absolute top-0 left-0 right-0 h-8 z-10 pointer-events-none bg-linear-to-b from-black/30 to-transparent" />
         )}
 
-        {messages.map((msg, index) => (
-          <div
-            key={`${msg.uid}-${index}`}
-            className="
-              bg-blueSecond/20
-              border
-              border-blueSecond
-              rounded-xl
-              px-4
-              py-3
-              max-w-[80%]
-            "
-          >
-            {/* USUÁRIO */}
-            <div className="flex items-center justify-between gap-3 mb-1">
-              <p className="font-semibold text-orangeSecond">
-                {msg.nome}
+        <div
+          ref={mensagensRef}
+          onScroll={verificarScroll}
+          className="h-full overflow-y-auto p-5 space-y-3"
+        >
+          {messages.length === 0 && (
+            <div className="text-center text-whiteMain/50 mt-10 text-sm">
+              Nenhuma mensagem ainda...
+            </div>
+          )}
+
+          {messages.map((msg, index) => (
+            <div
+              key={`${msg.uid}-${index}`}
+              className="
+                bg-blueSecond/20
+                border
+                border-blueSecond
+                rounded-xl
+                px-4
+                py-3
+                max-w-[80%]
+              "
+            >
+              {/* USUÁRIO */}
+              <div className="flex items-center justify-between gap-3 mb-1">
+                <p className="font-semibold text-orangeSecond">
+                  {msg.nome}
+                </p>
+
+                <span className="text-xs text-whiteMain/50">
+                  {msg.timeStamp}
+                </span>
+              </div>
+
+              {/* MENSAGEM */}
+              <p className="whitespace-pre-line leading-relaxed text-whiteMain">
+                {msg.message}
               </p>
 
-              <span className="text-xs text-whiteMain/50">
-                {msg.timeStamp}
-              </span>
+              {/* DENÚNCIA */}
+              {user && msg.uid !== user.id && (
+                <button
+                  onClick={() => {
+                    setUsuarioDenunciado(msg.uid);
+                    setNomeUsuarioDenunciado(msg.nome);
+                    setDenunciaUsuarioAberta(true);
+                  }}
+                  className="
+                    mt-2
+                    text-xs
+                    text-orangeThird
+                    hover:text-orangeSecond
+                    transition
+                  "
+                >
+                  Denunciar usuário
+                </button>
+              )}
             </div>
+          ))}
+        </div>
+      </div>
 
-            {/* MENSAGEM */}
-            <p className="whitespace-pre-line leading-relaxed text-whiteMain">
-              {msg.message}
-            </p>
+      {/* MODAL DE DENÚNCIA */}
+      {user && (
+        <DenunciaUsuario
+          aberto={denunciaUsuarioAberta}
+          uid={user.id}
+          duid={usuarioDenunciado}
+          nome={nomeUsuarioDenunciado}
+          fechar={() => {
+            setDenunciaUsuarioAberta(false);
+            setUsuarioDenunciado("");
+            setNomeUsuarioDenunciado("");
+          }}
+        />
+      )}
 
-            {/* DENÚNCIA */}
-            {user && msg.uid !== user.id && (
-              <button
-                onClick={() => {
-                  setUsuarioDenunciado(msg.uid);
-                  setNomeUsuarioDenunciado(msg.nome);
-                  setDenunciaUsuarioAberta(true);
-                }}
-                className="
-                  mt-2
-                  text-xs
-                  text-orangeThird
-                  hover:text-orangeSecond
-                  transition
-                "
-              >
-                Denunciar usuário
-              </button>
-            )}
-          </div>
-        ))}
+      {/* INPUT */}
+      <div className="p-4 border-t border-blueSecond flex gap-3 bg-blueMain/80 shrink-0">
+        <input
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              sendMessage();
+            }
+          }}
+          className="
+            flex-1
+            bg-blueSecond/20
+            border
+            border-blueSecond
+            text-whiteMain
+            placeholder:text-whiteMain/40
+            px-4
+            py-3
+            rounded-xl
+            outline-none
+            transition
+            focus:border-orangeMain
+          "
+          placeholder="Digite uma mensagem..."
+        />
+
+        <button
+          onClick={sendMessage}
+          className="
+            bg-greenMain
+            hover:bg-greenMain/80
+            text-whiteMain
+            transition
+            px-6
+            rounded-xl
+            font-semibold
+          "
+        >
+          Enviar
+        </button>
       </div>
     </div>
-
-    {/* MODAL DE DENÚNCIA */}
-    {user && (
-      <DenunciaUsuario
-        aberto={denunciaUsuarioAberta}
-        uid={user.id}
-        duid={usuarioDenunciado}
-        nome={nomeUsuarioDenunciado}
-        fechar={() => {
-          setDenunciaUsuarioAberta(false);
-          setUsuarioDenunciado("");
-          setNomeUsuarioDenunciado("");
-        }}
-      />
-    )}
-
-    {/* INPUT */}
-    <div className="p-4 border-t border-blueSecond flex gap-3 bg-blueMain/80 shrink-0">
-      <input
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") {
-            sendMessage();
-          }
-        }}
-        className="
-          flex-1
-          bg-blueSecond/20
-          border
-          border-blueSecond
-          text-whiteMain
-          placeholder:text-whiteMain/40
-          px-4
-          py-3
-          rounded-xl
-          outline-none
-          transition
-          focus:border-orangeMain
-        "
-        placeholder="Digite uma mensagem..."
-      />
-
-      <button
-        onClick={sendMessage}
-        className="
-          bg-greenMain
-          hover:bg-greenMain/80
-          text-whiteMain
-          transition
-          px-6
-          rounded-xl
-          font-semibold
-        "
-      >
-        Enviar
-      </button>
-    </div>
-  </div>
-);
+  );
 }

@@ -126,8 +126,7 @@ REGRAS CRÍTICAS:
 
 1. NÃO altere a resposta correta da questão original.
 2. A resposta correta deve permanecer na mesma posição.
-3. Mantenha exatamente 4 alternativas.
-4. Preserve todos os números, valores, unidades, fórmulas, dados e informações necessários para resolver a questão.
+3. Mantenha exatamente 5 alternativas, correspondentes às alternativas A, B, C, D e E da questão original.4. Preserve todos os números, valores, unidades, fórmulas, dados e informações necessários para resolver a questão.
 5. Mantenha exatamente o mesmo problema, raciocínio e resultado da questão original.
 6. NÃO faça apenas substituição de palavras. REESCREVA o contexto completo da questão para que a situação aconteça naturalmente dentro do tema.
 7. Todos os elementos do novo contexto devem ser coerentes com o tema e entre si.
@@ -145,16 +144,19 @@ REGRAS CRÍTICAS:
 19. NÃO gere violência gráfica.
 20. NÃO gere conteúdo discriminatório.
 21. Retorne SOMENTE uma linha. Não escreva explicações, observações ou comentários.
-
+22. Mantenha exatamente 5 alternativas, sempre na ordem A, B, C, D e E.
+23. NÃO remova, crie, troque de posição ou altere a quantidade de alternativas.
+24. A alternativa correta deve permanecer na mesma posição da questão original.
 FORMATO OBRIGATÓRIO:
 
-titulo # corpo # alt1 § alt2 § alt3 § alt4 # correta:indice
+titulo # corpo # alt1 § alt2 § alt3 § alt4 § alt5 # correta:indice
 
 A resposta correta deve usar índice:
 0 = primeira alternativa
 1 = segunda alternativa
 2 = terceira alternativa
 3 = quarta alternativa
+4 = quinta alternativa
 
 EXEMPLO:
 

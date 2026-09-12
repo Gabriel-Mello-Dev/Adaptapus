@@ -574,7 +574,7 @@ Resposta correta: ${questaoAtual.resposta}
       let correta: number;
 
       if (/^[1-5]$/.test(respostaIA)) {
-        correta = Number(respostaIA) - 1;
+        correta = Number(respostaIA);
       } else if (respostaIA in mapaRespostas) {
         // IA retornou a letra
         correta = mapaRespostas[respostaIA];

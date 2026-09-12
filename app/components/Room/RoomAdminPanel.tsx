@@ -56,10 +56,6 @@ export default function RoomAdminPanel({
   proximaQuestao,
   votingFinalizado,
 }: RoomAdminPanelProps) {
-  const materiaAtual =
-    materias.find(
-      (materia) => materia.arquivo === materiaSelecionada,
-    )?.nome || "matéria";
 
   return (
     <div className="w-full bg-blueMain border border-blueSecond rounded-2xl p-6">

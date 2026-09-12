@@ -58,7 +58,7 @@ export default function RoomQuestionCard({
   resultadoFinal,
 }: RoomQuestionCardProps) {
   return (
-    <div className="w-full bg-blueMain border border-blueSecond rounded-2xl p-6 min-h-[220px] flex flex-col justify-center">
+    <div className="w-full bg-blueMain border border-blueSecond rounded-2xl p-6 min-h-55 flex flex-col justify-center">
 
       {gerandoQuestao ? (
         <div className="flex flex-col items-center justify-center py-10 text-center">

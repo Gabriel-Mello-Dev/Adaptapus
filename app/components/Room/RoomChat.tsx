@@ -35,7 +35,7 @@ export default function RoomChat({ messages, onSendMessage }: RoomChatProps) {
   const [denunciaUsuarioAberta, setDenunciaUsuarioAberta] = useState(false);
   const [usuarioDenunciado, setUsuarioDenunciado] = useState("");
   const [nomeUsuarioDenunciado, setNomeUsuarioDenunciado] = useState("");
-
+  const [mensagemDenunciada, setMensagemDenunciada] = useState("");
   function sendMessage() {
     if (!message.trim()) return;
 
@@ -53,9 +53,7 @@ export default function RoomChat({ messages, onSendMessage }: RoomChatProps) {
     const container = e.currentTarget;
 
     const estaNoFinal =
-      container.scrollHeight -
-        container.scrollTop -
-        container.clientHeight <
+      container.scrollHeight - container.scrollTop - container.clientHeight <
       50;
 
     estavaNoFinalRef.current = estaNoFinal;
@@ -78,17 +76,13 @@ export default function RoomChat({ messages, onSendMessage }: RoomChatProps) {
 
   return (
     <div className="w-full h-96 bg-blueMain border border-blueSecond rounded-2xl overflow-hidden flex flex-col">
-
       {/* HEADER */}
       <div className="bg-blueMain/80 border-b border-blueSecond px-5 py-3 shrink-0">
-        <h2 className="text-lg font-semibold text-whiteMain">
-          Chat ao vivo
-        </h2>
+        <h2 className="text-lg font-semibold text-whiteMain">Chat ao vivo</h2>
       </div>
 
       {/* MENSAGENS */}
       <div className="relative flex-1 min-h-0">
-
         {/* SOMBRA SUPERIOR */}
         {temMensagensAcima && (
           <div className="absolute top-0 left-0 right-0 h-8 z-10 pointer-events-none bg-linear-to-b from-black/30 to-transparent" />
@@ -120,9 +114,7 @@ export default function RoomChat({ messages, onSendMessage }: RoomChatProps) {
             >
               {/* USUÁRIO */}
               <div className="flex items-center justify-between gap-3 mb-1">
-                <p className="font-semibold text-orangeSecond">
-                  {msg.nome}
-                </p>
+                <p className="font-semibold text-orangeSecond">{msg.nome}</p>
 
                 <span className="text-xs text-whiteMain/50">
                   {msg.timeStamp}
@@ -140,6 +132,7 @@ export default function RoomChat({ messages, onSendMessage }: RoomChatProps) {
                   onClick={() => {
                     setUsuarioDenunciado(msg.uid);
                     setNomeUsuarioDenunciado(msg.nome);
+                    setMensagemDenunciada(msg.message);
                     setDenunciaUsuarioAberta(true);
                   }}
                   className="
@@ -165,10 +158,12 @@ export default function RoomChat({ messages, onSendMessage }: RoomChatProps) {
           uid={user.id}
           duid={usuarioDenunciado}
           nome={nomeUsuarioDenunciado}
+          mensagem={mensagemDenunciada}
           fechar={() => {
             setDenunciaUsuarioAberta(false);
             setUsuarioDenunciado("");
             setNomeUsuarioDenunciado("");
+            setMensagemDenunciada("");
           }}
         />
       )}

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { DenunciaUsuario } from "@/app/components/Denuncias";
 import { createClient } from "@/app/libs/supabase/client";
 
@@ -44,68 +44,118 @@ export default function RoomChat({ messages, onSendMessage }: RoomChatProps) {
     setMessage("");
   }
 
+  const [temMensagensAcima, setTemMensagensAcima] = useState(false);
+
+  const mensagensRef = useRef<HTMLDivElement>(null);
+  const estavaNoFinalRef = useRef(true);
+
+  function verificarScroll(e: React.UIEvent<HTMLDivElement>) {
+    const container = e.currentTarget;
+
+    const estaNoFinal =
+      container.scrollHeight -
+        container.scrollTop -
+        container.clientHeight <
+      50;
+
+    estavaNoFinalRef.current = estaNoFinal;
+
+    setTemMensagensAcima(container.scrollTop > 0);
+  }
+
+  useEffect(() => {
+    const container = mensagensRef.current;
+
+    if (!container) return;
+
+    if (estavaNoFinalRef.current) {
+      container.scrollTo({
+        top: container.scrollHeight,
+        behavior: "smooth",
+      });
+    }
+  }, [messages]);
+
   return (
-    <div className="w-full flex-1 bg-blueMain border border-blueSecond rounded-2xl overflow-hidden flex flex-col">
+    <div className="w-full h-96 bg-blueMain border border-blueSecond rounded-2xl overflow-hidden flex flex-col">
+
       {/* HEADER */}
-      <div className="bg-blueMain/80 border-b border-blueSecond px-5 py-3">
-        <h2 className="text-lg font-semibold text-whiteMain">Chat ao vivo</h2>
+      <div className="bg-blueMain/80 border-b border-blueSecond px-5 py-3 shrink-0">
+        <h2 className="text-lg font-semibold text-whiteMain">
+          Chat ao vivo
+        </h2>
       </div>
 
       {/* MENSAGENS */}
-      <div className="flex-1 overflow-y-auto p-5 space-y-3">
-        {messages.length === 0 && (
-          <div className="text-center text-whiteMain/50 mt-10 text-sm">
-            Nenhuma mensagem ainda...
-          </div>
+      <div className="relative flex-1 min-h-0">
+
+        {/* SOMBRA SUPERIOR */}
+        {temMensagensAcima && (
+          <div className="absolute top-0 left-0 right-0 h-8 z-10 pointer-events-none bg-linear-to-b from-black/30 to-transparent" />
         )}
 
-        {messages.map((msg, index) => (
-          <div
-            key={`${msg.uid}-${index}`}
-            className="
-              bg-blueSecond/20
-              border
-              border-blueSecond
-              rounded-xl
-              px-4
-              py-3
-              max-w-[80%]
-            "
-          >
-            {/* USUÁRIO */}
-            <div className="flex items-center justify-between gap-3 mb-1">
-              <p className="font-semibold text-orangeSecond">{msg.nome}</p>
-
-              <span className="text-xs text-whiteMain/50">{msg.timeStamp}</span>
+        <div
+          ref={mensagensRef}
+          onScroll={verificarScroll}
+          className="h-full overflow-y-auto p-5 space-y-3"
+        >
+          {messages.length === 0 && (
+            <div className="text-center text-whiteMain/50 mt-10 text-sm">
+              Nenhuma mensagem ainda...
             </div>
+          )}
 
-            {/* MENSAGEM */}
-            <p className="whitespace-pre-line leading-relaxed text-whiteMain">
-              {msg.message}
-            </p>
+          {messages.map((msg, index) => (
+            <div
+              key={`${msg.uid}-${index}`}
+              className="
+                bg-blueSecond/20
+                border
+                border-blueSecond
+                rounded-xl
+                px-4
+                py-3
+                max-w-[80%]
+              "
+            >
+              {/* USUÁRIO */}
+              <div className="flex items-center justify-between gap-3 mb-1">
+                <p className="font-semibold text-orangeSecond">
+                  {msg.nome}
+                </p>
 
-            {/* DENÚNCIA */}
-            {user && msg.uid !== user.id && (
-              <button
-                onClick={() => {
-                  setUsuarioDenunciado(msg.uid);
-                  setNomeUsuarioDenunciado(msg.nome);
+                <span className="text-xs text-whiteMain/50">
+                  {msg.timeStamp}
+                </span>
+              </div>
 
-                  setDenunciaUsuarioAberta(true);
-                }}
-                className="
-                  mt-2
-                  text-xs
-                  text-orangeThird
-                  hover:text-orangeSecond
-                  transition
-                "
-              >
-                Denunciar usuário
-              </button>
-            )}
-          </div>
-        ))}
+              {/* MENSAGEM */}
+              <p className="whitespace-pre-line leading-relaxed text-whiteMain">
+                {msg.message}
+              </p>
+
+              {/* DENÚNCIA */}
+              {user && msg.uid !== user.id && (
+                <button
+                  onClick={() => {
+                    setUsuarioDenunciado(msg.uid);
+                    setNomeUsuarioDenunciado(msg.nome);
+                    setDenunciaUsuarioAberta(true);
+                  }}
+                  className="
+                    mt-2
+                    text-xs
+                    text-orangeThird
+                    hover:text-orangeSecond
+                    transition
+                  "
+                >
+                  Denunciar usuário
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* MODAL DE DENÚNCIA */}
@@ -124,7 +174,7 @@ export default function RoomChat({ messages, onSendMessage }: RoomChatProps) {
       )}
 
       {/* INPUT */}
-      <div className="p-4 border-t border-blueSecond flex gap-3 bg-blueMain/80">
+      <div className="p-4 border-t border-blueSecond flex gap-3 bg-blueMain/80 shrink-0">
         <input
           value={message}
           onChange={(e) => setMessage(e.target.value)}

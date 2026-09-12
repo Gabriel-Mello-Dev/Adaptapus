@@ -4,8 +4,10 @@ import { useState, useEffect } from "react";
 import { redirect } from "next/navigation";
 
 import { useQuestion } from "../../hooks/useQuestion";
-import QuestionCard from "../../components/QuestionCard";
+import { QuestionCard } from "../../components/Adaptar";
 import { checkLoggedUser } from "../../libs/auth/authservices";
+
+import { Header, Footer } from "@/app/components"
 
 export default function Home() {
   const {
@@ -58,6 +60,8 @@ export default function Home() {
   }
 
   return (
+    <>
+    <Header />
     <QuestionCard
       title={title}
       text={text}
@@ -74,5 +78,7 @@ export default function Home() {
       onGerar={handleGerar}
       onVerificar={handleVerificar}
     />
+    <Footer />
+    </>
   );
 }

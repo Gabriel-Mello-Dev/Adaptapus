@@ -737,8 +737,9 @@ Resposta correta: ${questaoAtual.resposta}
         
         {isAdmin ? (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
+
           {/* PAINEL ADMIN */}
-          
+          <div className="sticky top-6 self-start">
             <RoomAdminPanel
               materias={materias}
               materiaSelecionada={materiaSelecionada}
@@ -754,7 +755,8 @@ Resposta correta: ${questaoAtual.resposta}
               proximaQuestao={proximaQuestao}
               votingFinalizado={votingFinalizado}
             />
-
+          </div>
+          
           <div className="flex flex-col gap-6">
             {/* QUESTÃO */}
             <RoomQuestionCard

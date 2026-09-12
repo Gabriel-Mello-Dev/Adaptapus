@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Home, Brain, LogIn, Plus, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import { createClient } from "@/app/libs/supabase/client";
+import { usePathname } from "next/navigation";
 
 export default function Header() {
   const [nome, setNome] = useState<string | null>(null);
@@ -54,13 +55,23 @@ export default function Header() {
     };
   }, []);
 
+  const pathname = usePathname();
+
+  const isActive = (path: string) => {
+    if (path === "/") {
+      return pathname === "/";
+    }
+
+    return pathname.startsWith(path);
+  };
+
   return (
     <header className="w-full bg-orangeMain shadow-lg text-whiteSecond">
       <nav className="mx-auto flex h-20 max-w-7xl items-center justify-between px-8">
         <div className="flex items-center gap-3">
           <Link
             href="/"
-            className="flex items-center gap-2 rounded-xl bg-white/10 px-4 py-2 transition hover:bg-white/15"
+            className={` flex items-center gap-2 rounded-xl px-4 py-2 transition ${ isActive("/") ? "bg-white/20" : "hover:bg-white/15" } `}
           >
             <Home size={22} />
             <span className="font-semibold">Home</span>
@@ -68,7 +79,7 @@ export default function Header() {
 
           <Link
             href="/pages/Adaptar"
-            className="flex items-center gap-2 px-4 py-2 transition hover:opacity-80"
+            className={` flex items-center gap-2 rounded-xl px-4 py-2 transition ${ isActive("/pages/Adaptar") ? "bg-white/20" : "hover:bg-white/15" } `}
           >
             <Brain size={22} />
             <span className="font-semibold">Adaptapus</span>

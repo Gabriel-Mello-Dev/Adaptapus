@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { redirect, useParams } from "next/navigation";
 import { io } from "socket.io-client";
 import { checkLoggedUser } from "@/app/libs/auth/authservices";
@@ -13,8 +13,6 @@ import {
   RoomChat,
   RoomQuestionCard,
 } from "@/app/components/Room";
-
-const socket = io(process.env.NEXT_PUBLIC_SOCKET_SERVER!);
 
 const LOADING_MESSAGES = [
   "Adaptando sua questão...",
@@ -39,6 +37,7 @@ type Questao = {
 };
 
 export default function ChatPage() {
+  const socketRef = useRef<ReturnType<typeof io> | null>(null);
   const supabase = createClient();
 
   const params = useParams();
@@ -98,6 +97,17 @@ export default function ChatPage() {
     uid: "",
     nome: "",
   });
+
+  useEffect(() => {
+    const newSocket = io(process.env.NEXT_PUBLIC_SOCKET_SERVER!);
+
+    socketRef.current = newSocket;
+
+    return () => {
+      newSocket.disconnect();
+      socketRef.current = null;
+    };
+  }, []);
 
   useEffect(() => {
     async function getUserName() {
@@ -199,12 +209,9 @@ export default function ChatPage() {
 
   useEffect(() => {
     if (!roomId || !user.uid) return;
+    const socket = socketRef.current;
 
-    socket.emit("join-room", {
-      roomId,
-      uid: user.uid,
-      nome: user.nome,
-    });
+    if (!socket || !roomId || !user.uid) return;
 
     /*
      * CHAT
@@ -286,12 +293,24 @@ export default function ChatPage() {
       setResultadoFinal(resultado);
     };
 
+    /*
+     * PRIMEIRO REGISTRA OS LISTENERS
+     */
     socket.on("message", handleMessage);
     socket.on("users-online", handleUsersOnline);
     socket.on("question-generating", handleQuestionGenerating);
     socket.on("question", handleQuestion);
     socket.on("vote-update", handleVoteUpdate);
     socket.on("resultado-votacao", handleResultadoVotacao);
+
+    /*
+     * DEPOIS ENTRA NA SALA
+     */
+    socketRef.current?.emit("join-room", {
+      roomId,
+      uid: user.uid,
+      nome: user.nome,
+    });
 
     return () => {
       socket.off("message", handleMessage);
@@ -300,6 +319,11 @@ export default function ChatPage() {
       socket.off("question", handleQuestion);
       socket.off("vote-update", handleVoteUpdate);
       socket.off("resultado-votacao", handleResultadoVotacao);
+
+      /*
+       * Não desconectar aqui.
+       * O socket é global.
+       */
     };
   }, [roomId, questoes, user.uid, user.nome]);
 
@@ -434,7 +458,7 @@ export default function ChatPage() {
       minute: "2-digit",
     });
 
-    socket.emit("message", {
+    socketRef.current?.emit("message", {
       roomId,
       uid: user.uid,
       nome: user.nome,
@@ -492,7 +516,7 @@ export default function ChatPage() {
       /*
        * Avisa todos da sala.
        */
-      socket.emit("question-generating", {
+      socketRef.current?.emit("question-generating", {
         roomId,
       });
 
@@ -594,7 +618,7 @@ Resposta correta: ${questaoAtual.resposta}
       /*
        * Envia para todos.
        */
-      socket.emit("question", {
+      socketRef.current?.emit("question", {
         roomId,
         question: novaQuestion,
       });
@@ -603,7 +627,7 @@ Resposta correta: ${questaoAtual.resposta}
 
       setGerandoQuestao(false);
 
-      socket.emit("question-error", {
+      socketRef.current?.emit("question-error", {
         roomId,
       });
     }
@@ -661,7 +685,7 @@ Resposta correta: ${questaoAtual.resposta}
       return;
     }
 
-    socket.emit("vote", {
+    socketRef.current?.emit("vote", {
       roomId,
       answer: respostaSelecionada,
     });
@@ -684,7 +708,7 @@ Resposta correta: ${questaoAtual.resposta}
       return;
     }
 
-    socket.emit("finalizar-votacao", {
+    socketRef.current?.emit("finalizar-votacao", {
       roomId,
     });
   }

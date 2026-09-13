@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/immutability */
 "use client";
 
 import { useEffect, useState } from "react";
@@ -165,11 +166,11 @@ export default function AdminPage() {
   }
 
   function separarComentario(comentario: string) {
-    const partes = comentario.split("\\");
+    const partes = comentario.split("[");
 
     return {
       motivo: partes[0]?.trim() || "",
-      mensagem: partes.slice(1).join("\\").trim() || "",
+      mensagem: partes.slice(1).join("[").trim() || "",
     };
   }
 

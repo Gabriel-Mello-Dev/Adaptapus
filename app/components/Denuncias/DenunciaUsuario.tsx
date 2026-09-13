@@ -34,7 +34,7 @@ export default function DenunciaUsuario({
 
     setEnviando(true);
 
-    const comentario = `${motivo.trim()} \ ${mensagem}`;
+    const comentario = `${motivo.trim()} [ ${mensagem}`;
 
     const { error } = await supabase.from("denuncias_usuarios").insert({
       uid1: uid,

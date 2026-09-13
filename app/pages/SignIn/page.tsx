@@ -55,12 +55,12 @@ export default function SignIn() {
     return;
   }
 
-  if (usuario.active === false) {
-    await supabase.auth.signOut();
-    setErro("Esta conta está desativada.");
-    setCarregando(false);
-    return;
-  }
+if (usuario.active === false) {
+  await supabase.auth.signOut();
+  setErro("Esta conta está desativada.");
+  setCarregando(false);
+  return;
+}
 
 
 
@@ -91,12 +91,23 @@ export default function SignIn() {
           />
         </section>
 
-        {erro && (
-          <div className="mb-5 rounded-lg bg-red-100 px-4 py-3 text-sm text-red-700">
-            {erro}
-          </div>
-        )}
+  {erro && (
+  <div className="mb-5 rounded-lg bg-red-100 px-4 py-3 text-sm text-red-700">
+    {erro}
 
+    {erro === "Esta conta está desativada." && (
+      <p className="mt-2">
+        Não entendeu o motivo do banimento?{" "}
+        <a
+          href="/contato"
+          className="font-semibold underline hover:text-red-900"
+        >
+          Entre em contato.
+        </a>
+      </p>
+    )}
+  </div>
+)}
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
             <label

@@ -6,9 +6,11 @@ import { redirect } from "next/navigation";
 import { useQuestion } from "../../hooks/useQuestion";
 import { QuestionCard } from "../../components/Adaptar";
 import { checkLoggedUser } from "../../libs/auth/authservices";
-
+import { createClient } from "@/app/libs/supabase/client";
 import { Header, Footer } from "@/app/components"
 
+
+const supabase = createClient();
 export default function Home() {
   const {
     title,
@@ -27,18 +29,41 @@ export default function Home() {
 
   const [respostaEscolhida, setRespostaEscolhida] = useState(0);
 
-  useEffect(() => {
-    async function verificarUsuario() {
-      const user = await checkLoggedUser();
+useEffect(() => {
+  async function verificarUsuario() {
+    const user = await checkLoggedUser();
 
-      if (!user) {
-        console.log("não logado");
-        redirect("/pages/SignIn");
-      }
+    if (!user) {
+      console.log("não logado");
+      redirect("/pages/SignIn");
+      return;
     }
 
-    verificarUsuario();
-  }, []);
+    const { data: usuario, error } = await supabase
+      .from("usuarios")
+      .select("active")
+      .eq("uid", user.id)
+      .maybeSingle();
+
+    if (error || !usuario) {
+      console.error("Erro ao verificar usuário:", error);
+      redirect("/pages/SignIn");
+      return;
+    }
+
+    if (usuario.active === false) {
+      console.log("usuário desativado");
+
+      await supabase.auth.signOut();
+      redirect("/pages/SignIn");
+      return;
+    }
+
+    console.log("usuário ativo");
+  }
+
+  verificarUsuario();
+}, []);
 
   async function handleVerificar() {
     const acertou = await verificar(respostaEscolhida, materia);

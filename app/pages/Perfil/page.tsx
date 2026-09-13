@@ -177,36 +177,45 @@ export default function Perfil() {
     }
   }
 
-  useEffect(() => {
-    async function carregarPerfil() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+ useEffect(() => {
+  async function carregarPerfil() {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-      if (!user) {
-        router.push("/");
-        return;
-      }
-
-      setEmail(user.email || "");
-
-      const { data } = await supabase
-        .from("usuarios")
-        .select("nome")
-        .eq("uid", user.id)
-        .single();
-
-      if (data) {
-        setNome(data.nome);
-      }
-
-      setCarregando(false);
+    if (!user) {
+      router.push("/pages/SignIn");
+      return;
     }
 
-    carregarPerfil();
-    carregarTemas();
-    carregarProgresso();
-  }, []);
+    const { data: usuario, error: usuarioError } = await supabase
+      .from("usuarios")
+      .select("nome, active")
+      .eq("uid", user.id)
+      .single();
+
+    if (usuarioError || !usuario) {
+      await supabase.auth.signOut();
+      router.push("/pages/SignIn");
+      return;
+    }
+
+    if (usuario.active === false) {
+      await supabase.auth.signOut();
+      router.push("/pages/SignIn");
+      return;
+    }
+
+    setEmail(user.email || "");
+    setNome(usuario.nome);
+
+    setCarregando(false);
+  }
+
+  carregarPerfil();
+  carregarTemas();
+  carregarProgresso();
+}, []);
 
   async function logout() {
     await supabase.auth.signOut();

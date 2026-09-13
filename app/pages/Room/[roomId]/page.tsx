@@ -146,18 +146,38 @@ export default function ChatPage() {
   }, []);
 
   //verfica usuario logado
-  useEffect(() => {
-    async function verificarUsuario() {
-      const user = await checkLoggedUser();
+ useEffect(() => {
+  async function verificarUsuario() {
+    const user = await checkLoggedUser();
 
-      if (!user) {
-        console.log("não logado");
-        redirect("/pages/SignIn");
-      }
+    if (!user) {
+      console.log("não logado");
+      redirect("/pages/SignIn");
+      return;
     }
 
-    verificarUsuario();
-  }, []);
+    const { data: usuario, error } = await supabase
+      .from("usuarios")
+      .select("active")
+      .eq("uid", user.id)
+      .single();
+
+    if (error || !usuario) {
+      console.log("usuário não encontrado");
+      redirect("/pages/SignIn");
+      return;
+    }
+
+    if (usuario.active === false) {
+      console.log("usuário desativado");
+      await supabase.auth.signOut();
+      redirect("/pages/SignIn");
+      return;
+    }
+  }
+
+  verificarUsuario();
+}, []);
 
   /*
    * CARREGAR QUESTÕES

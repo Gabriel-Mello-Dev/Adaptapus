@@ -59,7 +59,6 @@ export default function RoomQuestionCard({
 }: RoomQuestionCardProps) {
   return (
     <div className="w-full bg-blueMain border border-blueSecond rounded-2xl p-6 min-h-55 flex flex-col justify-center">
-
       {gerandoQuestao ? (
         <div className="flex flex-col items-center justify-center py-10 text-center">
           <p
@@ -139,26 +138,23 @@ export default function RoomQuestionCard({
 
           {/* ALTERNATIVAS */}
           <div className="space-y-2">
-            {question.respostas?.map(
-              (resposta: string, index: number) => {
-                const selecionada =
-                  respostaSelecionada === index;
+            {question.respostas?.map((resposta: string, index: number) => {
+              const selecionada = respostaSelecionada === index;
 
-                const ehCorreta =
-                  votingFinalizado &&
-                  resultadoFinal?.correta === index;
+              const ehCorreta =
+                votingFinalizado && resultadoFinal?.correta === index;
 
-                const marcadaErrada =
-                  votingFinalizado &&
-                  selecionada &&
-                  resultadoFinal?.correta !== index;
+              const marcadaErrada =
+                votingFinalizado &&
+                selecionada &&
+                resultadoFinal?.correta !== index;
 
-                return (
-                  <button
-                    key={index}
-                    onClick={() => selecionarResposta(index)}
-                    disabled={votingFinalizado || gerandoQuestao}
-                    className={`
+              return (
+                <button
+                  key={index}
+                  onClick={() => selecionarResposta(index)}
+                  disabled={votingFinalizado || gerandoQuestao}
+                  className={`
                       w-full
                       text-left
                       border
@@ -176,16 +172,15 @@ export default function RoomQuestionCard({
                               : "bg-blueSecond/20 border-blueSecond hover:bg-blueSecond/30 text-whiteMain"
                       }
                     `}
-                  >
-                    {resposta}
+                >
+                  {resposta}
 
-                    <span className="text-whiteMain/50 ml-1">
-                      ({votes[index] || 0} votos)
-                    </span>
-                  </button>
-                );
-              },
-            )}
+                  <span className="text-whiteMain/50 ml-1">
+                    ({votes[index] || 0} votos)
+                  </span>
+                </button>
+              );
+            })}
           </div>
 
           {/* CONFIRMAR RESPOSTA */}
@@ -239,9 +234,10 @@ export default function RoomQuestionCard({
                   : "A maioria da sala errou!"}
               </p>
 
+
               <p className="text-sm opacity-80">
-                {resultadoFinal.acertos} acertaram ·{" "}
-                {resultadoFinal.erros} erraram
+                {resultadoFinal.acertos} acertaram · {resultadoFinal.erros}{" "}
+                erraram
               </p>
             </div>
           )}

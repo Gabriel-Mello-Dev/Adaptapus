@@ -11,6 +11,7 @@ interface DenunciaUsuarioProps {
   duid: string;
   uid: string;
   nome: string;
+  mensagem: string;
 }
 
 const supabase = createClient();
@@ -21,16 +22,24 @@ export default function DenunciaUsuario({
   uid,
   duid,
   nome,
+  mensagem,
 }: DenunciaUsuarioProps) {
   if (!aberto) return null;
+
   const [motivo, setMotivo] = useState("");
   const [enviando, setEnviando] = useState(false);
 
   const denunciarUsuario = async () => {
+    if (!motivo.trim() || enviando) return;
+
+    setEnviando(true);
+
+    const comentario = `${motivo.trim()} \ ${mensagem}`;
+
     const { error } = await supabase.from("denuncias_usuarios").insert({
       uid1: uid,
       uid2: duid,
-      comentario: motivo.trim(),
+      comentario,
       resolved_by: null,
     });
 
@@ -57,62 +66,69 @@ export default function DenunciaUsuario({
         <textarea
           placeholder="Digite o motivo da denúncia..."
           className="
-        mb-4
-        w-full
-        resize-none
-        rounded-xl
-        border
-        border-[#3d2769]
-        bg-[#2a1750]
-        p-3
-        text-white
-        placeholder:text-purple-400
-        outline-none
-        transition
-        focus:border-purple-400
-        focus:ring-1
-        focus:ring-purple-400
-      "
+            mb-4
+            w-full
+            resize-none
+            rounded-xl
+            border
+            border-[#3d2769]
+            bg-[#2a1750]
+            p-3
+            text-white
+            placeholder:text-purple-400
+            outline-none
+            transition
+            focus:border-purple-400
+            focus:ring-1
+            focus:ring-purple-400
+          "
           rows={4}
+          value={motivo}
           onChange={(e) => setMotivo(e.target.value)}
         />
 
         <div className="flex gap-3">
           <button
             onClick={fechar}
+            disabled={enviando}
             className="
-          flex-1
-          rounded-xl
-          border
-          border-[#3d2769]
-          bg-[#2a1750]
-          px-4
-          py-2.5
-          font-semibold
-          text-purple-300
-          transition
-          hover:bg-[#35205f]
-          hover:text-white
-        "
+              flex-1
+              rounded-xl
+              border
+              border-[#3d2769]
+              bg-[#2a1750]
+              px-4
+              py-2.5
+              font-semibold
+              text-purple-300
+              transition
+              hover:bg-[#35205f]
+              hover:text-white
+              disabled:cursor-not-allowed
+              disabled:opacity-50
+            "
           >
             Cancelar
           </button>
 
           <button
             onClick={denunciarUsuario}
+            disabled={enviando || !motivo.trim()}
             className="
-          flex-1
-          rounded-xl
-          bg-purple-600
-          px-4
-          py-2.5
-          font-semibold
-          text-white
-          transition
-          hover:bg-purple-500
-        "
+              flex-1
+              rounded-xl
+              bg-purple-600
+              px-4
+              py-2.5
+              font-semibold
+              text-white
+              transition
+              hover:bg-purple-500
+              disabled:cursor-not-allowed
+              disabled:opacity-50
+            "
           >
-            Enviar denúncia
+            {enviando ? "Enviando..." : "Enviar denúncia"}
           </button>
         </div>
       </div>

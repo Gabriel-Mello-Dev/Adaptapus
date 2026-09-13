@@ -78,7 +78,13 @@ export default function ChatPage() {
 
   const [loadingIndex, setLoadingIndex] = useState(0);
   const [loadingVisible, setLoadingVisible] = useState(true);
-
+  const [usuariosOnline, setUsuariosOnline] = useState<
+    {
+      uid: string;
+      nome: string;
+      socketId: string;
+    }[]
+  >([]);
   const [materias, setMaterias] = useState<{ nome: string; arquivo: string }[]>(
     [],
   );
@@ -165,7 +171,6 @@ export default function ChatPage() {
 
     carregarMaterias();
   }, []);
-
   useEffect(() => {
     async function carregarQuestoes() {
       try {
@@ -174,20 +179,13 @@ export default function ChatPage() {
         const response = await fetch(`/questions/${materiaSelecionada}`);
 
         if (!response.ok) {
-          throw new Error("Erro ao carregar questões");
+          throw new Error(`Erro ao carregar questões: ${response.status}`);
         }
 
-        const data: Questao[] = await response.json();
+        const data = await response.json();
 
         setQuestoes(data);
         setIndiceQuestao(0);
-        setQuestion(null);
-        setTema("");
-        setRespostaSelecionada(null);
-        setJavotou(false);
-        setVotes({});
-        setVotingFinalizado(false);
-        setResultadoFinal(null);
       } catch (error) {
         console.error("Erro ao carregar questões:", error);
         setQuestoes([]);
@@ -196,47 +194,36 @@ export default function ChatPage() {
       }
     }
 
-    if (materiaSelecionada) {
-      carregarQuestoes();
-    }
+    carregarQuestoes();
   }, [materiaSelecionada]);
 
-  /*
-   * ANIMAÇÃO DE CARREGAMENTO
-   */
   useEffect(() => {
-    if (!gerandoQuestao) {
-      setLoadingIndex(0);
-      setLoadingVisible(true);
-      return;
-    }
+    if (!roomId || !user.uid) return;
 
-    const interval = setInterval(() => {
-      setLoadingVisible(false);
-
-      setTimeout(() => {
-        setLoadingIndex((prev) => (prev + 1) % LOADING_MESSAGES.length);
-
-        setLoadingVisible(true);
-      }, 350);
-    }, 2400);
-
-    return () => clearInterval(interval);
-  }, [gerandoQuestao]);
-
-  /*
-   * SOCKET
-   */
-  useEffect(() => {
-    if (!roomId) return;
-
-    socket.emit("join-room", roomId);
+    socket.emit("join-room", {
+      roomId,
+      uid: user.uid,
+      nome: user.nome,
+    });
 
     /*
      * CHAT
      */
     const handleMessage = (message: ChatMessage) => {
       setMessages((prev) => [...prev, message]);
+    };
+
+    /*
+     * USUÁRIOS ONLINE
+     */
+    const handleUsersOnline = (
+      usuarios: {
+        uid: string;
+        nome: string;
+        socketId: string;
+      }[],
+    ) => {
+      setUsuariosOnline(usuarios);
     };
 
     /*
@@ -273,10 +260,6 @@ export default function ChatPage() {
       setVotingFinalizado(false);
       setResultadoFinal(null);
 
-      /*
-       * Se a questão possuir número original,
-       * sincroniza o índice local.
-       */
       if (newQuestion?.numero) {
         const index = questoes.findIndex(
           (questao) => questao.numero === newQuestion.numero,
@@ -304,6 +287,7 @@ export default function ChatPage() {
     };
 
     socket.on("message", handleMessage);
+    socket.on("users-online", handleUsersOnline);
     socket.on("question-generating", handleQuestionGenerating);
     socket.on("question", handleQuestion);
     socket.on("vote-update", handleVoteUpdate);
@@ -311,12 +295,13 @@ export default function ChatPage() {
 
     return () => {
       socket.off("message", handleMessage);
+      socket.off("users-online", handleUsersOnline);
       socket.off("question-generating", handleQuestionGenerating);
       socket.off("question", handleQuestion);
       socket.off("vote-update", handleVoteUpdate);
       socket.off("resultado-votacao", handleResultadoVotacao);
     };
-  }, [roomId, questoes]);
+  }, [roomId, questoes, user.uid, user.nome]);
 
   // fazer salvar progresso
   async function salvarProgresso(materia: string, acertou: boolean) {
@@ -728,58 +713,56 @@ Resposta correta: ${questaoAtual.resposta}
 
   return (
     <div className="min-h-screen w-screen bg-whiteMain text-white flex flex-col items-center">
-      <RoomHeader 
-        roomId={roomId} 
+      <RoomHeader
+        roomId={roomId}
         userName={user.nome}
+        usuariosOnline={usuariosOnline}
       />
-
       <main className="w-full px-4 py-6">
-        
         {isAdmin ? (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
+            {/* PAINEL ADMIN */}
+            <div className="sticky top-6 self-start">
+              <RoomAdminPanel
+                materias={materias}
+                materiaSelecionada={materiaSelecionada}
+                setMateriaSelecionada={setMateriaSelecionada}
+                gerandoQuestao={gerandoQuestao}
+                question={question}
+                questoes={questoes}
+                indiceQuestao={indiceQuestao}
+                tema={tema}
+                setTema={setTema}
+                criarPergunta={criarPergunta}
+                finalizarVotacao={finalizarVotacao}
+                proximaQuestao={proximaQuestao}
+                votingFinalizado={votingFinalizado}
+              />
+            </div>
 
-          {/* PAINEL ADMIN */}
-          <div className="sticky top-6 self-start">
-            <RoomAdminPanel
-              materias={materias}
-              materiaSelecionada={materiaSelecionada}
-              setMateriaSelecionada={setMateriaSelecionada}
-              gerandoQuestao={gerandoQuestao}
-              question={question}
-              questoes={questoes}
-              indiceQuestao={indiceQuestao}
-              tema={tema}
-              setTema={setTema}
-              criarPergunta={criarPergunta}
-              finalizarVotacao={finalizarVotacao}
-              proximaQuestao={proximaQuestao}
-              votingFinalizado={votingFinalizado}
-            />
-          </div>
-          
-          <div className="flex flex-col gap-6">
-            {/* QUESTÃO */}
-            <RoomQuestionCard
-              question={question}
-              gerandoQuestao={gerandoQuestao}
-              loadingIndex={loadingIndex}
-              loadingVisible={loadingVisible}
-              loadingMessages={LOADING_MESSAGES}
-              denunciaQuestaoAberta={denunciaQuestaoAberta}
-              setDenunciaQuestaoAberta={setDenunciaQuestaoAberta}
-              respostaSelecionada={respostaSelecionada}
-              selecionarResposta={selecionarResposta}
-              confirmarResposta={confirmarResposta}
-              votes={votes}
-              javotou={javotou}
-              votingFinalizado={votingFinalizado}
-              resultadoFinal={resultadoFinal}
-            />
+            <div className="flex flex-col gap-6">
+              {/* QUESTÃO */}
+              <RoomQuestionCard
+                question={question}
+                gerandoQuestao={gerandoQuestao}
+                loadingIndex={loadingIndex}
+                loadingVisible={loadingVisible}
+                loadingMessages={LOADING_MESSAGES}
+                denunciaQuestaoAberta={denunciaQuestaoAberta}
+                setDenunciaQuestaoAberta={setDenunciaQuestaoAberta}
+                respostaSelecionada={respostaSelecionada}
+                selecionarResposta={selecionarResposta}
+                confirmarResposta={confirmarResposta}
+                votes={votes}
+                javotou={javotou}
+                votingFinalizado={votingFinalizado}
+                resultadoFinal={resultadoFinal}
+              />
 
-            {/* CHAT */}
-            <RoomChat messages={messages} onSendMessage={sendMessage} />
+              {/* CHAT */}
+              <RoomChat messages={messages} onSendMessage={sendMessage} />
+            </div>
           </div>
-        </div>
         ) : (
           <div className="flex flex-col gap-6 w-full">
             {/* QUESTÃO */}
@@ -803,10 +786,8 @@ Resposta correta: ${questaoAtual.resposta}
             {/* CHAT */}
             <RoomChat messages={messages} onSendMessage={sendMessage} />
           </div>
-          )}
-
+        )}
       </main>
     </div>
-  )
-};
-
+  );
+}

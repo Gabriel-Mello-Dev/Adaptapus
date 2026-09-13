@@ -23,7 +23,7 @@ export default function SignIn() {
     setErro("");
     setCarregando(true);
 
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email: email,
       password: senha,
     });
@@ -34,6 +34,36 @@ export default function SignIn() {
       return;
     }
 
+    const { data: usuario, error: usuarioError } = await supabase
+      .from("usuarios")
+      .select("active")
+      .eq("uid", data.user.id)
+      .maybeSingle();
+
+ if (usuarioError) {
+    console.error(usuarioError);
+    await supabase.auth.signOut();
+    setErro("Erro ao verificar a conta.");
+    setCarregando(false);
+    return;
+  }
+
+  if (!usuario) {
+    await supabase.auth.signOut();
+    setErro("Usuário não encontrado.");
+    setCarregando(false);
+    return;
+  }
+
+  if (usuario.active === false) {
+    await supabase.auth.signOut();
+    setErro("Esta conta está desativada.");
+    setCarregando(false);
+    return;
+  }
+
+
+
     router.push("/");
   }
 
@@ -43,7 +73,6 @@ export default function SignIn() {
         <BackButton />
       </header>
       <div className="w-full max-w-md rounded-2xl bg-blueMain p-8 shadow-lg">
-
         <section className="mb-2 flex flex-col items-center justify-centerx">
           <h1 className="mb-2 text-center text-3xl font-bold text-white">
             Entrar
@@ -54,13 +83,13 @@ export default function SignIn() {
           </p>
 
           <Image
-              src="/imgs/logoAdaptapus.png"
-              alt="Logo Adaptapus"
-              height={64}
-              width={64}
-              className="w-18 transition-transform duration-300 hover:scale-105"
-            />
-          </section>
+            src="/imgs/logoAdaptapus.png"
+            alt="Logo Adaptapus"
+            height={64}
+            width={64}
+            className="w-18 transition-transform duration-300 hover:scale-105"
+          />
+        </section>
 
         {erro && (
           <div className="mb-5 rounded-lg bg-red-100 px-4 py-3 text-sm text-red-700">
@@ -127,7 +156,6 @@ export default function SignIn() {
           Criar conta
         </Link>
       </div>
-
     </main>
   );
 }

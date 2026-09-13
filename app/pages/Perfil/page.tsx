@@ -221,6 +221,28 @@ export default function Perfil() {
     return Math.round((materia.acertos / materia.total) * 100);
   }
 
+async function desativarConta() {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return;
+
+  const { error } = await supabase
+    .from("usuarios")
+    .update({ active: false })
+    .eq("uid", user.id);
+
+  if (error) {
+    console.error("Erro ao desativar conta:", error);
+    return;
+  }
+
+  await supabase.auth.signOut();
+  router.push("/pages/SignIn");
+}
+  
+
   if (carregando) {
     return (
       <main className="min-h-screen p-8">
@@ -465,7 +487,15 @@ export default function Perfil() {
         >
           Sair
         </button>
-      </div>
+        
+        <button
+  type="button"
+  onClick={desativarConta}
+  className="rounded bg-red-600 px-5 py-2 text-white hover:bg-red-700"
+>
+  Desativar conta
+</button>
+              </div>
     </main>
   );
 }

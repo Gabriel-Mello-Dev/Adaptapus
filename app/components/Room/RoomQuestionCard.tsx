@@ -118,16 +118,13 @@ export default function RoomQuestionCard({
             aberto={denunciaQuestaoAberta}
             fechar={() => setDenunciaQuestaoAberta(false)}
             questao={`
-              Tema: ${question.temaAdaptacao || "Não informado"}
-
-              Questão:
-              ${question.text}
-
-              Resposta correta:
-              ${question.respostas?.[question.correta] || "Não informada"}
-
-              I.A usada:
-              ${question.modeloIA}
+${question.temaAdaptacao || "Não informado"}
+[
+${question.text}
+[    
+${question.respostas?.[question.correta] || "Não informada"}
+[
+${question.modeloIA}
             `.trim()}
           />
 
@@ -233,7 +230,6 @@ export default function RoomQuestionCard({
                   ? "A maioria da sala acertou!"
                   : "A maioria da sala errou!"}
               </p>
-
 
               <p className="text-sm opacity-80">
                 {resultadoFinal.acertos} acertaram · {resultadoFinal.erros}{" "}

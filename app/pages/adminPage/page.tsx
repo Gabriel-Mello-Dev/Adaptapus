@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { createClient } from "@/app/libs/supabase/client";
+import { redirect } from "next/navigation";
 
 type DenunciaUsuario = {
   did: string;
@@ -65,6 +66,8 @@ export default function AdminPage() {
         .single();
 
       if (!usuario?.admin) {
+          redirect("/");
+
         setCarregando(false);
         return;
       }
@@ -188,6 +191,10 @@ export default function AdminPage() {
 const banirUsuario = async () => {
   if (!usuarioBanir) return;
 
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   console.log("Tentando banir:", usuarioBanir);
 
   const { error } = await supabase
@@ -200,7 +207,20 @@ const banirUsuario = async () => {
     return;
   }
 
-  console.log("banido certo:", usuarioBanir);
+
+  if (user){
+ const { error: denunciaError } = await supabase
+    .from("denuncias_usuarios")
+    .update({ resolved_by: user.id })
+    .eq("uid2", usuarioBanir);
+
+  if (denunciaError) {
+    console.error("Erro ao marcar denúncia:", denunciaError);
+    return;
+  }
+
+  }
+  
 
   setUsuarioBanir(null);
 };
@@ -373,7 +393,6 @@ const banirUsuario = async () => {
                       <th className="border p-2 text-left">Status</th>
                       <th className="border p-2 text-left">Usuário</th>
                       <th className="border p-2 text-left">Denúncia</th>
-                      <th className="border p-2 text-left">Resolvido por</th>
                     </tr>
                   </thead>
 
@@ -443,21 +462,7 @@ const banirUsuario = async () => {
                             </div>
                           </td>
 
-                          <td className="border p-3 align-top">
-                            {denuncia.resolved_by ? (
-                              <div>
-                                <p className="font-medium">
-                                  {nomeUsuario(denuncia.resolved_by)}
-                                </p>
-
-                                <p className="text-xs text-gray-500">
-                                  {denuncia.resolved_by}
-                                </p>
-                              </div>
-                            ) : (
-                              "Pendente"
-                            )}
-                          </td>
+                          
                         </tr>
                       );
                     })}

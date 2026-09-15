@@ -38,6 +38,7 @@ type Questao = {
 
 export default function ChatPage() {
   const socketRef = useRef<ReturnType<typeof io> | null>(null);
+
   const supabase = createClient();
 
   const params = useParams();
@@ -52,6 +53,7 @@ export default function ChatPage() {
   };
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+
   const [questoes, setQuestoes] = useState<Questao[]>([]);
   const [indiceQuestao, setIndiceQuestao] = useState(0);
   const [carregandoQuestoes, setCarregandoQuestoes] = useState(true);
@@ -68,6 +70,11 @@ export default function ChatPage() {
 
   const [javotou, setJavotou] = useState(false);
 
+  /*
+   * Indica que a IA não conseguiu adaptar a questão.
+   */
+  const [erroAdaptacao, setErroAdaptacao] = useState(false);
+
   const [votingFinalizado, setVotingFinalizado] = useState(false);
   const [resultadoFinal, setResultadoFinal] = useState<any>(null);
 
@@ -77,6 +84,7 @@ export default function ChatPage() {
 
   const [loadingIndex, setLoadingIndex] = useState(0);
   const [loadingVisible, setLoadingVisible] = useState(true);
+
   const [usuariosOnline, setUsuariosOnline] = useState<
     {
       uid: string;
@@ -84,6 +92,7 @@ export default function ChatPage() {
       socketId: string;
     }[]
   >([]);
+
   const [materias, setMaterias] = useState<{ nome: string; arquivo: string }[]>(
     [],
   );
@@ -98,6 +107,9 @@ export default function ChatPage() {
     nome: "",
   });
 
+  /*
+   * SOCKET
+   */
   useEffect(() => {
     const newSocket = io(process.env.NEXT_PUBLIC_SOCKET_SERVER!);
 
@@ -109,6 +121,9 @@ export default function ChatPage() {
     };
   }, []);
 
+  /*
+   * BUSCAR USUÁRIO
+   */
   useEffect(() => {
     async function getUserName() {
       const {
@@ -139,48 +154,55 @@ export default function ChatPage() {
     getUserName();
   }, []);
 
+  /*
+   * VERIFICAR ADMIN
+   */
   useEffect(() => {
     const adm = localStorage.getItem("adm") === "true";
 
     setIsAdmin(adm);
   }, []);
 
-  //verfica usuario logado
- useEffect(() => {
-  async function verificarUsuario() {
-    const user = await checkLoggedUser();
+  /*
+   * VERIFICAR USUÁRIO LOGADO
+   */
+  useEffect(() => {
+    async function verificarUsuario() {
+      const user = await checkLoggedUser();
 
-    if (!user) {
-      console.log("não logado");
-      redirect("/pages/SignIn");
-      return;
+      if (!user) {
+        console.log("não logado");
+        redirect("/pages/SignIn");
+        return;
+      }
+
+      const { data: usuario, error } = await supabase
+        .from("usuarios")
+        .select("active")
+        .eq("uid", user.id)
+        .single();
+
+      if (error || !usuario) {
+        console.log("usuário não encontrado");
+        redirect("/pages/SignIn");
+        return;
+      }
+
+      if (usuario.active === false) {
+        console.log("usuário desativado");
+
+        await supabase.auth.signOut();
+
+        redirect("/pages/SignIn");
+        return;
+      }
     }
 
-    const { data: usuario, error } = await supabase
-      .from("usuarios")
-      .select("active")
-      .eq("uid", user.id)
-      .single();
-
-    if (error || !usuario) {
-      console.log("usuário não encontrado");
-      redirect("/pages/SignIn");
-      return;
-    }
-
-    if (usuario.active === false) {
-      console.log("usuário desativado");
-      await supabase.auth.signOut();
-      redirect("/pages/SignIn");
-      return;
-    }
-  }
-
-  verificarUsuario();
-}, []);
+    verificarUsuario();
+  }, []);
 
   /*
-   * CARREGAR QUESTÕES
+   * CARREGAR MATÉRIAS
    */
   useEffect(() => {
     async function carregarMaterias() {
@@ -201,6 +223,10 @@ export default function ChatPage() {
 
     carregarMaterias();
   }, []);
+
+  /*
+   * CARREGAR QUESTÕES
+   */
   useEffect(() => {
     async function carregarQuestoes() {
       try {
@@ -218,6 +244,7 @@ export default function ChatPage() {
         setIndiceQuestao(0);
       } catch (error) {
         console.error("Erro ao carregar questões:", error);
+
         setQuestoes([]);
       } finally {
         setCarregandoQuestoes(false);
@@ -227,11 +254,15 @@ export default function ChatPage() {
     carregarQuestoes();
   }, [materiaSelecionada]);
 
+  /*
+   * SOCKET DA SALA
+   */
   useEffect(() => {
     if (!roomId || !user.uid) return;
+
     const socket = socketRef.current;
 
-    if (!socket || !roomId || !user.uid) return;
+    if (!socket) return;
 
     /*
      * CHAT
@@ -259,7 +290,16 @@ export default function ChatPage() {
     const handleQuestionGenerating = () => {
       setGerandoQuestao(true);
 
+      /*
+       * Remove qualquer erro anterior.
+       */
+      setErroAdaptacao(false);
+
+      /*
+       * Remove a questão anterior enquanto a nova é gerada.
+       */
       setQuestion(null);
+
       setRespostaSelecionada(null);
       setJavotou(false);
 
@@ -276,6 +316,12 @@ export default function ChatPage() {
      */
     const handleQuestion = (newQuestion: any) => {
       setGerandoQuestao(false);
+
+      /*
+       * Se uma questão foi gerada com sucesso,
+       * remove qualquer mensagem de erro.
+       */
+      setErroAdaptacao(false);
 
       setQuestion(newQuestion);
 
@@ -299,6 +345,32 @@ export default function ChatPage() {
     };
 
     /*
+     * ERRO AO ADAPTAR QUESTÃO
+     */
+    const handleQuestionError = () => {
+      console.error("Não foi possível adaptar a questão.");
+
+      setGerandoQuestao(false);
+
+      /*
+       * Ativa a mensagem de erro.
+       */
+      setErroAdaptacao(true);
+
+      /*
+       * Não deixa aparecer a questão anterior.
+       */
+      setQuestion(null);
+
+      setRespostaSelecionada(null);
+      setJavotou(false);
+
+      setVotes({});
+      setVotingFinalizado(false);
+      setResultadoFinal(null);
+    };
+
+    /*
      * VOTOS
      */
     const handleVoteUpdate = (newVotes: any) => {
@@ -314,30 +386,47 @@ export default function ChatPage() {
     };
 
     /*
-     * PRIMEIRO REGISTRA OS LISTENERS
+     * REGISTRAR LISTENERS
      */
     socket.on("message", handleMessage);
+
     socket.on("users-online", handleUsersOnline);
+
     socket.on("question-generating", handleQuestionGenerating);
+
     socket.on("question", handleQuestion);
+
+    socket.on("question-error", handleQuestionError);
+
     socket.on("vote-update", handleVoteUpdate);
+
     socket.on("resultado-votacao", handleResultadoVotacao);
 
     /*
-     * DEPOIS ENTRA NA SALA
+     * ENTRAR NA SALA
      */
-    socketRef.current?.emit("join-room", {
+    socket.emit("join-room", {
       roomId,
       uid: user.uid,
       nome: user.nome,
     });
 
+    /*
+     * LIMPAR LISTENERS
+     */
     return () => {
       socket.off("message", handleMessage);
+
       socket.off("users-online", handleUsersOnline);
+
       socket.off("question-generating", handleQuestionGenerating);
+
       socket.off("question", handleQuestion);
+
+      socket.off("question-error", handleQuestionError);
+
       socket.off("vote-update", handleVoteUpdate);
+
       socket.off("resultado-votacao", handleResultadoVotacao);
 
       /*
@@ -347,7 +436,9 @@ export default function ChatPage() {
     };
   }, [roomId, questoes, user.uid, user.nome]);
 
-  // fazer salvar progresso
+  /*
+   * SALVAR PROGRESSO
+   */
   async function salvarProgresso(materia: string, acertou: boolean) {
     type ProgressoMateria = {
       acertos: number;
@@ -488,12 +579,8 @@ export default function ChatPage() {
   }
 
   /*
-   * ADAPTAR QUESTÃO
-   *
-   * Pega automaticamente a questão atual
-   * do JSON e envia para a IA junto com o tema.
+   * SALVAR TEMA
    */
-
   async function salvarTema() {
     const temaLimpo = tema.trim();
 
@@ -508,15 +595,19 @@ export default function ChatPage() {
       return;
     }
 
-    const { data, error } = await supabase
-      .from("temas_usuarios")
-      .insert({ uid: user.id, tema: temaLimpo });
-    if (!user) {
-      console.error("Usuário não está logado.");
-      return;
+    const { error } = await supabase.from("temas_usuarios").insert({
+      uid: user.id,
+      tema: temaLimpo,
+    });
+
+    if (error) {
+      console.error("Erro ao salvar tema:", error);
     }
   }
 
+  /*
+   * ADAPTAR QUESTÃO
+   */
   async function criarPergunta() {
     if (!isAdmin) return;
 
@@ -531,6 +622,11 @@ export default function ChatPage() {
     try {
       setGerandoQuestao(true);
 
+      /*
+       * Remove erro anterior.
+       */
+      setErroAdaptacao(false);
+
       await salvarTema();
 
       /*
@@ -543,8 +639,7 @@ export default function ChatPage() {
       console.log("Adaptando questão:", questaoAtual.numero);
 
       /*
-       * Envia a questão original da API
-       * para o endpoint da IA.
+       * Envia a questão original para a IA.
        */
       const res = await fetch("/api/gemini", {
         method: "POST",
@@ -566,7 +661,7 @@ D) ${questaoAtual.alternativas.D}
 E) ${questaoAtual.alternativas.E}
 
 Resposta correta: ${questaoAtual.resposta}
-            `.trim(),
+          `.trim(),
 
           tema,
         }),
@@ -578,15 +673,44 @@ Resposta correta: ${questaoAtual.resposta}
 
       const data = await res.json();
 
+      if (!data.text) {
+        throw new Error("A IA não retornou uma questão.");
+      }
+
+      /*
+       * Divide a resposta da IA.
+       *
+       * 0 = título
+       * 1 = texto
+       * 2 = alternativas
+       * 3 = resposta correta
+       */
       const partes = data.text.split("#");
+
+      if (partes.length < 4) {
+        throw new Error("Formato de resposta da IA inválido.");
+      }
 
       const modelo = data.modelo || "outro";
 
+      /*
+       * Alternativas.
+       */
       const respostas = partes[2]
         ?.split(/\s*§\s*/)
         .map((a: string) => a.trim())
         .filter((a: string) => a !== "");
 
+      /*
+       * Validação das alternativas.
+       */
+      if (!respostas || respostas.length !== 5) {
+        throw new Error("A IA não retornou exatamente 5 alternativas.");
+      }
+
+      /*
+       * Resposta correta.
+       */
       const respostaIA = partes[3]
         ?.replace(/correta\s*:/i, "")
         .trim()
@@ -602,16 +726,23 @@ Resposta correta: ${questaoAtual.resposta}
 
       let correta: number;
 
+      /*
+       * Caso a IA retorne 1-5,
+       * converte para índice 0-4.
+       */
       if (/^[1-5]$/.test(respostaIA)) {
         correta = Number(respostaIA);
       } else if (respostaIA in mapaRespostas) {
-        // IA retornou a letra
         correta = mapaRespostas[respostaIA];
       } else {
-        console.error("Resposta correta inválida recebida da IA:", partes[4]);
+        console.error("Resposta correta inválida recebida da IA:", partes[3]);
+
         throw new Error("A IA retornou uma resposta correta inválida.");
       }
 
+      /*
+       * Questão adaptada.
+       */
       const novaQuestion = {
         id: questaoAtual.id,
 
@@ -629,30 +760,37 @@ Resposta correta: ${questaoAtual.resposta}
 
         modeloIA: modelo,
 
-        temaAdaptacao: tema,
+        temaAdaptacao: tema.trim(),
 
         respostaOriginal: questaoAtual.resposta,
       };
+
       console.log("Questão adaptada:", novaQuestion);
 
       /*
-       * Envia para todos.
+       * Envia a questão para todos.
        */
       socketRef.current?.emit("question", {
         roomId,
         question: novaQuestion,
       });
     } catch (error) {
-      console.error(error);
+      console.error("Erro ao adaptar questão:", error);
 
       setGerandoQuestao(false);
 
+      /*
+       * Avisa todos da sala que a adaptação falhou.
+       */
       socketRef.current?.emit("question-error", {
         roomId,
       });
     }
   }
 
+  /*
+   * PRÓXIMA QUESTÃO
+   */
   function proximaQuestao() {
     if (!isAdmin) return;
 
@@ -667,6 +805,8 @@ Resposta correta: ${questaoAtual.resposta}
     setIndiceQuestao(novoIndice);
 
     setQuestion(null);
+
+    setErroAdaptacao(false);
 
     setTema("");
 
@@ -685,7 +825,7 @@ Resposta correta: ${questaoAtual.resposta}
    * SELECIONAR RESPOSTA
    */
   function selecionarResposta(index: number) {
-    if (javotou || votingFinalizado || gerandoQuestao) {
+    if (javotou || votingFinalizado || gerandoQuestao || erroAdaptacao) {
       return;
     }
 
@@ -700,7 +840,9 @@ Resposta correta: ${questaoAtual.resposta}
       respostaSelecionada === null ||
       javotou ||
       votingFinalizado ||
-      gerandoQuestao
+      gerandoQuestao ||
+      erroAdaptacao ||
+      !question
     ) {
       return;
     }
@@ -709,9 +851,13 @@ Resposta correta: ${questaoAtual.resposta}
       roomId,
       answer: respostaSelecionada,
     });
+
     console.log("Resposta selecionada:", respostaSelecionada);
+
     console.log("Resposta correta:", question.correta);
+
     console.log("Acertou:", respostaSelecionada === question.correta);
+
     const acertou = respostaSelecionada === question.correta;
 
     await salvarProgresso(question.materia, acertou);
@@ -762,6 +908,7 @@ Resposta correta: ${questaoAtual.resposta}
         userName={user.nome}
         usuariosOnline={usuariosOnline}
       />
+
       <main className="w-full px-4 py-6">
         {isAdmin ? (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
@@ -788,6 +935,7 @@ Resposta correta: ${questaoAtual.resposta}
               {/* QUESTÃO */}
               <RoomQuestionCard
                 question={question}
+                erroAdaptacao={erroAdaptacao}
                 gerandoQuestao={gerandoQuestao}
                 loadingIndex={loadingIndex}
                 loadingVisible={loadingVisible}
@@ -812,6 +960,7 @@ Resposta correta: ${questaoAtual.resposta}
             {/* QUESTÃO */}
             <RoomQuestionCard
               question={question}
+              erroAdaptacao={erroAdaptacao}
               gerandoQuestao={gerandoQuestao}
               loadingIndex={loadingIndex}
               loadingVisible={loadingVisible}

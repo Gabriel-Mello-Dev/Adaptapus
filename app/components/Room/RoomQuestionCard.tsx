@@ -20,6 +20,8 @@ interface ResultadoFinal {
 interface RoomQuestionCardProps {
   question: Question | null;
 
+  erroAdaptacao: boolean;
+
   gerandoQuestao: boolean;
 
   loadingIndex: number;
@@ -43,6 +45,7 @@ interface RoomQuestionCardProps {
 
 export default function RoomQuestionCard({
   question,
+  erroAdaptacao,
   gerandoQuestao,
   loadingIndex,
   loadingVisible,
@@ -60,6 +63,9 @@ export default function RoomQuestionCard({
   return (
     <div className="w-full bg-blueMain border border-blueSecond rounded-2xl p-6 min-h-55 flex flex-col justify-center">
       {gerandoQuestao ? (
+        /*
+         * CARREGANDO
+         */
         <div className="flex flex-col items-center justify-center py-10 text-center">
           <p
             className={`
@@ -77,7 +83,24 @@ export default function RoomQuestionCard({
             Aguarde enquanto a inteligência artificial adapta a questão
           </p>
         </div>
+      ) : erroAdaptacao ? (
+        /*
+         * ERRO AO ADAPTAR
+         */
+        <div className="flex flex-col items-center justify-center py-10 text-center">
+          <p className="text-lg font-semibold text-whiteMain">
+            Não foi possível adaptar a questão
+          </p>
+
+          <p className="text-sm text-whiteMain/60 mt-2 max-w-md">
+            A inteligência artificial não conseguiu adaptar esta questão para o
+            tema escolhido.
+          </p>
+        </div>
       ) : !question ? (
+        /*
+         * NENHUMA QUESTÃO
+         */
         <div className="flex flex-col items-center justify-center py-10 text-center">
           <p className="text-lg text-whiteMain">
             Nenhuma questão ativa no momento
@@ -88,6 +111,9 @@ export default function RoomQuestionCard({
           </p>
         </div>
       ) : (
+        /*
+         * QUESTÃO
+         */
         <div>
           {/* CABEÇALHO DA QUESTÃO */}
           <div className="flex items-center justify-between gap-4 mb-3">
@@ -121,10 +147,10 @@ export default function RoomQuestionCard({
 ${question.temaAdaptacao || "Não informado"}
 [
 ${question.text}
-[    
+[
 ${question.respostas?.[question.correta] || "Não informada"}
 [
-${question.modeloIA}
+${question.modeloIA || "Não informado"}
             `.trim()}
           />
 
@@ -214,16 +240,16 @@ ${question.modeloIA}
           {votingFinalizado && resultadoFinal && (
             <div
               className={`
-                mt-4
-                p-4
-                rounded-xl
-                border
-                ${
-                  resultadoFinal.maioriaAcertou
-                    ? "bg-greenMain/10 border-greenMain/40 text-greenMain"
-                    : "bg-red-500/10 border-red-400/40 text-red-300"
-                }
-              `}
+                  mt-4
+                  p-4
+                  rounded-xl
+                  border
+                  ${
+                    resultadoFinal.maioriaAcertou
+                      ? "bg-greenMain/10 border-greenMain/40 text-greenMain"
+                      : "bg-red-500/10 border-red-400/40 text-red-300"
+                  }
+                `}
             >
               <p className="font-semibold text-lg mb-1">
                 {resultadoFinal.maioriaAcertou

@@ -28,6 +28,7 @@ const termosProibidos = [
   "nudes",
   "estupro",
   "pedofilia",
+  "caralinhos",
 ];
 
 function encontrarTermoProibido(texto: string) {
@@ -124,34 +125,99 @@ Adapte a questão para o tema: ${tema}
 
 REGRAS CRÍTICAS:
 
-1. NÃO altere a resposta correta da questão original.
-2. A resposta correta deve permanecer na mesma posição.
-3. Mantenha exatamente 5 alternativas, correspondentes às alternativas A, B, C, D e E da questão original.4. Preserve todos os números, valores, unidades, fórmulas, dados e informações necessários para resolver a questão.
-5. Mantenha exatamente o mesmo problema, raciocínio e resultado da questão original.
-6. NÃO faça apenas substituição de palavras. REESCREVA o contexto completo da questão para que a situação aconteça naturalmente dentro do tema.
-7. Todos os elementos do novo contexto devem ser coerentes com o tema e entre si.
-8. Não force o tema em elementos que não façam sentido. Se necessário, recrie completamente a situação, mantendo o mesmo problema original.
-9. Preserve o significado das unidades. Litros continuam representando volume, metros continuam representando distância, quilogramas continuam representando massa, segundos continuam representando tempo etc.
-10. Nunca associe uma unidade a algo que não possa ser medido por ela. Por exemplo, NÃO escreva "10 L de torcedores". Se a questão possui 10 L, crie no novo contexto algo que realmente tenha 10 litros, como água, combustível ou outro líquido adequado.
-11. O tema deve fazer parte da situação de forma natural, e não apenas aparecer em uma palavra.
-12. Preserve todas as informações necessárias para que o estudante consiga resolver a questão sem receber ou perder informações relevantes.
-13. Não adicione informações que possam mudar a interpretação ou a resposta.
-14. Mantenha aproximadamente o mesmo nível de dificuldade e a mesma estrutura de resolução.
-15. O resultado deve parecer uma questão originalmente criada sobre o tema, e não uma questão genérica com palavras substituídas.
-16. Antes de responder, verifique se o contexto é logicamente possível, se os valores e unidades fazem sentido e se a resposta continua correta.
-17. NÃO utilize palavrões, xingamentos ou linguagem vulgar.
-18. NÃO gere conteúdo sexual ou pornográfico, e recuse a gerar com estes temas.
-19. NÃO gere violência gráfica.
-20. NÃO gere conteúdo discriminatório.
-21. Retorne SOMENTE uma linha. Não escreva explicações, observações ou comentários.
-22. Mantenha exatamente 5 alternativas, sempre na ordem A, B, C, D e E.
-23. NÃO remova, crie, troque de posição ou altere a quantidade de alternativas.
-24. A alternativa correta deve permanecer na mesma posição da questão original.
+1. PRESERVE A RESPOSTA CORRETA
+A resposta correta da questão original é imutável. A alternativa correta deve permanecer exatamente na mesma posição da questão original.
+
+2. PRESERVE AS ALTERNATIVAS
+Mantenha exatamente as 5 alternativas originais, na mesma ordem e com o mesmo conteúdo. NÃO reescreva, altere, simplifique, complete, remova ou reorganize nenhuma alternativa.
+
+3. PRESERVE O EXERCÍCIO
+A questão adaptada deve continuar sendo essencialmente o mesmo exercício da questão original. O estudante deve precisar aplicar o mesmo raciocínio para chegar à mesma resposta.
+
+4. PRESERVE A ESTRUTURA DE RESOLUÇÃO
+Mantenha a mesma pergunta, objetivo, operação, fórmula, relação matemática, lógica, condições e resultado da questão original.
+
+5. PRESERVE OS DADOS NECESSÁRIOS
+Todos os números, valores, unidades, fórmulas, medidas, proporções, informações e condições necessárias para resolver o exercício devem ser preservados.
+
+6. LIBERDADE PARA RECRIAR O CONTEXTO
+Você possui liberdade para reconstruir o contexto da questão. Pode trocar personagens, lugares, objetos, atividades, profissões, situações e elementos narrativos sempre que isso ajudar a integrar o tema.
+
+7. NÃO FAÇA APENAS SUBSTITUIÇÃO DE PALAVRAS
+Não transforme a questão simplesmente trocando um personagem, objeto ou palavra pelo tema. Se necessário, reescreva completamente a situação apresentada no enunciado.
+
+8. MUDE O CONTEXTO, NÃO O EXERCÍCIO
+A história pode ser diferente, mas o problema que o estudante precisa resolver deve continuar sendo o mesmo. A adaptação deve mudar principalmente o contexto narrativo, e não a lógica do exercício.
+
+9. INTEGRE O TEMA DE VERDADE
+O tema deve ter uma função real dentro da situação apresentada. O contexto deve parecer uma situação que originalmente poderia ter sido criada sobre esse tema.
+
+10. EVITE INSERIR O TEMA ARTIFICIALMENTE
+Não basta mencionar o tema no início ou substituir o nome de um personagem por algo relacionado ao tema. Os acontecimentos, objetos e ações da situação devem fazer sentido dentro do tema.
+
+11. PRESERVE O SIGNIFICADO DOS DADOS
+Os dados devem continuar representando a mesma grandeza ou informação. Litros devem representar volume, metros devem representar distância, quilogramas devem representar massa, segundos devem representar tempo etc.
+
+12. RECONSTRUA ELEMENTOS QUANDO NECESSÁRIO
+Se um elemento do contexto original não combinar naturalmente com o tema, substitua-o por outro elemento equivalente que cumpra a mesma função no exercício, sem alterar os dados ou o raciocínio necessário para resolvê-lo.
+
+13. NÃO FORCE O TEMA
+Se determinado elemento original não fizer sentido dentro do novo tema, não tente simplesmente encaixá-lo. Crie uma situação equivalente e plausível em que o mesmo exercício possa acontecer naturalmente.
+
+14. NÃO ADICIONE INFORMAÇÕES RELEVANTES
+Não invente novos dados, condições ou informações que possam mudar a interpretação ou facilitar, dificultar ou modificar a resolução do exercício.
+
+15. NÃO REMOVA INFORMAÇÕES RELEVANTES
+Nenhuma informação necessária para compreender ou resolver a questão original pode ser perdida durante a adaptação.
+
+16. MANTENHA O NÍVEL DE DIFICULDADE
+A questão adaptada deve exigir aproximadamente o mesmo nível de conhecimento e raciocínio da questão original.
+
+17. MANTENHA A NATURALIDADE
+A situação criada deve ser logicamente possível dentro do tema. Personagens, objetos, ações, medidas e acontecimentos devem ser coerentes entre si.
+
+18. PRIORIDADE DAS REGRAS
+Quando houver conflito entre criatividade e preservação da questão, preserve nesta ordem:
+a) alternativa correta e sua posição;
+b) conteúdo das alternativas;
+c) raciocínio e solução do exercício;
+d) dados e informações necessários;
+e) estrutura do problema;
+f) contexto narrativo original.
+
+19. DIFERENÇA SUFICIENTE NO CONTEXTO
+Não preserve o contexto original desnecessariamente. Se a situação puder ser reconstruída de maneira mais natural dentro do tema, faça isso. A adaptação deve apresentar uma mudança perceptível de contexto, sem deixar de ser o mesmo exercício.
+
+20. RESULTADO FINAL
+O resultado deve parecer uma questão originalmente escrita dentro do tema escolhido, e não uma questão original com algumas palavras substituídas.
+
+21. VERIFICAÇÃO ANTES DA RESPOSTA
+Antes de responder, verifique internamente:
+a) A resposta correta continua exatamente a mesma?
+b) A alternativa correta continua na mesma posição?
+c) As 5 alternativas permanecem exatamente iguais?
+d) O estudante resolve a questão usando o mesmo raciocínio?
+e) Todos os dados necessários foram preservados?
+f) O novo contexto realmente pertence ao tema?
+g) A situação é natural e logicamente possível?
+h) A adaptação mudou o contexto de maneira suficiente sem mudar o exercício?
+
+22. SEGURANÇA
+NÃO utilize palavrões, xingamentos ou linguagem vulgar.
+NÃO gere conteúdo sexual ou pornográfico. Se o tema for sexual ou pornográfico, recuse a geração.
+NÃO gere violência gráfica.
+NÃO gere conteúdo discriminatório.
+NÃO gere conteúdo discriminatório.
+Caso o prompt possua algo deste contexto, se negue a fazer.
+
+23. FORMATO
+Retorne SOMENTE uma linha, sem explicações, observações ou comentários.
+
 FORMATO OBRIGATÓRIO:
 
 titulo # corpo # alt1 § alt2 § alt3 § alt4 § alt5 # correta:indice
 
-A resposta correta deve usar índice:
+ÍNDICE DA RESPOSTA CORRETA:
 0 = primeira alternativa
 1 = segunda alternativa
 2 = terceira alternativa

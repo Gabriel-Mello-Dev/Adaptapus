@@ -28,6 +28,7 @@ const termosProibidos = [
   "nudes",
   "estupro",
   "pedofilia",
+  "caralinhos",
 ];
 
 function encontrarTermoProibido(texto: string) {

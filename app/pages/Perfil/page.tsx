@@ -261,33 +261,48 @@ async function desativarConta() {
   }
 
   return (
-    <main className="min-h-screen p-6">
-      <BackButton></BackButton>
+    <main className="min-h-screen bg-whiteMain text-blueMain p-6">
+
+      <BackButton />
+
       <div className="mx-auto w-full max-w-5xl">
+
         {/* TÍTULO */}
         <header className="mb-8">
-          <h1 className="text-3xl font-bold">Meu Perfil</h1>
+          <h1 className="text-3xl font-bold text-orangeMain">
+            Meu Perfil
+          </h1>
 
-          <p className="mt-1 text-sm text-gray-500">
+          <p className="mt-1 text-sm text-orangeSecond">
             Informações da conta e progresso.
           </p>
         </header>
 
         {/* INFORMAÇÕES */}
-        <section className="mb-8 rounded-lg border p-6">
-          <h2 className="mb-5 text-xl font-semibold">Informações da conta</h2>
+        <section className="mb-8 rounded-2xl border border-orangeMain bg-blueMain p-6 text-whiteMain">
+          <h2 className="mb-5 text-xl font-semibold">
+            Informações da conta
+          </h2>
 
           <div className="grid gap-5 sm:grid-cols-2">
             <div>
-              <p className="text-sm text-gray-500">Nome</p>
+              <p className="text-sm text-whiteMain/60">
+                Nome
+              </p>
 
-              <p className="mt-1">{nome}</p>
+              <p className="mt-1 text-whiteMain">
+                {nome}
+              </p>
             </div>
 
             <div>
-              <p className="text-sm text-gray-500">Email</p>
+              <p className="text-sm text-whiteMain/60">
+                Email
+              </p>
 
-              <p className="mt-1 break-all">{email}</p>
+              <p className="mt-1 break-all text-whiteMain">
+                {email}
+              </p>
             </div>
           </div>
         </section>
@@ -295,28 +310,37 @@ async function desativarConta() {
         {/* PROGRESSO */}
         <section className="mb-8">
           <div className="mb-4">
-            <h2 className="text-xl font-semibold">Progresso</h2>
+            <h2 className="text-xl font-semibold text-orangeMain">
+              Progresso
+            </h2>
 
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-orangeSecond">
               Seu desempenho em cada matéria.
             </p>
           </div>
 
           <div className="grid gap-4 md:grid-cols-3">
+
             {/* MATEMÁTICA */}
-            <div className="rounded-lg border p-5">
-              <h3 className="mb-4 font-semibold">Matemática</h3>
+            <div className="rounded-2xl border border-orangeMain bg-blueMain p-5 text-whiteMain">
+              <h3 className="mb-4 font-semibold">
+                Matemática
+              </h3>
 
               <div className="mb-4">
                 <div className="mb-1 flex justify-between text-sm">
-                  <span>Aproveitamento</span>
+                  <span className="text-whiteMain/70">
+                    Aproveitamento
+                  </span>
 
-                  <span>{calcularPorcentagem(progresso.matematica)}%</span>
+                  <span className="text-whiteMain">
+                    {calcularPorcentagem(progresso.matematica)}%
+                  </span>
                 </div>
 
-                <div className="h-2 rounded bg-gray-200">
+                <div className="h-2 rounded bg-blueSecond/30">
                   <div
-                    className="h-2 rounded bg-green-500"
+                    className="h-2 rounded bg-greenMain"
                     style={{
                       width: `${calcularPorcentagem(progresso.matematica)}%`,
                     }}
@@ -325,42 +349,52 @@ async function desativarConta() {
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <div className="rounded border p-3">
-                  <p className="text-sm text-gray-500">Acertos</p>
+                <div className="rounded-xl border border-blueSecond bg-blueSecond/20 p-3">
+                  <p className="text-sm text-whiteMain/60">
+                    Acertos
+                  </p>
 
-                  <p className="mt-1 text-2xl font-semibold text-green-600">
+                  <p className="mt-1 text-2xl font-semibold text-greenMain">
                     {progresso.matematica.acertos}
                   </p>
                 </div>
 
-                <div className="rounded border p-3">
-                  <p className="text-sm text-gray-500">Erros</p>
+                <div className="rounded-xl border border-blueSecond bg-blueSecond/20 p-3">
+                  <p className="text-sm text-whiteMain/60">
+                    Erros
+                  </p>
 
-                  <p className="mt-1 text-2xl font-semibold text-red-600">
+                  <p className="mt-1 text-2xl font-semibold text-red-400">
                     {progresso.matematica.erros}
                   </p>
                 </div>
               </div>
 
-              <p className="mt-4 text-sm text-gray-500">
+              <p className="mt-4 text-sm text-whiteMain/60">
                 {progresso.matematica.total} questões
               </p>
             </div>
 
             {/* FÍSICA */}
-            <div className="rounded-lg border p-5">
-              <h3 className="mb-4 font-semibold">Física</h3>
+            <div className="rounded-2xl border border-orangeMain bg-blueMain p-5 text-whiteMain">
+              <h3 className="mb-4 font-semibold">
+                Física
+              </h3>
 
               <div className="mb-4">
                 <div className="mb-1 flex justify-between text-sm">
-                  <span>Aproveitamento</span>
+                  <span className="text-whiteMain/70">
+                    Aproveitamento
+                  </span>
 
-                  <span>{calcularPorcentagem(progresso.fisica)}%</span>
+                  <span className="text-whiteMain">
+                    {calcularPorcentagem(progresso.fisica)}%
+                  </span>
                 </div>
 
-                <div className="h-2 rounded bg-gray-200">
+                <div className="h-2 rounded bg-blueSecond/30">
                   <div
-                    className="h-2 rounded bg-green-500"
+                    className="h-2 rounded bg-greenMain"
                     style={{
                       width: `${calcularPorcentagem(progresso.fisica)}%`,
                     }}
@@ -369,42 +403,52 @@ async function desativarConta() {
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <div className="rounded border p-3">
-                  <p className="text-sm text-gray-500">Acertos</p>
+                <div className="rounded-xl border border-blueSecond bg-blueSecond/20 p-3">
+                  <p className="text-sm text-whiteMain/60">
+                    Acertos
+                  </p>
 
-                  <p className="mt-1 text-2xl font-semibold text-green-600">
+                  <p className="mt-1 text-2xl font-semibold text-greenMain">
                     {progresso.fisica.acertos}
                   </p>
                 </div>
 
-                <div className="rounded border p-3">
-                  <p className="text-sm text-gray-500">Erros</p>
+                <div className="rounded-xl border border-blueSecond bg-blueSecond/20 p-3">
+                  <p className="text-sm text-whiteMain/60">
+                    Erros
+                  </p>
 
-                  <p className="mt-1 text-2xl font-semibold text-red-600">
+                  <p className="mt-1 text-2xl font-semibold text-red-400">
                     {progresso.fisica.erros}
                   </p>
                 </div>
               </div>
 
-              <p className="mt-4 text-sm text-gray-500">
+              <p className="mt-4 text-sm text-whiteMain/60">
                 {progresso.fisica.total} questões
               </p>
             </div>
 
             {/* QUÍMICA */}
-            <div className="rounded-lg border p-5">
-              <h3 className="mb-4 font-semibold">Química</h3>
+            <div className="rounded-2xl border border-orangeMain bg-blueMain p-5 text-whiteMain">
+              <h3 className="mb-4 font-semibold">
+                Química
+              </h3>
 
               <div className="mb-4">
                 <div className="mb-1 flex justify-between text-sm">
-                  <span>Aproveitamento</span>
+                  <span className="text-whiteMain/70">
+                    Aproveitamento
+                  </span>
 
-                  <span>{calcularPorcentagem(progresso.quimica)}%</span>
+                  <span className="text-whiteMain">
+                    {calcularPorcentagem(progresso.quimica)}%
+                  </span>
                 </div>
 
-                <div className="h-2 rounded bg-gray-200">
+                <div className="h-2 rounded bg-blueSecond/30">
                   <div
-                    className="h-2 rounded bg-green-500"
+                    className="h-2 rounded bg-greenMain"
                     style={{
                       width: `${calcularPorcentagem(progresso.quimica)}%`,
                     }}
@@ -413,49 +457,60 @@ async function desativarConta() {
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <div className="rounded border p-3">
-                  <p className="text-sm text-gray-500">Acertos</p>
+                <div className="rounded-xl border border-blueSecond bg-blueSecond/20 p-3">
+                  <p className="text-sm text-whiteMain/60">
+                    Acertos
+                  </p>
 
-                  <p className="mt-1 text-2xl font-semibold text-green-600">
+                  <p className="mt-1 text-2xl font-semibold text-greenMain">
                     {progresso.quimica.acertos}
                   </p>
                 </div>
 
-                <div className="rounded border p-3">
-                  <p className="text-sm text-gray-500">Erros</p>
+                <div className="rounded-xl border border-blueSecond bg-blueSecond/20 p-3">
+                  <p className="text-sm text-whiteMain/60">
+                    Erros
+                  </p>
 
-                  <p className="mt-1 text-2xl font-semibold text-red-600">
+                  <p className="mt-1 text-2xl font-semibold text-red-400">
                     {progresso.quimica.erros}
                   </p>
                 </div>
               </div>
 
-              <p className="mt-4 text-sm text-gray-500">
+              <p className="mt-4 text-sm text-whiteMain/60">
                 {progresso.quimica.total} questões
               </p>
             </div>
+
           </div>
         </section>
 
         {/* TEMAS */}
         <section className="mb-8">
           <div className="mb-4">
-            <h2 className="text-xl font-semibold">Temas utilizados</h2>
+            <h2 className="text-xl font-semibold text-orangeMain">
+              Temas utilizados
+            </h2>
 
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-orangeSecond">
               Temas utilizados nas questões adaptadas.
             </p>
           </div>
 
-          <div className="overflow-hidden rounded-lg border">
+          <div className="overflow-hidden rounded-2xl border border-orangeMain bg-blueMain text-whiteMain">
             {temas.length > 0 ? (
               <div className="max-h-72 overflow-y-auto">
                 <table className="w-full text-left">
-                  <thead className="sticky top-0 bg-gray-100">
+                  <thead className="sticky top-0 bg-blueSecond text-whiteMain">
                     <tr>
-                      <th className="w-16 px-4 py-3 text-sm font-medium">#</th>
+                      <th className="w-16 px-4 py-3 text-sm font-medium">
+                        #
+                      </th>
 
-                      <th className="px-4 py-3 text-sm font-medium">Tema</th>
+                      <th className="px-4 py-3 text-sm font-medium">
+                        Tema
+                      </th>
                     </tr>
                   </thead>
 
@@ -463,28 +518,31 @@ async function desativarConta() {
                     {temas.map((tema, index) => (
                       <tr
                         key={`${normalizarTexto(tema)}-${index}`}
-                        className="border-t"
+                        className="border-t border-blueSecond/50"
                       >
-                        <td className="px-4 py-3 text-sm text-gray-500">
+                        <td className="px-4 py-3 text-sm text-whiteMain/60">
                           {index + 1}
                         </td>
 
-                        <td className="px-4 py-3">{tema}</td>
+                        <td className="px-4 py-3 text-whiteMain">
+                          {tema}
+                        </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
             ) : (
-              <p className="p-6 text-center text-sm text-gray-500">
+              <p className="p-6 text-center text-sm text-whiteMain/50">
                 Nenhum tema utilizado ainda.
               </p>
             )}
           </div>
 
           {temas.length > 0 && (
-            <p className="mt-2 text-right text-sm text-gray-500">
-              {temas.length} {temas.length === 1 ? "tema" : "temas"}
+            <p className="mt-2 text-right text-sm text-blueSecond">
+              {temas.length}{" "}
+              {temas.length === 1 ? "tema" : "temas"}
             </p>
           )}
         </section>
@@ -492,19 +550,37 @@ async function desativarConta() {
         {/* SAIR */}
         <button
           onClick={logout}
-          className="rounded bg-red-600 px-5 py-2 text-white hover:bg-red-700"
+          className="
+            rounded-xl
+            bg-red-500
+            px-5
+            py-2
+            text-whiteMain
+            transition
+            hover:bg-red-400
+          "
         >
           Sair
         </button>
-        
+
         <button
-  type="button"
-  onClick={desativarConta}
-  className="rounded bg-red-600 px-5 py-2 text-white hover:bg-red-700"
->
-  Desativar conta
-</button>
-              </div>
+          type="button"
+          onClick={desativarConta}
+          className="
+            ml-3
+            rounded-xl
+            bg-red-500
+            px-5
+            py-2
+            text-whiteMain
+            transition
+            hover:bg-red-400
+          "
+        >
+          Desativar conta
+        </button>
+
+      </div>
     </main>
   );
 }

@@ -1,4 +1,5 @@
-import { ActionCard, JoinRoomPage, CreateRoom } from "./index";
+import { ActionCard } from "./index";
+import { ModalActions } from "@/app/components"
 import { useState } from 'react'
 
 import {
@@ -7,13 +8,7 @@ import {
     Plus,
 } from "lucide-react";
 
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogDescription,
-} from "@/components/ui/dialog";
+
 
 export default function Hero() {
 
@@ -90,35 +85,7 @@ export default function Hero() {
 
                 </section>
 
-                <Dialog
-                        open={modal !== null}
-                        onOpenChange={(open) => {
-                            if (!open) setModal(null);
-                        }}
-                    >
-                        <DialogContent className="bg-blueMain text-white">
-                            <DialogHeader className="">
-                                <DialogTitle>
-                                    {modal === "entrar"
-                                        ? "Entrar na Sala"
-                                        : "Criar Sala"}
-                                </DialogTitle>
-
-                                <DialogDescription>
-                                    {modal === "entrar"
-                                        ? "Digite o código da sala para entrar."
-                                        : "Configure sua nova sala de estudo."}
-                                </DialogDescription>
-                            </DialogHeader>
-                            
-                            {modal === "entrar"
-                            ? <JoinRoomPage/>
-                            : <CreateRoom/>
-                            }
-
-                        </DialogContent>
-                    </Dialog>
-
+                <ModalActions modal={modal} setModal={setModal} />
 
             </main>
     )

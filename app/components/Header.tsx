@@ -7,6 +7,8 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/app/libs/supabase/client";
 import { usePathname } from "next/navigation";
 
+import { ModalActions } from "./index"
+
 export default function Header() {
   const [nome, setNome] = useState<string | null>(null);
   const [logado, setLogado] = useState<boolean | null>(null);
@@ -65,6 +67,8 @@ export default function Header() {
     return pathname.startsWith(path);
   };
 
+  const [modal, setModal] = useState<"entrar" | "criar" | null>(null);
+
   return (
     <header className="w-full bg-orangeMain shadow-lg text-whiteSecond">
       <nav className="mx-auto flex h-20 max-w-7xl items-center justify-between px-8">
@@ -85,21 +89,21 @@ export default function Header() {
             <span className="font-semibold">Adaptapus</span>
           </Link>
 
-          <Link
-            href="/pages/Room"
+          <button
             className="flex items-center gap-2 px-4 py-2 transition hover:opacity-80"
+            onClick={() => setModal("entrar")}
           >
             <LogIn size={22} />
             <span className="font-semibold">Entrar na Sala</span>
-          </Link>
+          </button>
 
-          <Link
-            href="/pages/Room"
+          <button
             className="flex items-center gap-2 px-4 py-2 transition hover:opacity-80"
+            onClick={() => setModal("criar")}
           >
             <Plus size={22} />
             <span className="font-semibold">Criar Sala</span>
-          </Link>
+          </button>
 
           {/* Usuário logado */}
           {logado === true && (
@@ -161,6 +165,9 @@ export default function Header() {
           />
         </div>
       </nav>
+
+      <ModalActions modal={modal} setModal={setModal} />
+
     </header>
   );
 }

@@ -49,7 +49,7 @@ export default function ActionCard({
                 flex
                 min-h-28
                 items-center
-                justify-between
+                justify-center
                 rounded-2xl
                 px-7
                 py-5
@@ -59,42 +59,57 @@ export default function ActionCard({
                 duration-300
                 hover:-translate-y-1
                 hover:shadow-xl
+                md:justify-between
             `}
-        >
-            <div className="flex items-center gap-5">
+            >
+            <div className="flex flex-col items-center gap-3 text-center md:flex-row md:items-center md:gap-5 md:text-left">
+                {/* TEXTOS */}
+                <div className="order-1">
+                <h3 className="text-xl font-bold">
+                    {title}
+                </h3>
 
-                <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-white/90 ${variants[variant].icon}`}>
-                    {icon}
+                <p className="mt-1 text-sm opacity-90">
+                    {description}
+                </p>
                 </div>
 
-                <div>
-                    <h3 className="text-xl font-bold">
-                        {title}
-                    </h3>
-
-                    <p className="mt-1 text-sm opacity-90">
-                        {description}
-                    </p>
+                {/* ÍCONE */}
+                <div
+                className={`
+                    order-2
+                    flex
+                    h-14
+                    w-14
+                    shrink-0
+                    items-center
+                    justify-center
+                    rounded-xl
+                    bg-white/90
+                    md:order-1
+                    ${variants[variant].icon}
+                `}
+                >
+                {icon}
                 </div>
-
             </div>
 
             <ArrowRight
                 size={28}
-                className="transition-transform duration-300 group-hover:translate-x-1"
+                className="hidden shrink-0 transition-transform duration-300 group-hover:translate-x-1 md:block"
             />
-        </button>
-        ) : ( 
+            </button>
+        ) : (
             <Link
-                href={href}
-                className={`
+            href={href}
+            className={`
                 group
                 ${fullWidth ? "col-span-2" : ""}
                 ${variants[variant].background}
                 flex
                 min-h-28
                 items-center
-                justify-between
+                justify-center
                 rounded-2xl
                 px-7
                 py-5
@@ -104,32 +119,47 @@ export default function ActionCard({
                 duration-300
                 hover:-translate-y-1
                 hover:shadow-xl
-                `}
+                md:justify-between
+            `}
             >
-                <div className="flex items-center gap-5">
+            <div className="flex flex-col items-center gap-3 text-center md:flex-row md:items-center md:gap-5 md:text-left">
+                {/* TEXTOS */}
+                <div className="order-1">
+                <h3 className="text-xl font-bold">
+                    {title}
+                </h3>
 
-                    <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-white/90 ${variants[variant].icon}`}>
-                        {icon}
-                    </div>
-
-                    <div>
-                        <h3 className="text-xl font-bold">
-                            {title}
-                        </h3>
-
-                        <p className="mt-1 text-sm opacity-90">
-                            {description}
-                        </p>
-                    </div>
-
+                <p className="mt-1 text-sm opacity-90">
+                    {description}
+                </p>
                 </div>
 
-                <ArrowRight
-                    size={28}
-                    className="transition-transform duration-300 group-hover:translate-x-1"
-                />
+                {/* ÍCONE */}
+                <div
+                className={`
+                    order-2
+                    flex
+                    h-14
+                    w-14
+                    shrink-0
+                    items-center
+                    justify-center
+                    rounded-xl
+                    bg-white/90
+                    md:order-1
+                    ${variants[variant].icon}
+                `}
+                >
+                {icon}
+                </div>
+            </div>
+
+            <ArrowRight
+                size={28}
+                className="hidden shrink-0 transition-transform duration-300 group-hover:translate-x-1 md:block"
+            />
             </Link>
-        )}  
-    </>
+        )}
+        </>
     );
 }

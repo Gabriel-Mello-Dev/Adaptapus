@@ -70,7 +70,7 @@ export default function Header() {
   const [modal, setModal] = useState<"entrar" | "criar" | null>(null);
 
   return (
-    <header className="w-full bg-orangeMain shadow-lg text-whiteSecond z-10">
+    <header className="w-full bg-orangeMain shadow-lg text-whiteSecond z-100">
 
       {/*Versão Desktop*/}
       <nav className="mx-auto hidden md:flex h-20 max-w-7xl items-center justify-between px-8">

@@ -71,7 +71,7 @@ export default function MobileHeader({
 
       {/* MENU MOBILE */}
       {menuAberto && (
-        <div className="absolute left-0 right-0 top-16 border-t border-orangeSecond/50 bg-orangeMain p-4 shadow-xl md:hidden">
+        <div className="absolute z-999 left-0 right-0 top-16 border-t border-orangeSecond/50 bg-orangeMain p-4 shadow-xl md:hidden">
           <div className="flex flex-col gap-2">
 
             {/* HOME */}

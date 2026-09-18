@@ -15,7 +15,7 @@ export default function Hero() {
     const [modal, setModal] = useState<"entrar" | "criar" | null>(null);
 
     return ( 
-        <main className="relative flex flex-1 flex-col overflow-hidden justify-center items-center">
+        <main className="relative z-0 flex flex-1 flex-col overflow-hidden justify-center items-center">
 
                 {/* Hero */}
                 <section className="mx-auto flex max-w-7xl flex-col items-center px-6 pb-6 pt-14 text-center bg-whiteMain">

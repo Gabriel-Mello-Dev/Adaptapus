@@ -1,6 +1,5 @@
 import { ReactNode } from "react";
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import Link from "next/link";;
 
 interface ActionCardProps {
     href: string;
@@ -48,6 +47,7 @@ export default function ActionCard({
                 ${variants[variant].background}
                 flex
                 min-h-28
+                flex-col
                 items-center
                 justify-center
                 rounded-2xl
@@ -59,45 +59,40 @@ export default function ActionCard({
                 duration-300
                 hover:-translate-y-1
                 hover:shadow-xl
+                md:flex-row
+                md:items-center
                 md:justify-between
             `}
             >
-            <div className="flex flex-col items-center gap-3 text-center md:flex-row md:items-center md:gap-5 md:text-left">
-                {/* TEXTOS */}
-                <div className="order-1">
+            {/* TEXTOS */}
+            <div className="text-center md:text-left">
                 <h3 className="text-xl font-bold">
-                    {title}
+                {title}
                 </h3>
 
                 <p className="mt-1 text-sm opacity-90">
-                    {description}
+                {description}
                 </p>
-                </div>
-
-                {/* ÍCONE */}
-                <div
-                className={`
-                    order-2
-                    flex
-                    h-14
-                    w-14
-                    shrink-0
-                    items-center
-                    justify-center
-                    rounded-xl
-                    bg-white/90
-                    md:order-1
-                    ${variants[variant].icon}
-                `}
-                >
-                {icon}
-                </div>
             </div>
 
-            <ArrowRight
-                size={28}
-                className="hidden shrink-0 transition-transform duration-300 group-hover:translate-x-1 md:block"
-            />
+            {/* ÍCONE */}
+            <div
+                className={`
+                mt-4
+                flex
+                h-14
+                w-14
+                shrink-0
+                items-center
+                justify-center
+                rounded-xl
+                bg-white/90
+                md:mt-0
+                ${variants[variant].icon}
+                `}
+            >
+                {icon}
+            </div>
             </button>
         ) : (
             <Link
@@ -108,6 +103,7 @@ export default function ActionCard({
                 ${variants[variant].background}
                 flex
                 min-h-28
+                flex-col
                 items-center
                 justify-center
                 rounded-2xl
@@ -119,45 +115,40 @@ export default function ActionCard({
                 duration-300
                 hover:-translate-y-1
                 hover:shadow-xl
+                md:flex-row
+                md:items-center
                 md:justify-between
             `}
             >
-            <div className="flex flex-col items-center gap-3 text-center md:flex-row md:items-center md:gap-5 md:text-left">
-                {/* TEXTOS */}
-                <div className="order-1">
+            {/* TEXTOS */}
+            <div className="text-center md:text-left">
                 <h3 className="text-xl font-bold">
-                    {title}
+                {title}
                 </h3>
 
                 <p className="mt-1 text-sm opacity-90">
-                    {description}
+                {description}
                 </p>
-                </div>
-
-                {/* ÍCONE */}
-                <div
-                className={`
-                    order-2
-                    flex
-                    h-14
-                    w-14
-                    shrink-0
-                    items-center
-                    justify-center
-                    rounded-xl
-                    bg-white/90
-                    md:order-1
-                    ${variants[variant].icon}
-                `}
-                >
-                {icon}
-                </div>
             </div>
 
-            <ArrowRight
-                size={28}
-                className="hidden shrink-0 transition-transform duration-300 group-hover:translate-x-1 md:block"
-            />
+            {/* ÍCONE */}
+            <div
+                className={`
+                mt-4
+                flex
+                h-14
+                w-14
+                shrink-0
+                items-center
+                justify-center
+                rounded-xl
+                bg-white/90
+                md:mt-0
+                ${variants[variant].icon}
+                `}
+            >
+                {icon}
+            </div>
             </Link>
         )}
         </>

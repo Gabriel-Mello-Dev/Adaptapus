@@ -3,7 +3,6 @@
 import { BackButton } from "../index";
 import Image from "next/image";
 import { useState } from "react";
-import { MobileRoomHeader } from "./index";
 
 type UsuarioOnline = {
   uid: string;
@@ -11,81 +10,34 @@ type UsuarioOnline = {
   socketId: string;
 };
 
-interface RoomHeaderProps {
+interface MobileRoomHeaderProps {
   roomId: string;
   userName: string;
   usuariosOnline: UsuarioOnline[];
+  onCopyCode: () => void;
 }
 
-export default function RoomHeader({
+export default function MobileRoomHeader({
   roomId,
   userName,
   usuariosOnline,
-}: RoomHeaderProps) {
-  const [copiado, setCopiado] = useState(false);
+  onCopyCode,
+}: MobileRoomHeaderProps) {
   const [mostrarUsuarios, setMostrarUsuarios] = useState(false);
 
-  async function copiarCodigo() {
-    try {
-      await navigator.clipboard.writeText(roomId);
-
-      setCopiado(true);
-
-      setTimeout(() => {
-        setCopiado(false);
-      }, 1800);
-    } catch (error) {
-      console.error("Erro ao copiar código:", error);
-    }
-  }
-
   return (
-    <>
-      {/* MODAL DE COPIADO */}
-      {copiado && (
-        <div
-          className="
-            fixed
-            top-5
-            left-1/2
-            z-[100]
-            flex
-            -translate-x-1/2
-            items-center
-            gap-2
-            rounded-xl
-            border
-            border-orangeMain
-            bg-orangeSecond
-            px-4
-            py-2.5
-            text-sm
-            text-whiteMain
-            shadow-xl
-          "
-        >
-          <Image
-            src="/favicon.ico"
-            alt="Logo Adaptapus"
-            className="m-auto w-4"
-            height={16}
-            width={16}
-          />
+    <header className="relative z-50 flex w-full flex-col bg-orangeMain text-whiteMain shadow-lg md:hidden">
+      
+      {/* LINHA PRINCIPAL */}
+      <div className="flex h-16 w-full items-center justify-between gap-3 px-4">
 
-          <span>Copiado</span>
+        {/* VOLTAR */}
+        <div className="shrink-0">
+          <BackButton />
         </div>
-      )}
-
-      {/* DESKTOP */}
-      <header className="relative z-50 hidden h-20 w-full items-center justify-between bg-orangeMain px-12 text-whiteMain shadow-lg md:flex">
-        <BackButton />
-
-        <p className="text-2xl font-bold tracking-wide">
-          Sala Compartilhada
-        </p>
 
         {/* USUÁRIO + ONLINE */}
-        <div className="relative">
+        <div className="relative min-w-0">
           <button
             onClick={() =>
               setMostrarUsuarios((prev) => !prev)
@@ -93,22 +45,23 @@ export default function RoomHeader({
             className="
               flex
               items-center
+              justify-center
               gap-2
-              rounded-lg
+              rounded-xl
               px-3
               py-2
               transition
               hover:bg-white/10
             "
           >
-            <span className="h-2.5 w-2.5 rounded-full bg-green-400" />
+            <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-green-400" />
 
-            <span className="text-lg">
+            <span className="max-w-28 truncate text-sm font-semibold">
               {userName}
             </span>
 
-            <span className="text-sm text-whiteMain/70">
-              ({usuariosOnline.length} online)
+            <span className="whitespace-nowrap text-xs text-whiteMain/70">
+              ({usuariosOnline.length})
             </span>
           </button>
 
@@ -117,11 +70,12 @@ export default function RoomHeader({
             <div
               className="
                 absolute
-                right-0
+                left-1/2
                 top-full
-                z-40
+                z-[60]
                 mt-2
                 w-64
+                -translate-x-1/2
                 rounded-xl
                 border
                 border-orangeMain
@@ -161,24 +115,39 @@ export default function RoomHeader({
           )}
         </div>
 
-        {/* CÓDIGO DA SALA */}
-        <div className="flex items-center justify-between gap-4 rounded-xl bg-greenMain p-4">
-          <p className="text-sm text-whiteMain">
-            Código da sala:
-          </p>
+        {/* LOGO */}
+        <Image
+          src="/imgs/logoAdaptapus.png"
+          alt="Logo Adaptapus"
+          width={44}
+          height={44}
+          className="h-11 w-11 shrink-0"
+        />
+      </div>
 
-          <span className="text-2xl font-bold tracking-[0.25em]">
-            {roomId}
-          </span>
+      {/* CÓDIGO DA SALA */}
+      <div className="px-4 pb-3">
+        <div className="flex items-center justify-between gap-3 rounded-xl bg-greenMain px-3 py-2.5">
+          
+          <div className="flex min-w-0 flex-col">
+            <span className="text-[11px] text-whiteMain/70">
+              Código da sala
+            </span>
+
+            <span className="truncate text-lg font-bold tracking-[0.18em]">
+              {roomId}
+            </span>
+          </div>
 
           <button
-            onClick={copiarCodigo}
+            onClick={onCopyCode}
             className="
+              shrink-0
               rounded-lg
               bg-white/10
-              px-4
+              px-3
               py-2
-              text-sm
+              text-xs
               font-medium
               transition
               hover:bg-white/20
@@ -187,15 +156,7 @@ export default function RoomHeader({
             Copiar
           </button>
         </div>
-      </header>
-
-      {/* MOBILE */}
-      <MobileRoomHeader
-        roomId={roomId}
-        userName={userName}
-        usuariosOnline={usuariosOnline}
-        onCopyCode={copiarCodigo}
-      />
-    </>
+      </div>
+    </header>
   );
 }

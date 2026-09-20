@@ -2,5 +2,6 @@ import RoomHeader from "./RoomHeader";
 import RoomChat from "./RoomChat";
 import RoomAdminPanel from "./RoomAdminPanel"
 import RoomQuestionCard from "./RoomQuestionCard";
+import MobileRoomHeader from "./MobileRoomHeader";
 
-export { RoomHeader, RoomChat, RoomAdminPanel, RoomQuestionCard };
+export { RoomHeader, RoomChat, RoomAdminPanel, RoomQuestionCard, MobileRoomHeader };

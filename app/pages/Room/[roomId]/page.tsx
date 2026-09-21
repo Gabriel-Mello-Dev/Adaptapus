@@ -913,7 +913,7 @@ Resposta correta: ${questaoAtual.resposta}
         {isAdmin ? (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
             {/* PAINEL ADMIN */}
-            <div className="sticky top-6 self-start">
+            <div className=" md:sticky top-6 self-start">
               <RoomAdminPanel
                 materias={materias}
                 materiaSelecionada={materiaSelecionada}

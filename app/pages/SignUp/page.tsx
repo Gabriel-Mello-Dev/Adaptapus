@@ -141,7 +141,7 @@ export default function SignUp() {
   }
 
   return (
-    <main className="relative flex min-h-dvh items-center justify-center overflow-hidden bg-whiteMain px-4 py-8 sm:px-6">
+    <main className="relative flex min-h-dvh flex-col items-center overflow-hidden bg-whiteMain px-4 py-4 sm:justify-center sm:px-6 sm:py-8">
       {/* DETALHES DECORATIVOS */}
       <div className="pointer-events-none absolute -left-10 top-0 h-40 w-40 opacity-30">
         <svg
@@ -186,7 +186,7 @@ export default function SignUp() {
       </div>
 
       {/* BOTÃO VOLTAR */}
-      <header className="absolute left-4 top-4 sm:left-6 sm:top-6">
+      <header className="z-20 mb-4 w-full max-w-md sm:absolute sm:left-6 sm:top-6 sm:mb-0 sm:w-auto sm:max-w-none">
         <BackButton />
       </header>
 

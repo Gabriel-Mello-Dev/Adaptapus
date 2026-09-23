@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export default function Footer() {
     return (
-        <footer className="w-full bg-blueMain text-whiteMain relative">
+        <footer className="relative w-full shrink-0 overflow-hidden bg-blueMain text-whiteMain">
             <div className="mx-auto flex min-h-20 max-w-7xl flex-col items-center justify-center gap-3 px-4 py-4 text-center sm:flex-row sm:justify-between sm:px-8 sm:text-left">
 
                 {/* DETALHE SUPERIOR */}

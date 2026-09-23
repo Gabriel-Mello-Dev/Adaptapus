@@ -62,6 +62,7 @@ export default function ActionCard({
                 md:flex-row
                 md:items-center
                 md:justify-between
+                md:gap-2
             `}
             >
             {/* TEXTOS */}

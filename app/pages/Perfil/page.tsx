@@ -265,7 +265,7 @@ async function desativarConta() {
 
       <BackButton />
 
-      <div className="mx-auto w-full max-w-5xl">
+      <div className="mx-auto w-full max-w-5xl mt-3">
 
         {/* TÍTULO */}
         <header className="mb-8">

@@ -884,7 +884,7 @@ Resposta correta: ${questaoAtual.resposta}
    */
   if (!roomId) {
     return (
-      <div className="min-h-screen bg-[#160a29] text-white flex items-center justify-center">
+      <div className="min-h-screen bg-blueMain text-white flex items-center justify-center">
         Carregando...
       </div>
     );
@@ -913,7 +913,7 @@ Resposta correta: ${questaoAtual.resposta}
         {isAdmin ? (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
             {/* PAINEL ADMIN */}
-            <div className=" md:sticky top-6 self-start">
+            <div className=" lg:sticky top-6 self-start">
               <RoomAdminPanel
                 materias={materias}
                 materiaSelecionada={materiaSelecionada}

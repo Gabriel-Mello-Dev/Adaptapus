@@ -12,6 +12,7 @@ import {
   RoomAdminPanel,
   RoomChat,
   RoomQuestionCard,
+  RoomSvgs,
 } from "@/app/components/Room";
 
 const LOADING_MESSAGES = [
@@ -909,29 +910,58 @@ Resposta correta: ${questaoAtual.resposta}
         usuariosOnline={usuariosOnline}
       />
 
-      <main className="w-full px-4 py-6">
-        {isAdmin ? (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
-            {/* PAINEL ADMIN */}
-            <div className=" lg:sticky top-6 self-start">
-              <RoomAdminPanel
-                materias={materias}
-                materiaSelecionada={materiaSelecionada}
-                setMateriaSelecionada={setMateriaSelecionada}
-                gerandoQuestao={gerandoQuestao}
-                question={question}
-                questoes={questoes}
-                indiceQuestao={indiceQuestao}
-                tema={tema}
-                setTema={setTema}
-                criarPergunta={criarPergunta}
-                finalizarVotacao={finalizarVotacao}
-                proximaQuestao={proximaQuestao}
-                votingFinalizado={votingFinalizado}
-              />
-            </div>
+      <main className="w-full px-4 py-6 relative">
 
-            <div className="flex flex-col gap-6">
+        <RoomSvgs />
+
+        <div className="relative z-10">
+          {isAdmin ? (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
+              {/* PAINEL ADMIN */}
+              <div className=" lg:sticky top-6 self-start">
+                <RoomAdminPanel
+                  materias={materias}
+                  materiaSelecionada={materiaSelecionada}
+                  setMateriaSelecionada={setMateriaSelecionada}
+                  gerandoQuestao={gerandoQuestao}
+                  question={question}
+                  questoes={questoes}
+                  indiceQuestao={indiceQuestao}
+                  tema={tema}
+                  setTema={setTema}
+                  criarPergunta={criarPergunta}
+                  finalizarVotacao={finalizarVotacao}
+                  proximaQuestao={proximaQuestao}
+                  votingFinalizado={votingFinalizado}
+                />
+              </div>
+
+              <div className="flex flex-col gap-6">
+                {/* QUESTÃO */}
+                <RoomQuestionCard
+                  question={question}
+                  erroAdaptacao={erroAdaptacao}
+                  gerandoQuestao={gerandoQuestao}
+                  loadingIndex={loadingIndex}
+                  loadingVisible={loadingVisible}
+                  loadingMessages={LOADING_MESSAGES}
+                  denunciaQuestaoAberta={denunciaQuestaoAberta}
+                  setDenunciaQuestaoAberta={setDenunciaQuestaoAberta}
+                  respostaSelecionada={respostaSelecionada}
+                  selecionarResposta={selecionarResposta}
+                  confirmarResposta={confirmarResposta}
+                  votes={votes}
+                  javotou={javotou}
+                  votingFinalizado={votingFinalizado}
+                  resultadoFinal={resultadoFinal}
+                />
+
+                {/* CHAT */}
+                <RoomChat messages={messages} onSendMessage={sendMessage} />
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-6 w-full">
               {/* QUESTÃO */}
               <RoomQuestionCard
                 question={question}
@@ -954,32 +984,8 @@ Resposta correta: ${questaoAtual.resposta}
               {/* CHAT */}
               <RoomChat messages={messages} onSendMessage={sendMessage} />
             </div>
-          </div>
-        ) : (
-          <div className="flex flex-col gap-6 w-full">
-            {/* QUESTÃO */}
-            <RoomQuestionCard
-              question={question}
-              erroAdaptacao={erroAdaptacao}
-              gerandoQuestao={gerandoQuestao}
-              loadingIndex={loadingIndex}
-              loadingVisible={loadingVisible}
-              loadingMessages={LOADING_MESSAGES}
-              denunciaQuestaoAberta={denunciaQuestaoAberta}
-              setDenunciaQuestaoAberta={setDenunciaQuestaoAberta}
-              respostaSelecionada={respostaSelecionada}
-              selecionarResposta={selecionarResposta}
-              confirmarResposta={confirmarResposta}
-              votes={votes}
-              javotou={javotou}
-              votingFinalizado={votingFinalizado}
-              resultadoFinal={resultadoFinal}
-            />
-
-            {/* CHAT */}
-            <RoomChat messages={messages} onSendMessage={sendMessage} />
-          </div>
-        )}
+          )}
+        </div>
       </main>
     </div>
   );

@@ -230,7 +230,7 @@ export default function SignIn() {
             alt="Logo Adaptapus"
             width={72}
             height={72}
-            className="mt-6 h-[72px] w-[72px] transition-transform duration-300 hover:scale-105"
+            className="mt-6 h-18 w-18 transition-transform duration-300 hover:scale-105"
           />
         </section>
 

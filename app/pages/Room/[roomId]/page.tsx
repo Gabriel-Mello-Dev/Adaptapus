@@ -903,14 +903,14 @@ Resposta correta: ${questaoAtual.resposta}
   }
 
   return (
-    <div className="min-h-screen w-screen bg-whiteMain text-white flex flex-col items-center">
+    <div className="flex min-h-dvh w-full flex-col bg-whiteMain text-white">
       <RoomHeader
         roomId={roomId}
         userName={user.nome}
         usuariosOnline={usuariosOnline}
       />
 
-      <main className="w-full px-4 py-6 relative">
+      <main className="relative flex w-full flex-1 flex-col px-4 py-6">
 
         <RoomSvgs />
 

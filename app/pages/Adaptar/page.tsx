@@ -85,7 +85,7 @@ useEffect(() => {
   }
 
   return (
-    <>
+    <div className="flex min-h-screen w-full flex-col overflow-x-hidden bg-whiteMain">
     <Header />
     <QuestionCard
       title={title}
@@ -104,6 +104,6 @@ useEffect(() => {
       onVerificar={handleVerificar}
     />
     <Footer />
-    </>
+    </div>
   );
 }

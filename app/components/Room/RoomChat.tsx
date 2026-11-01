@@ -122,7 +122,7 @@ export default function RoomChat({ messages, onSendMessage }: RoomChatProps) {
               </div>
 
               {/* MENSAGEM */}
-              <p className="whitespace-pre-line leading-relaxed text-whiteMain">
+              <p className="whitespace-pre-line leading-relaxed text-whiteMain wrap-break-word">
                 {msg.message}
               </p>
 

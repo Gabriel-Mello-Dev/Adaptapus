@@ -1,6 +1,5 @@
 import { ReactNode } from "react";
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import Link from "next/link";;
 
 interface ActionCardProps {
     href: string;
@@ -48,8 +47,9 @@ export default function ActionCard({
                 ${variants[variant].background}
                 flex
                 min-h-28
+                flex-col
                 items-center
-                justify-between
+                justify-center
                 rounded-2xl
                 px-7
                 py-5
@@ -59,42 +59,54 @@ export default function ActionCard({
                 duration-300
                 hover:-translate-y-1
                 hover:shadow-xl
+                md:flex-row
+                md:items-center
+                md:justify-between
+                md:gap-2
             `}
-        >
-            <div className="flex items-center gap-5">
+            >
+            {/* TEXTOS */}
+            <div className="text-center md:text-left">
+                <h3 className="text-xl font-bold">
+                {title}
+                </h3>
 
-                <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-white/90 ${variants[variant].icon}`}>
-                    {icon}
-                </div>
-
-                <div>
-                    <h3 className="text-xl font-bold">
-                        {title}
-                    </h3>
-
-                    <p className="mt-1 text-sm opacity-90">
-                        {description}
-                    </p>
-                </div>
-
+                <p className="mt-1 text-sm opacity-90">
+                {description}
+                </p>
             </div>
 
-            <ArrowRight
-                size={28}
-                className="transition-transform duration-300 group-hover:translate-x-1"
-            />
-        </button>
-        ) : ( 
-            <Link
-                href={href}
+            {/* ÍCONE */}
+            <div
                 className={`
+                mt-4
+                flex
+                h-14
+                w-14
+                shrink-0
+                items-center
+                justify-center
+                rounded-xl
+                bg-white/90
+                md:mt-0
+                ${variants[variant].icon}
+                `}
+            >
+                {icon}
+            </div>
+            </button>
+        ) : (
+            <Link
+            href={href}
+            className={`
                 group
                 ${fullWidth ? "col-span-2" : ""}
                 ${variants[variant].background}
                 flex
                 min-h-28
+                flex-col
                 items-center
-                justify-between
+                justify-center
                 rounded-2xl
                 px-7
                 py-5
@@ -104,32 +116,42 @@ export default function ActionCard({
                 duration-300
                 hover:-translate-y-1
                 hover:shadow-xl
+                md:flex-row
+                md:items-center
+                md:justify-between
+            `}
+            >
+            {/* TEXTOS */}
+            <div className="text-center md:text-left">
+                <h3 className="text-xl font-bold">
+                {title}
+                </h3>
+
+                <p className="mt-1 text-sm opacity-90">
+                {description}
+                </p>
+            </div>
+
+            {/* ÍCONE */}
+            <div
+                className={`
+                mt-4
+                flex
+                h-14
+                w-14
+                shrink-0
+                items-center
+                justify-center
+                rounded-xl
+                bg-white/90
+                md:mt-0
+                ${variants[variant].icon}
                 `}
             >
-                <div className="flex items-center gap-5">
-
-                    <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-white/90 ${variants[variant].icon}`}>
-                        {icon}
-                    </div>
-
-                    <div>
-                        <h3 className="text-xl font-bold">
-                            {title}
-                        </h3>
-
-                        <p className="mt-1 text-sm opacity-90">
-                            {description}
-                        </p>
-                    </div>
-
-                </div>
-
-                <ArrowRight
-                    size={28}
-                    className="transition-transform duration-300 group-hover:translate-x-1"
-                />
+                {icon}
+            </div>
             </Link>
-        )}  
-    </>
+        )}
+        </>
     );
 }

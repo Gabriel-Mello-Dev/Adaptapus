@@ -1,6 +1,9 @@
+"use client";
+
 import { BackButton } from "../index";
 import Image from "next/image";
 import { useState } from "react";
+import { MobileRoomHeader } from "./index";
 
 type UsuarioOnline = {
   uid: string;
@@ -22,9 +25,6 @@ export default function RoomHeader({
   const [copiado, setCopiado] = useState(false);
   const [mostrarUsuarios, setMostrarUsuarios] = useState(false);
 
-  /*
-   * COPIAR CÓDIGO
-   */
   async function copiarCodigo() {
     try {
       await navigator.clipboard.writeText(roomId);
@@ -48,35 +48,36 @@ export default function RoomHeader({
             fixed
             top-5
             left-1/2
-            -translate-x-1/2
-            z-50
+            z-[100]
             flex
+            -translate-x-1/2
             items-center
             gap-2
-            bg-orangeSecond
+            rounded-xl
             border
             border-orangeMain
-            shadow-xl
-            rounded-xl
+            bg-orangeSecond
             px-4
             py-2.5
             text-sm
-            text-white
+            text-whiteMain
+            shadow-xl
           "
         >
           <Image
             src="/favicon.ico"
             alt="Logo Adaptapus"
-            className="w-4 m-auto"
-            height={4}
-            width={4}
+            className="m-auto w-4"
+            height={16}
+            width={16}
           />
 
           <span>Copiado</span>
         </div>
       )}
 
-      <header className="w-screen bg-orangeMain text-whiteMain flex items-center justify-between p-4 px-12 h-20">
+      {/* DESKTOP */}
+      <header className="relative z-50 hidden h-20 w-full items-center justify-between bg-orangeMain px-12 text-whiteMain shadow-lg md:flex">
         <BackButton />
 
         <p className="text-2xl font-bold tracking-wide">
@@ -86,16 +87,18 @@ export default function RoomHeader({
         {/* USUÁRIO + ONLINE */}
         <div className="relative">
           <button
-            onClick={() => setMostrarUsuarios((prev) => !prev)}
+            onClick={() =>
+              setMostrarUsuarios((prev) => !prev)
+            }
             className="
               flex
               items-center
               gap-2
-              hover:bg-white/10
-              transition
               rounded-lg
               px-3
               py-2
+              transition
+              hover:bg-white/10
             "
           >
             <span className="h-2.5 w-2.5 rounded-full bg-green-400" />
@@ -104,7 +107,7 @@ export default function RoomHeader({
               {userName}
             </span>
 
-            <span className="text-sm text-white/70">
+            <span className="text-sm text-whiteMain/70">
               ({usuariosOnline.length} online)
             </span>
           </button>
@@ -114,20 +117,20 @@ export default function RoomHeader({
             <div
               className="
                 absolute
-                top-full
                 right-0
+                top-full
+                z-40
                 mt-2
                 w-64
-                bg-orangeSecond
+                rounded-xl
                 border
                 border-orangeMain
-                rounded-xl
-                shadow-xl
+                bg-orangeSecond
                 p-3
-                z-40
+                shadow-xl
               "
             >
-              <p className="text-sm font-semibold text-white mb-3">
+              <p className="mb-3 text-sm font-semibold text-whiteMain">
                 Pessoas na sala
               </p>
 
@@ -139,15 +142,16 @@ export default function RoomHeader({
                       flex
                       items-center
                       gap-2
+                      rounded-lg
                       px-2
                       py-1.5
-                      rounded-lg
-                      hover:bg-white/5
+                      transition
+                      hover:bg-white/10
                     "
                   >
-                    <span className="h-2 w-2 rounded-full bg-green-400 shrink-0" />
+                    <span className="h-2 w-2 shrink-0 rounded-full bg-green-400" />
 
-                    <span className="text-sm text-white truncate">
+                    <span className="truncate text-sm text-whiteMain">
                       {usuario.nome}
                     </span>
                   </div>
@@ -158,8 +162,8 @@ export default function RoomHeader({
         </div>
 
         {/* CÓDIGO DA SALA */}
-        <div className="bg-greenMain rounded-xl p-4 flex items-center justify-between gap-4">
-          <p className="text-sm text-white">
+        <div className="flex items-center justify-between gap-4 rounded-xl bg-greenMain p-4">
+          <p className="text-sm text-whiteMain">
             Código da sala:
           </p>
 
@@ -170,20 +174,28 @@ export default function RoomHeader({
           <button
             onClick={copiarCodigo}
             className="
+              rounded-lg
               bg-white/10
-              hover:bg-white/20
-              transition
               px-4
               py-2
-              rounded-lg
               text-sm
               font-medium
+              transition
+              hover:bg-white/20
             "
           >
             Copiar
           </button>
         </div>
       </header>
+
+      {/* MOBILE */}
+      <MobileRoomHeader
+        roomId={roomId}
+        userName={userName}
+        usuariosOnline={usuariosOnline}
+        onCopyCode={copiarCodigo}
+      />
     </>
   );
 }

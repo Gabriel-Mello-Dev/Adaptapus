@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/app/libs/supabase/client";
 import { usePathname } from "next/navigation";
 
-import { ModalActions } from "./index"
+import { ModalActions, MobileHeader } from "./index"
 
 export default function Header() {
   const [nome, setNome] = useState<string | null>(null);
@@ -70,8 +70,10 @@ export default function Header() {
   const [modal, setModal] = useState<"entrar" | "criar" | null>(null);
 
   return (
-    <header className="w-full bg-orangeMain shadow-lg text-whiteSecond">
-      <nav className="mx-auto flex h-20 max-w-7xl items-center justify-between px-8">
+    <header className="w-full bg-orangeMain shadow-lg text-whiteSecond z-100">
+
+      {/*Versão Desktop*/}
+      <nav className="mx-auto hidden md:flex h-20 max-w-7xl items-center justify-between px-8">
         <div className="flex items-center gap-3">
           <Link
             href="/"
@@ -139,6 +141,7 @@ export default function Header() {
         </div>
 
         <div className="flex items-center gap-3">
+
           {/* Status do usuário */}
           {logado !== null && (
             <div className="flex items-center gap-2 rounded-xl bg-white/15 px-3 py-2">
@@ -165,6 +168,13 @@ export default function Header() {
           />
         </div>
       </nav>
+
+      <MobileHeader
+        nome={nome}
+        logado={logado}
+        setModal={setModal}
+        isActive={isActive}
+      />
 
       <ModalActions modal={modal} setModal={setModal} />
 

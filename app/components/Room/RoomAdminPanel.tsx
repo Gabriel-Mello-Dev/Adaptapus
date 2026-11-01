@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { Eye } from "lucide-react";
 import ModalEnunciado from "./ModalEnunciado";
 
@@ -124,7 +124,7 @@ export default function RoomAdminPanel({
                 </h3>
 
                 <p className="mt-0.5 text-xs text-whiteMain/50">
-                  Selecione uma questão para atualizar a sala.
+                  Selecione uma questão para atualizar a prévia.
                 </p>
               </div>
 
@@ -152,8 +152,6 @@ export default function RoomAdminPanel({
               ))}
             </select>
           </div>
-
-      
 
           {/* ENUNCIADO ORIGINAL */}
           <div className="rounded-xl border border-blueSecond bg-blueSecond/20 p-4">
@@ -189,7 +187,7 @@ export default function RoomAdminPanel({
           <div>
             <div className="mb-3">
               <h3 className="text-3xl font-semibold text-whiteMain">
-                Adaptação 
+                Adaptação
               </h3>
 
               <p className="mt-1 text-xs text-whiteMain/50">

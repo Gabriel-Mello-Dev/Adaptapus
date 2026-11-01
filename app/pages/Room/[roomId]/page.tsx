@@ -38,6 +38,13 @@ type Questao = {
 
 export default function ChatPage() {
   const socketRef = useRef<ReturnType<typeof io> | null>(null);
+  const [questoes, setQuestoes] = useState<Questao[]>([]);
+
+  const questoesRef = useRef<Questao[]>([]);
+
+  useEffect(() => {
+    questoesRef.current = questoes;
+  }, [questoes]);
 
   const supabase = createClient();
 
@@ -54,7 +61,6 @@ export default function ChatPage() {
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);
 
-  const [questoes, setQuestoes] = useState<Questao[]>([]);
   const [indiceQuestao, setIndiceQuestao] = useState(0);
   const [carregandoQuestoes, setCarregandoQuestoes] = useState(true);
 
@@ -69,7 +75,7 @@ export default function ChatPage() {
   );
 
   const [javotou, setJavotou] = useState(false);
-
+  const votoEnviadoRef = useRef(false);
   /*
    * Indica que a IA não conseguiu adaptar a questão.
    */
@@ -111,8 +117,9 @@ export default function ChatPage() {
    * SOCKET
    */
   useEffect(() => {
-    const newSocket = io(process.env.NEXT_PUBLIC_SOCKET_SERVER!);
-
+    const newSocket = io(process.env.NEXT_PUBLIC_SOCKET_SERVER!, {
+      closeOnBeforeunload: true,
+    });
     socketRef.current = newSocket;
 
     return () => {
@@ -258,7 +265,7 @@ export default function ChatPage() {
    * SOCKET DA SALA
    */
   useEffect(() => {
-    if (!roomId || !user.uid) return;
+    if (!roomId) return;
 
     const socket = socketRef.current;
 
@@ -302,6 +309,7 @@ export default function ChatPage() {
 
       setRespostaSelecionada(null);
       setJavotou(false);
+      votoEnviadoRef.current = false;
 
       setVotes({});
       setVotingFinalizado(false);
@@ -327,14 +335,14 @@ export default function ChatPage() {
 
       setRespostaSelecionada(null);
       setJavotou(false);
-
+      votoEnviadoRef.current = false;
       setVotes({});
 
       setVotingFinalizado(false);
       setResultadoFinal(null);
 
       if (newQuestion?.numero) {
-        const index = questoes.findIndex(
+        const index = questoesRef.current.findIndex(
           (questao) => questao.numero === newQuestion.numero,
         );
 
@@ -364,7 +372,7 @@ export default function ChatPage() {
 
       setRespostaSelecionada(null);
       setJavotou(false);
-
+      votoEnviadoRef.current = false;
       setVotes({});
       setVotingFinalizado(false);
       setResultadoFinal(null);
@@ -403,15 +411,6 @@ export default function ChatPage() {
     socket.on("resultado-votacao", handleResultadoVotacao);
 
     /*
-     * ENTRAR NA SALA
-     */
-    socket.emit("join-room", {
-      roomId,
-      uid: user.uid,
-      nome: user.nome,
-    });
-
-    /*
      * LIMPAR LISTENERS
      */
     return () => {
@@ -434,7 +433,38 @@ export default function ChatPage() {
        * O socket é global.
        */
     };
-  }, [roomId, questoes, user.uid, user.nome]);
+  }, [roomId]);
+
+  /*
+   * ENTRAR NA SALA
+   */
+  useEffect(() => {
+    if (!roomId || !user.uid) return;
+
+    const socket = socketRef.current;
+
+    if (!socket) return;
+
+    const joinRoom = () => {
+      socket.emit("join-room", {
+        roomId,
+        uid: user.uid,
+        nome: user.nome,
+      });
+    };
+
+    // Entra imediatamente se o socket já estiver conectado.
+    if (socket.connected) {
+      joinRoom();
+    }
+
+    // Entra novamente caso o socket reconecte.
+    socket.on("connect", joinRoom);
+
+    return () => {
+      socket.off("connect", joinRoom);
+    };
+  }, [roomId, user.uid, user.nome]);
 
   /*
    * SALVAR PROGRESSO
@@ -813,7 +843,7 @@ Resposta correta: ${questaoAtual.resposta}
     setRespostaSelecionada(null);
 
     setJavotou(false);
-
+    votoEnviadoRef.current = false;
     setVotes({});
 
     setVotingFinalizado(false);
@@ -835,20 +865,30 @@ Resposta correta: ${questaoAtual.resposta}
   /*
    * CONFIRMAR RESPOSTA
    */
+  /*
+   * CONFIRMAR RESPOSTA
+   */
   async function confirmarResposta() {
     if (
       respostaSelecionada === null ||
+      votoEnviadoRef.current ||
       javotou ||
       votingFinalizado ||
       gerandoQuestao ||
       erroAdaptacao ||
-      !question
+      !question ||
+      !user.uid
     ) {
       return;
     }
 
+    // Bloqueia imediatamente novos envios
+    votoEnviadoRef.current = true;
+    setJavotou(true);
+
     socketRef.current?.emit("vote", {
       roomId,
+      uid: user.uid,
       answer: respostaSelecionada,
     });
 
@@ -861,10 +901,7 @@ Resposta correta: ${questaoAtual.resposta}
     const acertou = respostaSelecionada === question.correta;
 
     await salvarProgresso(question.materia, acertou);
-
-    setJavotou(true);
   }
-
   /*
    * ADMIN:
    * FINALIZAR VOTAÇÃO

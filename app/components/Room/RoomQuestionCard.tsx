@@ -176,12 +176,14 @@ ${question.modeloIA || "Não informado"}
                 <button
                   key={index}
                   onClick={() => selecionarResposta(index)}
-                  disabled={votingFinalizado || gerandoQuestao}
+                  disabled={javotou || votingFinalizado || gerandoQuestao}
                   className={`
                       w-full
                       text-left
                       border
-                      transition
+transition
+disabled:cursor-not-allowed
+disabled:opacity-60
                       p-3
                       rounded-xl
 

@@ -1,4 +1,8 @@
-import React from "react";
+"use client";
+
+import { useState } from "react";
+import { Eye } from "lucide-react";
+import ModalEnunciado from "./ModalEnunciado";
 
 interface Questao {
   id: string;
@@ -57,7 +61,12 @@ export default function RoomAdminPanel({
   votingFinalizado,
 }: RoomAdminPanelProps) {
 
+  const [modalEnunciadoAberto, setModalEnunciadoAberto] = useState(false);
+
+  const questaoAtual = questoes[indiceQuestao];
+
   return (
+    <>
     <div className="w-full bg-blueMain border border-blueSecond rounded-2xl p-6">
       {/* TÍTULO */}
       <div className="mb-6">
@@ -151,16 +160,32 @@ export default function RoomAdminPanel({
             "
           />
         </div>
-
+        
         {/* QUESTÃO ORIGINAL */}
-        <div className="bg-blueSecond/20 border border-blueSecond rounded-xl p-4">
-          <p className="text-sm text-orangeSecond mb-2">
+        <div className="rounded-xl border border-blueSecond bg-blueSecond/20 p-4">
+          <p className="mb-2 text-sm text-orangeSecond">
             Questão original
           </p>
 
-          <p className="text-sm text-whiteMain/80 line-clamp-4">
-            {questoes[indiceQuestao]?.enunciado}
+          <p className="line-clamp-4 whitespace-pre-line wrap-break-word text-sm text-whiteMain/80">
+            {questaoAtual?.enunciado}
           </p>
+
+          <button
+            type="button"
+            onClick={() => setModalEnunciadoAberto(true)}
+            disabled={!questaoAtual}
+            className="
+              mt-4 flex w-full items-center justify-center gap-2
+              rounded-xl bg-greenMain px-4 py-2.5
+              font-semibold text-whiteMain
+              transition hover:bg-greenMain/80
+              disabled:cursor-not-allowed disabled:opacity-50
+            "
+          >
+            <Eye size={18} />
+            Ver Enunciado
+          </button>
         </div>
 
         {/* ADAPTAR */}
@@ -240,5 +265,13 @@ export default function RoomAdminPanel({
         )}
       </div>
     </div>
+
+    <ModalEnunciado
+      aberto={modalEnunciadoAberto}
+      fechar={() => setModalEnunciadoAberto(false)}
+      titulo={`Questão ${questaoAtual?.numero ?? ""} — ${questaoAtual?.materia ?? ""}`}
+      enunciado={questaoAtual?.enunciado ?? ""}
+    />
+    </>
   );
 }

@@ -323,6 +323,7 @@ export default function ChatPage() {
      * QUESTÃO PRONTA
      */
     const handleQuestion = (newQuestion: any) => {
+      console.log("QUESTÃO RECEBIDA PELO FRONTEND:", newQuestion);
       setGerandoQuestao(false);
 
       /*
@@ -819,6 +820,19 @@ Resposta correta: ${questaoAtual.resposta}
   }
 
   /*
+   * ENVIAR QUESTÃO ORIGINAL PARA TODOS
+   */
+  function selecionarQuestaoSala(novoIndice: number) {
+    if (!isAdmin || gerandoQuestao) return;
+
+    const questaoSelecionada = questoes[novoIndice];
+
+    if (!questaoSelecionada) return;
+
+    // Altera somente a seleção local do administrador.
+    setIndiceQuestao(novoIndice);
+  }
+  /*
    * PRÓXIMA QUESTÃO
    */
   function proximaQuestao() {
@@ -965,6 +979,8 @@ Resposta correta: ${questaoAtual.resposta}
                 finalizarVotacao={finalizarVotacao}
                 proximaQuestao={proximaQuestao}
                 votingFinalizado={votingFinalizado}
+                setIndiceQuestao={setIndiceQuestao}
+                selecionarQuestaoSala={selecionarQuestaoSala}
               />
             </div>
 

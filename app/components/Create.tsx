@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Plus } from "lucide-react"
+import { checkLoggedUser } from "@/app/libs/auth/authservices";
 
 export default function CreateRoom() {
 
@@ -9,14 +10,26 @@ export default function CreateRoom() {
     const router = useRouter();
 
     const [loading, setLoading] = useState(false);
-    const [roomId, setRoomId] = useState("");
 
     async function createRoom() {
         try {
         setLoading(true);
 
+        const user = await checkLoggedUser();
+
+        if (!user) {
+            router.push("/pages/SignIn");
+            return;
+        }
+
         const response = await fetch(`${socketServer}/create-room`, {
             method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                uid: user.id,
+            }),
         });
 
         if (!response.ok) {
@@ -25,7 +38,20 @@ export default function CreateRoom() {
 
         const data = await response.json();
 
-        localStorage.setItem("adm", "true");
+        /*
+         * Remove a chave antiga, que deixava qualquer usuário
+         * que já criou uma sala como admin em todas as salas.
+         */
+        localStorage.removeItem("adm");
+
+        /*
+         * Guarda o criador da sala. Somente este UID será
+         * considerado admin nesta sala.
+         */
+        localStorage.setItem(
+            `adm:${data.roomId.toUpperCase()}`,
+            user.id,
+        );
 
         router.push(`/pages/Room/${data.roomId}`);
         } catch (error) {

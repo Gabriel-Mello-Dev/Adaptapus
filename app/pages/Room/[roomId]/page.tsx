@@ -164,12 +164,29 @@ export default function ChatPage() {
 
   /*
    * VERIFICAR ADMIN
+   *
+   * O admin é o usuário que criou ESTA sala.
+   * A chave é específica por sala e guarda o UID do criador,
+   * então outro usuário no mesmo navegador não herda o admin.
    */
   useEffect(() => {
-    const adm = localStorage.getItem("adm") === "true";
+    /*
+     * Remove a chave global antiga, que deixava o usuário
+     * admin em qualquer sala e mesmo depois de trocar de conta.
+     */
+    localStorage.removeItem("adm");
 
-    setIsAdmin(adm);
-  }, []);
+    if (!roomId || !user.uid) {
+      setIsAdmin(false);
+      return;
+    }
+
+    const donoDaSala = localStorage.getItem(
+      `adm:${String(roomId).toUpperCase()}`,
+    );
+
+    setIsAdmin(donoDaSala === user.uid);
+  }, [roomId, user.uid]);
 
   /*
    * VERIFICAR USUÁRIO LOGADO
@@ -293,6 +310,16 @@ export default function ChatPage() {
     };
 
     /*
+     * PERMISSÃO DE ADMIN
+     *
+     * O servidor é a fonte da verdade: só retorna true
+     * para o UID que criou a sala.
+     */
+    const handleRoomRole = ({ isAdmin }: { isAdmin: boolean }) => {
+      setIsAdmin(isAdmin);
+    };
+
+    /*
      * IA COMEÇOU A GERAR
      */
     const handleQuestionGenerating = () => {
@@ -402,6 +429,8 @@ export default function ChatPage() {
 
     socket.on("users-online", handleUsersOnline);
 
+    socket.on("room-role", handleRoomRole);
+
     socket.on("question-generating", handleQuestionGenerating);
 
     socket.on("question", handleQuestion);
@@ -419,6 +448,8 @@ export default function ChatPage() {
       socket.off("message", handleMessage);
 
       socket.off("users-online", handleUsersOnline);
+
+      socket.off("room-role", handleRoomRole);
 
       socket.off("question-generating", handleQuestionGenerating);
 

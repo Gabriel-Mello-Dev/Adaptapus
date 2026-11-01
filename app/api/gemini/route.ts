@@ -47,80 +47,8 @@ function encontrarTermoProibido(texto: string) {
   });
 }
 
-export async function POST(request: Request) {
-  try {
-    const body = await request.json();
-
-    const { questao, tema } = body;
-
-    if (!questao || !tema) {
-      return Response.json(
-        {
-          error: "Questão e tema são obrigatórios.",
-        },
-        {
-          status: 400,
-        },
-      );
-    }
-
-    // FILTRO DO TEMA
-    const analiseTema = analisar(tema);
-    const termoProibido = encontrarTermoProibido(tema);
-
-    console.log("========== FILTRO TEMA ==========");
-    console.log("Tema recebido:", tema);
-    console.log("Resultado profanity-br:", analiseTema);
-    console.log("Termo proibido:", termoProibido);
-    console.log("=================================");
-
-    if (analiseTema.hits.length > 0 || termoProibido) {
-      console.log("TEMA INVÁLIDO:", tema);
-
-      return Response.json(
-        {
-          error: "O tema contém conteúdo inadequado.",
-        },
-        {
-          status: 400,
-        },
-      );
-    }
-    // FILTRO DA QUESTÃO
-    const analiseQuestao = analisar(questao);
-
-    if (!analiseQuestao) {
-      return Response.json(
-        {
-          error: "A questão contém palavras inadequadas.",
-        },
-        {
-          status: 400,
-        },
-      );
-    }
-
-    const models = ["openai/gpt-oss-120b", "openai/gpt-oss-20b"];
-
-    const modelNames: Record<string, string> = {
-      "openai/gpt-oss-120b": "gpt-oss",
-      "openai/gpt-oss-20b": "gpt-oss",
-    };
-
-    let completion = null;
-    let lastError = null;
-    let modeloUsado = "outro";
-
-    for (const model of models) {
-      try {
-        completion = await client.chat.completions.create({
-          model,
-
-          messages: [
-            {
-              role: "user",
-
-              content: `
+function montarPromptEnem(questao: string, tema: string) {
+  return `
 Adapte a questão para o tema: ${tema}
 
 REGRAS CRÍTICAS:
@@ -239,7 +167,154 @@ O objetivo é RECRIAR A SITUAÇÃO dentro do tema, preservando o problema origin
 
 Questão:
 ${questao}
-`,
+`;
+}
+
+function montarPromptLivre(questao: string, tema: string, materia: string) {
+  return `
+Adapte a questão para o tema: ${tema}
+
+Matéria: ${materia || "não informada"}
+
+REGRAS CRÍTICAS:
+
+1. PRESERVE O EXERCÍCIO
+A questão adaptada deve continuar sendo essencialmente o mesmo exercício da questão original. O estudante deve precisar aplicar o mesmo raciocínio para chegar ao mesmo resultado.
+
+2. PRESERVE OS DADOS NECESSÁRIOS
+Todos os números, valores, unidades, fórmulas, medidas, proporções, informações e condições necessárias para resolver o exercício devem ser preservados.
+
+3. MUDE O CONTEXTO, NÃO O EXERCÍCIO
+A história pode ser diferente, mas o problema que o estudante precisa resolver deve continuar sendo o mesmo.
+
+4. INTEGRE O TEMA DE VERDADE
+O tema deve ter uma função real dentro da situação apresentada. O contexto deve parecer uma situação que originalmente poderia ter sido criada sobre esse tema.
+
+5. ALTERNATIVAS VARIÁVEIS
+Crie a quantidade de alternativas que fizer sentido para a questão. NÃO é obrigatório usar cinco alternativas. Use no mínimo 2 alternativas e mantenha todas plausíveis e coerentes com o enunciado.
+
+6. RESPOSTA CORRETA
+A resposta correta deve ser exatamente uma das alternativas criadas. Todas as demais alternativas devem estar incorretas.
+
+7. NÃO ADICIONE INFORMAÇÕES RELEVANTES
+Não invente novos dados, condições ou informações que possam mudar a interpretação ou facilitar, dificultar ou modificar a resolução do exercício.
+
+8. NÃO REMOVA INFORMAÇÕES RELEVANTES
+Nenhuma informação necessária para compreender ou resolver a questão original pode ser perdida durante a adaptação.
+
+9. SEGURANÇA
+NÃO utilize palavrões, xingamentos ou linguagem vulgar.
+NÃO gere conteúdo sexual ou pornográfico. Se o tema for sexual ou pornográfico, recuse a geração.
+NÃO gere violência gráfica.
+NÃO gere conteúdo discriminatório.
+
+10. FORMATO
+Retorne SOMENTE uma linha, sem explicações, observações ou comentários. Não use "#" nem "§" dentro do título, do corpo ou das alternativas.
+
+FORMATO OBRIGATÓRIO:
+
+titulo # corpo # alt1 § alt2 § alt3 # correta:indice
+
+O índice da resposta correta começa em 0:
+0 = primeira alternativa
+1 = segunda alternativa
+2 = terceira alternativa
+3 = quarta alternativa
+e assim por diante.
+
+EXEMPLO COM 3 ALTERNATIVAS:
+
+"Treino de futebol" # "Durante um treinamento, o vestiário de um time recebeu um recipiente contendo 10 L de água. Quantos litros de água há no recipiente?" # "2 L" § "5 L" § "10 L" # correta:2
+
+O objetivo é RECRIAR A SITUAÇÃO dentro do tema, preservando o problema original, e não simplesmente trocar palavras.
+
+Questão:
+${questao}
+`;
+}
+
+export async function POST(request: Request) {
+  try {
+    const body = await request.json();
+
+    const { questao, tema, materia, tipoAdaptacao } = body;
+
+    const modo: "enem" | "livre" =
+      tipoAdaptacao === "livre" ? "livre" : "enem";
+
+    if (!questao || !tema) {
+      return Response.json(
+        {
+          error: "Questão e tema são obrigatórios.",
+        },
+        {
+          status: 400,
+        },
+      );
+    }
+
+    // FILTRO DO TEMA
+    const analiseTema = analisar(tema);
+    const termoProibido = encontrarTermoProibido(tema);
+
+    console.log("========== FILTRO TEMA ==========");
+    console.log("Tema recebido:", tema);
+    console.log("Resultado profanity-br:", analiseTema);
+    console.log("Termo proibido:", termoProibido);
+    console.log("=================================");
+
+    if (analiseTema.hits.length > 0 || termoProibido) {
+      console.log("TEMA INVÁLIDO:", tema);
+
+      return Response.json(
+        {
+          error: "O tema contém conteúdo inadequado.",
+        },
+        {
+          status: 400,
+        },
+      );
+    }
+    // FILTRO DA QUESTÃO
+    const analiseQuestao = analisar(questao);
+
+    if (!analiseQuestao) {
+      return Response.json(
+        {
+          error: "A questão contém palavras inadequadas.",
+        },
+        {
+          status: 400,
+        },
+      );
+    }
+
+    const models = ["openai/gpt-oss-120b", "openai/gpt-oss-20b"];
+
+    const modelNames: Record<string, string> = {
+      "openai/gpt-oss-120b": "gpt-oss",
+      "openai/gpt-oss-20b": "gpt-oss",
+    };
+
+    let completion = null;
+    let lastError = null;
+    let modeloUsado = "outro";
+
+    const prompt =
+      modo === "livre"
+        ? montarPromptLivre(questao, tema, materia)
+        : montarPromptEnem(questao, tema);
+
+    for (const model of models) {
+      try {
+        completion = await client.chat.completions.create({
+          model,
+
+          messages: [
+            {
+              role: "user",
+
+              content: prompt,
             },
           ],
         });
@@ -280,6 +355,7 @@ ${questao}
     return Response.json({
       text,
       modelo: modeloUsado,
+      tipoAdaptacao: modo,
     });
   } catch (err: any) {
     console.error("Erro API:", err);

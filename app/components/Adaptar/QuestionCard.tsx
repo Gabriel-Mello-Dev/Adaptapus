@@ -2,8 +2,11 @@ type Props = {
   title: string;
   text: string;
   respostas: string[];
+  correta: number;
   perguntando: boolean;
-  respostaEscolhida: number;
+  respostaEscolhida: number | null;
+  resultado: { acertou: boolean; escolhida: number } | null;
+  erro: string | null;
   materia: string;
   modeloIA: string;
 
@@ -21,6 +24,8 @@ import { QuestionHeader } from "./index";
 
 export default function QuestionCard(props: Props) {
   const questaoExiste = props.respostas.length > 0;
+  const respondida = props.resultado !== null;
+  const letraCorreta = String.fromCharCode(65 + props.correta);
 
   return (
     <div className="relative flex w-full min-w-0 flex-1 flex-col items-center overflow-hidden bg-whiteMain">
@@ -553,6 +558,16 @@ export default function QuestionCard(props: Props) {
               ? "Gerando pergunta..."
               : "Gerar pergunta"}
           </button>
+
+          {/* ERRO DE GERAÇÃO */}
+          {props.erro && (
+            <div
+              role="alert"
+              className="rounded-lg border border-red-400/70 bg-red-500/15 p-3 text-sm text-whiteMain"
+            >
+              {props.erro}
+            </div>
+          )}
         </div>
 
         {/* PERGUNTA */}
@@ -574,28 +589,85 @@ export default function QuestionCard(props: Props) {
         {questaoExiste && (
           <div className="mt-6 space-y-3">
 
-            {props.respostas.map((resp, i) => (
-              <button
-                key={i}
-                onClick={() => props.setRespostaEscolhida(i)}
-                className={`
-                  w-full
-                  text-left
-                  p-3
-                  rounded-lg
-                  border
-                  transition
-                  ${
-                    props.respostaEscolhida === i
-                      ? "bg-orangeMain/20 border-orangeMain text-whiteMain"
-                      : "bg-blueSecond/20 border-blueSecond text-whiteMain/80 hover:border-orangeMain"
-                  }
-                `}
-              >
-                {resp}
-              </button>
-            ))}
+            {props.respostas.map((resp, i) => {
+              const selecionada = props.respostaEscolhida === i;
+              const correta = i === props.correta;
 
+              const classeResposta = respondida
+                ? correta
+                  ? "bg-greenMain/20 border-greenMain text-whiteMain"
+                  : selecionada
+                    ? "bg-red-500/15 border-red-400 text-whiteMain/70"
+                    : "bg-blueSecond/10 border-blueSecond/60 text-whiteMain/50"
+                : selecionada
+                  ? "bg-orangeMain/20 border-orangeMain text-whiteMain"
+                  : "bg-blueSecond/20 border-blueSecond text-whiteMain/80 hover:border-orangeMain";
+
+              return (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => props.setRespostaEscolhida(i)}
+                  disabled={respondida}
+                  aria-pressed={selecionada}
+                  className={`
+                    w-full
+                    text-left
+                    p-3
+                    rounded-lg
+                    border
+                    transition
+                    disabled:cursor-default
+                    ${classeResposta}
+                  `}
+                >
+                  {resp}
+                </button>
+              );
+            })}
+
+          </div>
+        )}
+
+        {/* RESULTADO DA RESPOSTA */}
+        {questaoExiste && props.resultado && (
+          <div
+            role="status"
+            aria-live="polite"
+            className={`
+              mt-6
+              rounded-xl
+              border
+              p-4
+              ${
+                props.resultado.acertou
+                  ? "border-greenMain bg-greenMain/15"
+                  : "border-red-400 bg-red-500/10"
+              }
+            `}
+          >
+            <p
+              className={`
+                text-lg
+                font-semibold
+                ${
+                  props.resultado.acertou
+                    ? "text-greenMain"
+                    : "text-red-300"
+                }
+              `}
+            >
+              {props.resultado.acertou ? "Você acertou!" : "Você errou!"}
+            </p>
+
+            {!props.resultado.acertou && props.respostas[props.correta] && (
+              <p className="mt-1 text-sm text-whiteMain/80">
+                Alternativa considerada correta pela IA ({letraCorreta}):{" "}
+                <span className="font-semibold text-whiteMain">
+                  {props.respostas[props.correta]}
+                </span>
+              </p>
+            )}
           </div>
         )}
 
@@ -603,7 +675,13 @@ export default function QuestionCard(props: Props) {
         {questaoExiste && (
           <>
             <button
+              type="button"
               onClick={props.onVerificar}
+              disabled={
+                props.perguntando ||
+                props.respostaEscolhida === null ||
+                respondida
+              }
               className="
                 w-full
                 mt-6
@@ -611,13 +689,21 @@ export default function QuestionCard(props: Props) {
                 rounded-lg
                 bg-greenMain
                 hover:bg-greenMain/80
+                disabled:opacity-50
+                disabled:cursor-not-allowed
+                disabled:hover:bg-greenMain
                 transition
                 text-whiteMain
                 font-semibold
               "
             >
-              Verificar resposta
+              {respondida ? "Resposta verificada" : "Verificar resposta"}
             </button>
+
+            {/* AVISO DE CORREÇÃO POR IA */}
+            <p className="mt-3 text-xs text-whiteMain/60">
+              Resposta conferida por IA. A correção pode conter erros.
+            </p>
 
             {/* MODELO */}
             <div className="mt-4 pt-3 border-t border-blueSecond">

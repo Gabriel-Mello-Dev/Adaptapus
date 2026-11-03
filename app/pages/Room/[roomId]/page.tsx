@@ -77,6 +77,13 @@ export default function ChatPage() {
 
   const [javotou, setJavotou] = useState(false);
   const votoEnviadoRef = useRef(false);
+
+  /*
+   * Guarda se o último erro local foi causado pelo limite diário.
+   * O evento `question-generating` pode chegar atrasado e resetar
+   * o estado antes do `question-error`; este ref preserva o motivo.
+   */
+  const ultimoErroFoiLimiteRef = useRef(false);
   /*
    * Indica que a IA não conseguiu adaptar a questão.
    */
@@ -366,6 +373,7 @@ export default function ChatPage() {
        */
       setErroAdaptacao(false);
       setLimiteAtingido(false);
+      ultimoErroFoiLimiteRef.current = false;
 
       setQuestion(newQuestion);
 
@@ -403,8 +411,17 @@ export default function ChatPage() {
 
       /*
        * Diferencia o erro de limite diário dos demais erros.
+       *
+       * Não sobrescreve um limite já detectado localmente: se o
+       * servidor de socket ainda não repassa a flag, o evento chega
+       * sem `limiteAtingido` e não deve apagar a mensagem de limite.
        */
-      setLimiteAtingido(payload?.limiteAtingido === true);
+      setLimiteAtingido(
+        (anterior) =>
+          anterior ||
+          payload?.limiteAtingido === true ||
+          ultimoErroFoiLimiteRef.current,
+      );
 
       /*
        * Não deixa aparecer a questão anterior.
@@ -696,6 +713,11 @@ export default function ChatPage() {
 
     let limiteDoPlano = false;
 
+    /*
+     * Novo pedido: limpa o motivo do erro anterior.
+     */
+    ultimoErroFoiLimiteRef.current = false;
+
     try {
       setGerandoQuestao(true);
 
@@ -865,7 +887,22 @@ Resposta correta: ${questaoAtual.resposta}
     } catch (error) {
       console.error("Erro ao adaptar questão:", error);
 
+      /*
+       * Atualiza o estado local imediatamente, sem depender
+       * do retorno do socket. Assim o administrador vê o erro
+       * mesmo que o evento demore ou não seja reenviado.
+       */
       setGerandoQuestao(false);
+      setErroAdaptacao(true);
+      setLimiteAtingido(limiteDoPlano);
+      ultimoErroFoiLimiteRef.current = limiteDoPlano;
+      setQuestion(null);
+      setRespostaSelecionada(null);
+      setJavotou(false);
+      votoEnviadoRef.current = false;
+      setVotes({});
+      setVotingFinalizado(false);
+      setResultadoFinal(null);
 
       /*
        * Avisa todos da sala que a adaptação falhou.
@@ -911,6 +948,7 @@ Resposta correta: ${questaoAtual.resposta}
     setErroAdaptacao(false);
 
     setLimiteAtingido(false);
+    ultimoErroFoiLimiteRef.current = false;
 
     setTema("");
 

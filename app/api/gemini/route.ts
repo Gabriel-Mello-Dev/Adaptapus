@@ -2,6 +2,7 @@
 
 import OpenAI from "openai";
 import { analisar } from "profanity-br";
+import { createClient } from "@/app/libs/supabase/server";
 
 const client = new OpenAI({
   baseURL: "https://api.groq.com/openai/v1",
@@ -235,12 +236,86 @@ ${questao}
 
 export async function POST(request: Request) {
   try {
+    console.log("1. Entrou na API");
+
+    const supabase = await createClient();
+
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    console.log("user:", user);
+
+    if (authError || !user) {
+      return Response.json(
+        {
+          error: "Usuário não autenticado.",
+        },
+        {
+          status: 401,
+        },
+      );
+    }
+
+    const userId = user.id;
+    console.log("Usuário autenticado:", userId);
+
+    // SINCRONIZAR PLANO E RENOVAR CONTADOR
+    const { error: syncError } = await supabase.rpc(
+      "sincronizar_limite_diario",
+    );
+
+    if (syncError) {
+      console.error("Erro ao sincronizar limite:", syncError);
+
+      return Response.json(
+        { error: "Não foi possível verificar seu plano." },
+        { status: 500 },
+      );
+    }
+
+    // CONSULTAR LIMITE ATUALIZADO
+    const { data, error } = await supabase
+      .from("limite_questoes")
+      .select("*")
+      .eq("uid", userId)
+      .maybeSingle();
+
+    if (error || !data) {
+      console.error("Erro ao consultar limite:", error);
+
+      return Response.json(
+        { error: "Não foi possível consultar seu limite." },
+        { status: 500 },
+      );
+    }
+
+    const limiteUser = data.limiteplano;
+    const questoesDiarias = data.questoesadaptadas;
+
+    // VERIFICAR SE ATINGIU O LIMITE
+    if (limiteUser !== -1 && questoesDiarias >= limiteUser) {
+      return Response.json(
+        {
+          code: "limite_atingido",
+          error: "Você atingiu seu limite de adaptações!",
+          message: `Seu plano permite adaptar até ${limiteUser} questões por dia.`,
+          limite: limiteUser,
+          utilizadas: questoesDiarias,
+        },
+        { status: 403 },
+      );
+    }
+
+    console.log("Plano:", limiteUser === -1 ? "Ilimitado" : limiteUser);
+    console.log("Questões utilizadas:", questoesDiarias);
+
     const body = await request.json();
 
     const { questao, tema, materia, tipoAdaptacao } = body;
 
-    const modo: "enem" | "livre" =
-      tipoAdaptacao === "livre" ? "livre" : "enem";
+    const modo: "enem" | "livre" = tipoAdaptacao === "livre" ? "livre" : "enem";
 
     if (!questao || !tema) {
       return Response.json(
@@ -351,11 +426,36 @@ export async function POST(request: Request) {
         },
       );
     }
+    // INCREMENTAR QUESTÕES ADAPTADAS
+    console.log("Valor atual:", questoesDiarias);
+    console.log("Novo valor:", questoesDiarias + 1);
+
+    const { data: atualizado, error: updateError } = await supabase
+      .from("limite_questoes")
+      .update({
+        questoesadaptadas: questoesDiarias + 1,
+      })
+      .eq("uid", userId)
+      .select();
+
+    console.log("Resultado do UPDATE:", atualizado);
+    console.log("Erro do UPDATE:", updateError);
+
+    if (updateError || !atualizado || atualizado.length === 0) {
+      return Response.json(
+        { error: "Não foi possível atualizar o limite de questões." },
+        { status: 500 },
+      );
+    }
+    console.log("Questões adaptadas:", questoesDiarias + 1);
 
     return Response.json({
       text,
       modelo: modeloUsado,
       tipoAdaptacao: modo,
+      questoesAdaptadas: questoesDiarias + 1,
+      limite: limiteUser,
+      ilimitado: limiteUser === -1,
     });
   } catch (err: any) {
     console.error("Erro API:", err);

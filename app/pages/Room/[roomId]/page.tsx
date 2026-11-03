@@ -77,10 +77,22 @@ export default function ChatPage() {
 
   const [javotou, setJavotou] = useState(false);
   const votoEnviadoRef = useRef(false);
+
+  /*
+   * Guarda se o último erro local foi causado pelo limite diário.
+   * O evento `question-generating` pode chegar atrasado e resetar
+   * o estado antes do `question-error`; este ref preserva o motivo.
+   */
+  const ultimoErroFoiLimiteRef = useRef(false);
   /*
    * Indica que a IA não conseguiu adaptar a questão.
    */
   const [erroAdaptacao, setErroAdaptacao] = useState(false);
+
+  /*
+   * Indica que o erro de adaptação foi causado pelo limite diário.
+   */
+  const [limiteAtingido, setLimiteAtingido] = useState(false);
 
   const [votingFinalizado, setVotingFinalizado] = useState(false);
   const [resultadoFinal, setResultadoFinal] = useState<any>(null);
@@ -329,6 +341,7 @@ export default function ChatPage() {
        * Remove qualquer erro anterior.
        */
       setErroAdaptacao(false);
+      setLimiteAtingido(false);
 
       /*
        * Remove a questão anterior enquanto a nova é gerada.
@@ -359,6 +372,8 @@ export default function ChatPage() {
        * remove qualquer mensagem de erro.
        */
       setErroAdaptacao(false);
+      setLimiteAtingido(false);
+      ultimoErroFoiLimiteRef.current = false;
 
       setQuestion(newQuestion);
 
@@ -384,7 +399,7 @@ export default function ChatPage() {
     /*
      * ERRO AO ADAPTAR QUESTÃO
      */
-    const handleQuestionError = () => {
+    const handleQuestionError = (payload?: { limiteAtingido?: boolean }) => {
       console.error("Não foi possível adaptar a questão.");
 
       setGerandoQuestao(false);
@@ -393,6 +408,20 @@ export default function ChatPage() {
        * Ativa a mensagem de erro.
        */
       setErroAdaptacao(true);
+
+      /*
+       * Diferencia o erro de limite diário dos demais erros.
+       *
+       * Não sobrescreve um limite já detectado localmente: se o
+       * servidor de socket ainda não repassa a flag, o evento chega
+       * sem `limiteAtingido` e não deve apagar a mensagem de limite.
+       */
+      setLimiteAtingido(
+        (anterior) =>
+          anterior ||
+          payload?.limiteAtingido === true ||
+          ultimoErroFoiLimiteRef.current,
+      );
 
       /*
        * Não deixa aparecer a questão anterior.
@@ -682,6 +711,13 @@ export default function ChatPage() {
 
     if (!questaoAtual) return;
 
+    let limiteDoPlano = false;
+
+    /*
+     * Novo pedido: limpa o motivo do erro anterior.
+     */
+    ultimoErroFoiLimiteRef.current = false;
+
     try {
       setGerandoQuestao(true);
 
@@ -689,6 +725,7 @@ export default function ChatPage() {
        * Remove erro anterior.
        */
       setErroAdaptacao(false);
+      setLimiteAtingido(false);
 
       await salvarTema();
 
@@ -731,6 +768,16 @@ Resposta correta: ${questaoAtual.resposta}
       });
 
       if (!res.ok) {
+        const erroData = await res.json().catch(() => null);
+
+        if (res.status === 403 || erroData?.code === "limite_atingido") {
+          limiteDoPlano = true;
+
+          throw new Error(
+            "Limite de adaptações diárias atingido, altere seu plano para continuar.",
+          );
+        }
+
         throw new Error("Erro ao gerar questão");
       }
 
@@ -840,13 +887,29 @@ Resposta correta: ${questaoAtual.resposta}
     } catch (error) {
       console.error("Erro ao adaptar questão:", error);
 
+      /*
+       * Atualiza o estado local imediatamente, sem depender
+       * do retorno do socket. Assim o administrador vê o erro
+       * mesmo que o evento demore ou não seja reenviado.
+       */
       setGerandoQuestao(false);
+      setErroAdaptacao(true);
+      setLimiteAtingido(limiteDoPlano);
+      ultimoErroFoiLimiteRef.current = limiteDoPlano;
+      setQuestion(null);
+      setRespostaSelecionada(null);
+      setJavotou(false);
+      votoEnviadoRef.current = false;
+      setVotes({});
+      setVotingFinalizado(false);
+      setResultadoFinal(null);
 
       /*
        * Avisa todos da sala que a adaptação falhou.
        */
       socketRef.current?.emit("question-error", {
         roomId,
+        limiteAtingido: limiteDoPlano,
       });
     }
   }
@@ -883,6 +946,9 @@ Resposta correta: ${questaoAtual.resposta}
     setQuestion(null);
 
     setErroAdaptacao(false);
+
+    setLimiteAtingido(false);
+    ultimoErroFoiLimiteRef.current = false;
 
     setTema("");
 
@@ -1038,6 +1104,7 @@ Resposta correta: ${questaoAtual.resposta}
                   javotou={javotou}
                   votingFinalizado={votingFinalizado}
                   resultadoFinal={resultadoFinal}
+                  limiteAtingido={limiteAtingido}
                 />
 
                 {/* CHAT */}
@@ -1066,6 +1133,7 @@ Resposta correta: ${questaoAtual.resposta}
                 javotou={javotou}
                 votingFinalizado={votingFinalizado}
                 resultadoFinal={resultadoFinal}
+                limiteAtingido={limiteAtingido}
               />
 
               {/* CHAT */}

@@ -153,6 +153,7 @@ export function useQuestion() {
   const [modeloIA, setModeloIA] = useState("outro");
   const [resultado, setResultado] = useState<ResultadoResposta | null>(null);
   const [erro, setErro] = useState<string | null>(null);
+  const [limiteAtingido, setLimiteAtingido] = useState(false);
 
   const respondidaRef = useRef(false);
 
@@ -290,6 +291,7 @@ export function useQuestion() {
     try {
       setPerguntando(true);
       setErro(null);
+      setLimiteAtingido(false);
 
       const tipoFinal: TipoAdaptacao =
         tipoAdaptacao === "livre" ? "livre" : "enem";
@@ -313,9 +315,18 @@ export function useQuestion() {
         text?: unknown;
         modelo?: unknown;
         error?: unknown;
+        code?: unknown;
       };
 
       if (!res.ok) {
+        if (res.status === 403 || data.code === "limite_atingido") {
+          setLimiteAtingido(true);
+
+          throw new Error(
+            "Limite de adaptações diárias atingido, altere seu plano para continuar."
+          );
+        }
+
         throw new Error(
           typeof data.error === "string" && data.error.trim()
             ? data.error
@@ -422,6 +433,7 @@ export function useQuestion() {
     setModeloIA("outro");
     setResultado(null);
     setErro(null);
+    setLimiteAtingido(false);
     respondidaRef.current = false;
   }
 
@@ -433,6 +445,7 @@ export function useQuestion() {
     perguntando,
     resultado,
     erro,
+    limiteAtingido,
     gerarPergunta,
     verificar,
     salvarTema,

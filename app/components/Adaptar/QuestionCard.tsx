@@ -7,6 +7,7 @@ type Props = {
   respostaEscolhida: number | null;
   resultado: { acertou: boolean; escolhida: number } | null;
   erro: string | null;
+  limiteAtingido?: boolean;
   materia: string;
   modeloIA: string;
 
@@ -565,7 +566,23 @@ export default function QuestionCard(props: Props) {
               role="alert"
               className="rounded-lg border border-red-400/70 bg-red-500/15 p-3 text-sm text-whiteMain"
             >
-              {props.erro}
+              {props.limiteAtingido ? (
+                <div className="flex flex-col items-start gap-3">
+                  <span>
+                    Limite de adaptações diárias atingido, altere seu plano para
+                    continuar.
+                  </span>
+
+                  <a
+                    href="/pages/planos"
+                    className="rounded-lg bg-orangeMain px-4 py-2 font-semibold text-whiteMain transition hover:bg-orangeSecond"
+                  >
+                    Alterar plano
+                  </a>
+                </div>
+              ) : (
+                props.erro
+              )}
             </div>
           )}
         </div>

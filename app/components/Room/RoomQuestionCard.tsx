@@ -96,22 +96,22 @@ export default function RoomQuestionCard({
           <div className="flex flex-col items-center justify-center py-10 text-center">
             <p className="text-lg font-semibold text-whiteMain">
               {limiteAtingido
-                ? "Limite diário atingido"
+                ? "Limite de adaptações diárias atingido"
                 : "Não foi possível adaptar a questão"}
             </p>
 
             <p className="text-sm text-whiteMain/60 mt-2 max-w-md">
               {limiteAtingido
-                ? "Você utilizou todas as adaptações disponíveis no seu plano de hoje. Conheça nossos planos para continuar."
+                ? "Altere seu plano para continuar."
                 : "A inteligência artificial não conseguiu adaptar esta questão para o tema escolhido."}
             </p>
 
             {limiteAtingido && (
               <a
-                href="/planos"
+                href="/pages/planos"
                 className="mt-5 px-6 py-3 rounded-xl bg-orangeMain hover:bg-orangeSecond text-whiteMain font-semibold transition"
               >
-                Ver planos
+                Alterar plano
               </a>
             )}
           </div>

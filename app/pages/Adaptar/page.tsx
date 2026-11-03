@@ -20,6 +20,7 @@ export default function Home() {
     modeloIA,
     resultado,
     erro,
+    limiteAtingido,
     gerarPergunta,
     verificar,
   } = useQuestion();
@@ -94,6 +95,7 @@ export default function Home() {
         respostaEscolhida={respostaEscolhida}
         resultado={resultado}
         erro={erro}
+        limiteAtingido={limiteAtingido}
         materia={materia}
         modeloIA={modeloIA}
         questao={questao}

@@ -298,6 +298,7 @@ export async function POST(request: Request) {
     if (limiteUser !== -1 && questoesDiarias >= limiteUser) {
       return Response.json(
         {
+          code: "limite_atingido",
           error: "Você atingiu seu limite de adaptações!",
           message: `Seu plano permite adaptar até ${limiteUser} questões por dia.`,
           limite: limiteUser,

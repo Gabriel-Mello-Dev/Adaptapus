@@ -41,6 +41,7 @@ interface RoomQuestionCardProps {
   votingFinalizado: boolean;
 
   resultadoFinal: ResultadoFinal | null;
+  limiteAtingido?: boolean;
 }
 
 export default function RoomQuestionCard({
@@ -59,6 +60,7 @@ export default function RoomQuestionCard({
   javotou,
   votingFinalizado,
   resultadoFinal,
+  limiteAtingido = false,
 }: RoomQuestionCardProps) {
   return (
     <div className="w-full bg-blueMain border border-blueSecond rounded-2xl p-6 min-h-55 flex flex-col justify-center">
@@ -88,14 +90,31 @@ export default function RoomQuestionCard({
          * ERRO AO ADAPTAR
          */
         <div className="flex flex-col items-center justify-center py-10 text-center">
-          <p className="text-lg font-semibold text-whiteMain">
-            Não foi possível adaptar a questão
-          </p>
+          {/*
+           * ERRO AO ADAPTAR
+           */}
+          <div className="flex flex-col items-center justify-center py-10 text-center">
+            <p className="text-lg font-semibold text-whiteMain">
+              {limiteAtingido
+                ? "Limite diário atingido"
+                : "Não foi possível adaptar a questão"}
+            </p>
 
-          <p className="text-sm text-whiteMain/60 mt-2 max-w-md">
-            A inteligência artificial não conseguiu adaptar esta questão para o
-            tema escolhido.
-          </p>
+            <p className="text-sm text-whiteMain/60 mt-2 max-w-md">
+              {limiteAtingido
+                ? "Você utilizou todas as adaptações disponíveis no seu plano de hoje. Conheça nossos planos para continuar."
+                : "A inteligência artificial não conseguiu adaptar esta questão para o tema escolhido."}
+            </p>
+
+            {limiteAtingido && (
+              <a
+                href="/planos"
+                className="mt-5 px-6 py-3 rounded-xl bg-orangeMain hover:bg-orangeSecond text-whiteMain font-semibold transition"
+              >
+                Ver planos
+              </a>
+            )}
+          </div>
         </div>
       ) : !question ? (
         /*

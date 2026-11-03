@@ -45,7 +45,8 @@ export default function Perfil() {
   const [carregando, setCarregando] = useState(true);
   const [temas, setTemas] = useState<string[]>([]);
   const [progresso, setProgresso] = useState<Progresso>(progressoInicial);
-
+  const [plano, setPlano] = useState<number | null>(null);
+  const [limiteRestante, setLimiteRestante] = useState<number | null>(null);
   function normalizarTexto(texto: string) {
     return texto
       .normalize("NFD")
@@ -177,45 +178,71 @@ export default function Perfil() {
     }
   }
 
- useEffect(() => {
-  async function carregarPerfil() {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+  useEffect(() => {
+    async function carregarPerfil() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
-    if (!user) {
-      router.push("/pages/SignIn");
-      return;
+      if (!user) {
+        router.push("/pages/SignIn");
+        return;
+      }
+
+      const { data: usuario, error: usuarioError } = await supabase
+        .from("usuarios")
+        .select("nome, active, plano")
+        .eq("uid", user.id)
+        .single();
+
+      if (usuarioError || !usuario) {
+        await supabase.auth.signOut();
+        router.push("/pages/SignIn");
+        return;
+      }
+
+      if (usuario.active === false) {
+        await supabase.auth.signOut();
+        router.push("/pages/SignIn");
+        return;
+      }
+
+      setEmail(user.email || "");
+      setNome(usuario.nome);
+
+      setPlano(usuario.plano);
+
+      // Atualizar o limite diário
+      const { error: syncError } = await supabase.rpc(
+        "sincronizar_limite_diario",
+      );
+
+      if (syncError) {
+        console.error("Erro ao sincronizar limite:", syncError);
+      } else {
+        const { data: limite, error: limiteError } = await supabase
+          .from("limite_questoes")
+          .select("limiteplano, questoesadaptadas")
+          .eq("uid", user.id)
+          .single();
+
+        if (limiteError) {
+          console.error("Erro ao buscar limite:", limiteError);
+        } else {
+          setLimiteRestante(
+            limite.limiteplano === -1
+              ? -1
+              : Math.max(0, limite.limiteplano - limite.questoesadaptadas),
+          );
+        }
+      }
+      setCarregando(false);
     }
 
-    const { data: usuario, error: usuarioError } = await supabase
-      .from("usuarios")
-      .select("nome, active")
-      .eq("uid", user.id)
-      .single();
-
-    if (usuarioError || !usuario) {
-      await supabase.auth.signOut();
-      router.push("/pages/SignIn");
-      return;
-    }
-
-    if (usuario.active === false) {
-      await supabase.auth.signOut();
-      router.push("/pages/SignIn");
-      return;
-    }
-
-    setEmail(user.email || "");
-    setNome(usuario.nome);
-
-    setCarregando(false);
-  }
-
-  carregarPerfil();
-  carregarTemas();
-  carregarProgresso();
-}, []);
+    carregarPerfil();
+    carregarTemas();
+    carregarProgresso();
+  }, []);
 
   async function logout() {
     await supabase.auth.signOut();
@@ -230,27 +257,26 @@ export default function Perfil() {
     return Math.round((materia.acertos / materia.total) * 100);
   }
 
-async function desativarConta() {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  async function desativarConta() {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-  if (!user) return;
+    if (!user) return;
 
-  const { error } = await supabase
-    .from("usuarios")
-    .update({ active: false })
-    .eq("uid", user.id);
+    const { error } = await supabase
+      .from("usuarios")
+      .update({ active: false })
+      .eq("uid", user.id);
 
-  if (error) {
-    console.error("Erro ao desativar conta:", error);
-    return;
+    if (error) {
+      console.error("Erro ao desativar conta:", error);
+      return;
+    }
+
+    await supabase.auth.signOut();
+    router.push("/pages/SignIn");
   }
-
-  await supabase.auth.signOut();
-  router.push("/pages/SignIn");
-}
-  
 
   if (carregando) {
     return (
@@ -262,10 +288,8 @@ async function desativarConta() {
 
   return (
     <main className="min-h-screen bg-whiteMain text-blueMain p-6 relative">
-
       {/* DECORAÇÕES SVG */}
       <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
-
         {/* ========================= */}
         {/* BOLHAS - ESQUERDA */}
         {/* ========================= */}
@@ -275,12 +299,7 @@ async function desativarConta() {
           viewBox="0 0 150 150"
           fill="none"
         >
-          <circle
-            cx="28"
-            cy="35"
-            r="6"
-            fill="currentColor"
-          />
+          <circle cx="28" cy="35" r="6" fill="currentColor" />
 
           <circle
             cx="82"
@@ -298,21 +317,10 @@ async function desativarConta() {
             strokeWidth="2"
           />
 
-          <circle
-            cx="112"
-            cy="88"
-            r="4"
-            fill="currentColor"
-          />
+          <circle cx="112" cy="88" r="4" fill="currentColor" />
 
-          <circle
-            cx="98"
-            cy="20"
-            r="3"
-            fill="currentColor"
-          />
+          <circle cx="98" cy="20" r="3" fill="currentColor" />
         </svg>
-
 
         {/* ========================= */}
         {/* BOLHAS - DIREITA */}
@@ -323,12 +331,7 @@ async function desativarConta() {
           viewBox="0 0 160 160"
           fill="none"
         >
-          <circle
-            cx="35"
-            cy="30"
-            r="5"
-            fill="currentColor"
-          />
+          <circle cx="35" cy="30" r="5" fill="currentColor" />
 
           <circle
             cx="82"
@@ -338,12 +341,7 @@ async function desativarConta() {
             strokeWidth="2"
           />
 
-          <circle
-            cx="128"
-            cy="83"
-            r="6"
-            fill="currentColor"
-          />
+          <circle cx="128" cy="83" r="6" fill="currentColor" />
 
           <circle
             cx="62"
@@ -353,14 +351,8 @@ async function desativarConta() {
             strokeWidth="2"
           />
 
-          <circle
-            cx="126"
-            cy="132"
-            r="3"
-            fill="currentColor"
-          />
+          <circle cx="126" cy="132" r="3" fill="currentColor" />
         </svg>
-
 
         {/* ========================= */}
         {/* BOLHAS CENTRAIS ESQUERDA */}
@@ -371,27 +363,11 @@ async function desativarConta() {
           viewBox="0 0 120 120"
           fill="none"
         >
-          <circle
-            cx="24"
-            cy="30"
-            r="4"
-            fill="currentColor"
-          />
+          <circle cx="24" cy="30" r="4" fill="currentColor" />
 
-          <circle
-            cx="60"
-            cy="52"
-            r="8"
-            stroke="currentColor"
-            strokeWidth="2"
-          />
+          <circle cx="60" cy="52" r="8" stroke="currentColor" strokeWidth="2" />
 
-          <circle
-            cx="92"
-            cy="28"
-            r="5"
-            fill="currentColor"
-          />
+          <circle cx="92" cy="28" r="5" fill="currentColor" />
 
           <circle
             cx="76"
@@ -402,7 +378,6 @@ async function desativarConta() {
           />
         </svg>
 
-
         {/* ========================= */}
         {/* BOLHAS CENTRAIS DIREITA */}
         {/* ========================= */}
@@ -412,37 +387,14 @@ async function desativarConta() {
           viewBox="0 0 130 130"
           fill="none"
         >
-          <circle
-            cx="28"
-            cy="35"
-            r="5"
-            fill="currentColor"
-          />
+          <circle cx="28" cy="35" r="5" fill="currentColor" />
 
-          <circle
-            cx="64"
-            cy="58"
-            r="9"
-            stroke="currentColor"
-            strokeWidth="2"
-          />
+          <circle cx="64" cy="58" r="9" stroke="currentColor" strokeWidth="2" />
 
-          <circle
-            cx="105"
-            cy="32"
-            r="4"
-            fill="currentColor"
-          />
+          <circle cx="105" cy="32" r="4" fill="currentColor" />
 
-          <circle
-            cx="94"
-            cy="96"
-            r="7"
-            stroke="currentColor"
-            strokeWidth="2"
-          />
+          <circle cx="94" cy="96" r="7" stroke="currentColor" strokeWidth="2" />
         </svg>
-
 
         {/* ========================= */}
         {/* CORAIS / ALGAS - ESQUERDA */}
@@ -453,7 +405,6 @@ async function desativarConta() {
           viewBox="0 0 320 320"
           fill="none"
         >
-
           {/* Coral laranja */}
           <path
             d="
@@ -540,7 +491,6 @@ async function desativarConta() {
             opacity="0.35"
           />
         </svg>
-
 
         {/* ========================= */}
         {/* CORAIS / ALGAS - DIREITA */}
@@ -551,7 +501,6 @@ async function desativarConta() {
           viewBox="0 0 320 320"
           fill="none"
         >
-
           {/* Coral laranja */}
           <path
             d="
@@ -639,7 +588,6 @@ async function desativarConta() {
           />
         </svg>
 
-
         {/* ========================= */}
         {/* BOLHAS PRÓXIMAS À BASE */}
         {/* ========================= */}
@@ -649,103 +597,89 @@ async function desativarConta() {
           viewBox="0 0 100 100"
           fill="none"
         >
-          <circle
-            cx="25"
-            cy="70"
-            r="5"
-            stroke="currentColor"
-            strokeWidth="2"
-          />
+          <circle cx="25" cy="70" r="5" stroke="currentColor" strokeWidth="2" />
 
-          <circle
-            cx="56"
-            cy="45"
-            r="9"
-            stroke="currentColor"
-            strokeWidth="2"
-          />
+          <circle cx="56" cy="45" r="9" stroke="currentColor" strokeWidth="2" />
 
-          <circle
-            cx="78"
-            cy="22"
-            r="4"
-            fill="currentColor"
-          />
+          <circle cx="78" cy="22" r="4" fill="currentColor" />
         </svg>
-
 
         <svg
           className="absolute bottom-[15%] right-[14%] h-24 w-24 text-greenMain/30 sm:right-[18%]"
           viewBox="0 0 100 100"
           fill="none"
         >
-          <circle
-            cx="24"
-            cy="69"
-            r="4"
-            stroke="currentColor"
-            strokeWidth="2"
-          />
+          <circle cx="24" cy="69" r="4" stroke="currentColor" strokeWidth="2" />
 
-          <circle
-            cx="56"
-            cy="44"
-            r="8"
-            stroke="currentColor"
-            strokeWidth="2"
-          />
+          <circle cx="56" cy="44" r="8" stroke="currentColor" strokeWidth="2" />
 
-          <circle
-            cx="77"
-            cy="20"
-            r="4"
-            fill="currentColor"
-          />
+          <circle cx="77" cy="20" r="4" fill="currentColor" />
         </svg>
-
       </div>
 
       <div className="relative z-10 w-full">
         <BackButton />
 
         <div className="mx-auto w-full max-w-5xl mt-3">
-
           {/* TÍTULO */}
           <header className="mb-8">
-            <h1 className="text-3xl font-bold text-orangeMain">
-              Meu Perfil
-            </h1>
+            <h1 className="text-3xl font-bold text-orangeMain">Meu Perfil</h1>
 
             <p className="mt-1 text-sm text-orangeSecond">
               Informações da conta e progresso.
             </p>
           </header>
 
-          {/* INFORMAÇÕES */}
+          {/* MEU PLANO */}
           <section className="mb-8 rounded-2xl border border-orangeMain bg-blueMain p-6 text-whiteMain">
-            <h2 className="mb-5 text-xl font-semibold">
-              Informações da conta
-            </h2>
+            <h2 className="mb-4 text-xl font-semibold">Meu plano</h2>
 
-            <div className="grid gap-5 sm:grid-cols-2">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <p className="text-sm text-whiteMain/60">
-                  Nome
-                </p>
+                <p className="text-sm text-whiteMain/60">Plano atual</p>
 
-                <p className="mt-1 text-whiteMain">
-                  {nome}
+                <p className="text-2xl font-bold text-orangeSecond">
+                  {plano === 1
+                    ? "Polvo Pigmeu"
+                    : plano === 2
+                      ? "Polvo Comum"
+                      : plano === 3
+                        ? "Kraken"
+                        : "Não identificado"}
                 </p>
               </div>
 
               <div>
                 <p className="text-sm text-whiteMain/60">
-                  Email
+                  Adaptações restantes hoje
                 </p>
 
-                <p className="mt-1 break-all text-whiteMain">
-                  {email}
+                <p className="text-2xl font-bold">
+                  {limiteRestante === null
+                    ? "Carregando..."
+                    : limiteRestante === -1
+                      ? "Ilimitadas"
+                      : `${limiteRestante} questões`}
                 </p>
+              </div>
+            </div>
+          </section>
+
+          {/* INFORMAÇÕES */}
+          <section className="mb-8 rounded-2xl border border-orangeMain bg-blueMain p-6 text-whiteMain">
+            <h2 className="mb-5 text-xl font-semibold">Informações da conta</h2>
+
+            <div className="grid gap-5 sm:grid-cols-2">
+              <div>
+                <p className="text-sm text-whiteMain/60">Nome</p>
+
+                <p className="mt-1 text-whiteMain">{nome}</p>
+              </div>
+
+              <div>
+                <p className="text-sm text-whiteMain/60">Email</p>
+
+                <p className="mt-1 break-all text-whiteMain">{email}</p>
               </div>
             </div>
           </section>
@@ -763,18 +697,13 @@ async function desativarConta() {
             </div>
 
             <div className="grid gap-4 md:grid-cols-3">
-
               {/* MATEMÁTICA */}
               <div className="rounded-2xl border border-orangeMain bg-blueMain p-5 text-whiteMain">
-                <h3 className="mb-4 font-semibold">
-                  Matemática
-                </h3>
+                <h3 className="mb-4 font-semibold">Matemática</h3>
 
                 <div className="mb-4">
                   <div className="mb-1 flex justify-between text-sm">
-                    <span className="text-whiteMain/70">
-                      Aproveitamento
-                    </span>
+                    <span className="text-whiteMain/70">Aproveitamento</span>
 
                     <span className="text-whiteMain">
                       {calcularPorcentagem(progresso.matematica)}%
@@ -793,9 +722,7 @@ async function desativarConta() {
 
                 <div className="grid grid-cols-2 gap-3">
                   <div className="rounded-xl border border-blueSecond bg-blueSecond/20 p-3">
-                    <p className="text-sm text-whiteMain/60">
-                      Acertos
-                    </p>
+                    <p className="text-sm text-whiteMain/60">Acertos</p>
 
                     <p className="mt-1 text-2xl font-semibold text-greenMain">
                       {progresso.matematica.acertos}
@@ -803,9 +730,7 @@ async function desativarConta() {
                   </div>
 
                   <div className="rounded-xl border border-blueSecond bg-blueSecond/20 p-3">
-                    <p className="text-sm text-whiteMain/60">
-                      Erros
-                    </p>
+                    <p className="text-sm text-whiteMain/60">Erros</p>
 
                     <p className="mt-1 text-2xl font-semibold text-red-400">
                       {progresso.matematica.erros}
@@ -820,15 +745,11 @@ async function desativarConta() {
 
               {/* FÍSICA */}
               <div className="rounded-2xl border border-orangeMain bg-blueMain p-5 text-whiteMain">
-                <h3 className="mb-4 font-semibold">
-                  Física
-                </h3>
+                <h3 className="mb-4 font-semibold">Física</h3>
 
                 <div className="mb-4">
                   <div className="mb-1 flex justify-between text-sm">
-                    <span className="text-whiteMain/70">
-                      Aproveitamento
-                    </span>
+                    <span className="text-whiteMain/70">Aproveitamento</span>
 
                     <span className="text-whiteMain">
                       {calcularPorcentagem(progresso.fisica)}%
@@ -847,9 +768,7 @@ async function desativarConta() {
 
                 <div className="grid grid-cols-2 gap-3">
                   <div className="rounded-xl border border-blueSecond bg-blueSecond/20 p-3">
-                    <p className="text-sm text-whiteMain/60">
-                      Acertos
-                    </p>
+                    <p className="text-sm text-whiteMain/60">Acertos</p>
 
                     <p className="mt-1 text-2xl font-semibold text-greenMain">
                       {progresso.fisica.acertos}
@@ -857,9 +776,7 @@ async function desativarConta() {
                   </div>
 
                   <div className="rounded-xl border border-blueSecond bg-blueSecond/20 p-3">
-                    <p className="text-sm text-whiteMain/60">
-                      Erros
-                    </p>
+                    <p className="text-sm text-whiteMain/60">Erros</p>
 
                     <p className="mt-1 text-2xl font-semibold text-red-400">
                       {progresso.fisica.erros}
@@ -874,15 +791,11 @@ async function desativarConta() {
 
               {/* QUÍMICA */}
               <div className="rounded-2xl border border-orangeMain bg-blueMain p-5 text-whiteMain">
-                <h3 className="mb-4 font-semibold">
-                  Química
-                </h3>
+                <h3 className="mb-4 font-semibold">Química</h3>
 
                 <div className="mb-4">
                   <div className="mb-1 flex justify-between text-sm">
-                    <span className="text-whiteMain/70">
-                      Aproveitamento
-                    </span>
+                    <span className="text-whiteMain/70">Aproveitamento</span>
 
                     <span className="text-whiteMain">
                       {calcularPorcentagem(progresso.quimica)}%
@@ -901,9 +814,7 @@ async function desativarConta() {
 
                 <div className="grid grid-cols-2 gap-3">
                   <div className="rounded-xl border border-blueSecond bg-blueSecond/20 p-3">
-                    <p className="text-sm text-whiteMain/60">
-                      Acertos
-                    </p>
+                    <p className="text-sm text-whiteMain/60">Acertos</p>
 
                     <p className="mt-1 text-2xl font-semibold text-greenMain">
                       {progresso.quimica.acertos}
@@ -911,9 +822,7 @@ async function desativarConta() {
                   </div>
 
                   <div className="rounded-xl border border-blueSecond bg-blueSecond/20 p-3">
-                    <p className="text-sm text-whiteMain/60">
-                      Erros
-                    </p>
+                    <p className="text-sm text-whiteMain/60">Erros</p>
 
                     <p className="mt-1 text-2xl font-semibold text-red-400">
                       {progresso.quimica.erros}
@@ -925,7 +834,6 @@ async function desativarConta() {
                   {progresso.quimica.total} questões
                 </p>
               </div>
-
             </div>
           </section>
 
@@ -951,9 +859,7 @@ async function desativarConta() {
                           #
                         </th>
 
-                        <th className="px-4 py-3 text-sm font-medium">
-                          Tema
-                        </th>
+                        <th className="px-4 py-3 text-sm font-medium">Tema</th>
                       </tr>
                     </thead>
 
@@ -967,9 +873,7 @@ async function desativarConta() {
                             {index + 1}
                           </td>
 
-                          <td className="px-4 py-3 text-whiteMain">
-                            {tema}
-                          </td>
+                          <td className="px-4 py-3 text-whiteMain">{tema}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -984,8 +888,7 @@ async function desativarConta() {
 
             {temas.length > 0 && (
               <p className="mt-2 text-right text-sm text-blueSecond">
-                {temas.length}{" "}
-                {temas.length === 1 ? "tema" : "temas"}
+                {temas.length} {temas.length === 1 ? "tema" : "temas"}
               </p>
             )}
           </section>

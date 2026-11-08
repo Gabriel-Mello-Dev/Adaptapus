@@ -837,10 +837,14 @@ Resposta correta: ${questaoAtual.resposta}
       let correta: number;
 
       /*
-       * Caso a IA retorne 1-5,
-       * converte para índice 0-4.
+       * A resposta numérica utiliza índice começando em zero.
+       * 0 = A
+       * 1 = B
+       * 2 = C
+       * 3 = D
+       * 4 = E
        */
-      if (/^[1-5]$/.test(respostaIA)) {
+      if (/^[0-4]$/.test(respostaIA)) {
         correta = Number(respostaIA);
       } else if (respostaIA in mapaRespostas) {
         correta = mapaRespostas[respostaIA];
@@ -1052,7 +1056,6 @@ Resposta correta: ${questaoAtual.resposta}
 
   return (
     <div className="flex min-h-dvh w-full flex-col bg-whiteMain text-white">
-     
       <RoomHeader
         roomId={roomId}
         userName={user.nome}
@@ -1108,10 +1111,7 @@ Resposta correta: ${questaoAtual.resposta}
                 />
 
                 {/* CHAT */}
-                <RoomChat
-                  messages={messages}
-                  onSendMessage={sendMessage}
-                />
+                <RoomChat messages={messages} onSendMessage={sendMessage} />
               </div>
             </div>
           ) : (
@@ -1137,10 +1137,7 @@ Resposta correta: ${questaoAtual.resposta}
               />
 
               {/* CHAT */}
-              <RoomChat
-                messages={messages}
-                onSendMessage={sendMessage}
-              />
+              <RoomChat messages={messages} onSendMessage={sendMessage} />
             </div>
           )}
         </div>

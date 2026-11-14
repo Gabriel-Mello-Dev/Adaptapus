@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Brain, FlaskConical, Lightbulb, Sigma } from "lucide-react";
 
-import { Header, Footer } from "@/app/components";
+import Header from "@/app/components/Header";
+import Footer from "@/app/components/Footer";
 
 export const metadata: Metadata = {
   title: "Exemplos de questões adaptadas",

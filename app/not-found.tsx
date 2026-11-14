@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { ArrowLeft, Brain, Compass, LifeBuoy, TriangleAlert } from "lucide-react";
 
-import { Header, Footer } from "@/app/components";
+import Header from "@/app/components/Header";
+import Footer from "@/app/components/Footer";
 
 export default function NotFound() {
   return (

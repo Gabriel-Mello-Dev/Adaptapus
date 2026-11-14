@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Brain, Clock, FileText, Mail, Scale, ShieldAlert } from "lucide-react";
 
-import { Header, Footer } from "@/app/components";
+import Header from "@/app/components/Header";
+import Footer from "@/app/components/Footer";
 import { EMAIL_CONTATO } from "@/app/institucional/siteInfo";
 
 export const metadata: Metadata = {

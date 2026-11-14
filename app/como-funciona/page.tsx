@@ -12,7 +12,8 @@ import {
   Users,
 } from "lucide-react";
 
-import { Header, Footer } from "@/app/components";
+import Header from "@/app/components/Header";
+import Footer from "@/app/components/Footer";
 
 export const metadata: Metadata = {
   title: "Como funciona",
@@ -257,7 +258,7 @@ export default function ComoFunciona() {
               <ul className="mt-5 list-disc space-y-2 pl-6 text-base leading-7 text-blueMain/80">
                 <li>
                   A IA pode errar. Ela pode alterar um dado sem perceber,
-                  cambiar uma unidade, criar um contexto implausível ou indicar
+                  mudar uma unidade, criar um contexto implausível ou indicar
                   uma resposta incorreta.
                 </li>
                 <li>

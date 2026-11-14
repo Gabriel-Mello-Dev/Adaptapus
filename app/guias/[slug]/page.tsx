@@ -3,7 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight, Brain } from "lucide-react";
 
-import { Header, Footer } from "@/app/components";
+import Header from "@/app/components/Header";
+import Footer from "@/app/components/Footer";
 import { buscarGuia, guias } from "../conteudo";
 
 type GuiaPageProps = {

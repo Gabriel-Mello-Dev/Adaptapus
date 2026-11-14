@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Brain, HelpCircle, Mail, MessageSquare, ShieldCheck } from "lucide-react";
 
-import { Header, Footer } from "@/app/components";
+import Header from "@/app/components/Header";
+import Footer from "@/app/components/Footer";
 import {
   EMAIL_CONTATO,
   NOME_RESPONSAVEL,

@@ -3,26 +3,81 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
   <url>
-    <loc>https://adaptapus.vercel.app/</loc>
+    <loc>https://www.adaptapus.com.br/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
 
   <url>
-    <loc>https://adaptapus.vercel.app/pages/Adaptar</loc>
-    <changefreq>weekly</changefreq>
+    <loc>https://www.adaptapus.com.br/sobre</loc>
+    <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
 
   <url>
-    <loc>https://adaptapus.vercel.app/pages/Room</loc>
+    <loc>https://www.adaptapus.com.br/como-funciona</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://www.adaptapus.com.br/exemplos</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://www.adaptapus.com.br/guias</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
-<url>
-    <loc>https://adaptapus.vercel.app/sobre</loc>
+  <url>
+    <loc>https://www.adaptapus.com.br/guias/o-que-e-contextualizacao-no-ensino</loc>
     <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-</url>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://www.adaptapus.com.br/guias/como-usar-seus-interesses-para-estudar-matematica</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://www.adaptapus.com.br/guias/estudando-fisica-e-quimica-com-exemplos-do-dia-a-dia</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://www.adaptapus.com.br/guias/como-usar-inteligencia-artificial-nos-estudos-sem-perder-o-raciocinio</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://www.adaptapus.com.br/guias/checklist-como-revisar-uma-questao-adaptada</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://www.adaptapus.com.br/privacidade</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <url>
+    <loc>https://www.adaptapus.com.br/termos</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <url>
+    <loc>https://www.adaptapus.com.br/fale-conosco</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
 </urlset>

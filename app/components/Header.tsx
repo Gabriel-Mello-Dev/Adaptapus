@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Home, Brain, LogIn, Plus, User } from "lucide-react";
+import { Home, Brain, LogIn, Plus, User, BookOpen } from "lucide-react";
 import { useEffect, useState } from "react";
 import { createClient } from "@/app/libs/supabase/client";
 import { usePathname } from "next/navigation";
@@ -73,7 +73,7 @@ export default function Header() {
     <header className="w-full bg-orangeMain shadow-lg text-whiteSecond z-100">
 
       {/*Versão Desktop*/}
-      <nav className="mx-auto hidden md:flex h-20 max-w-7xl items-center justify-between px-8">
+      <nav className="mx-auto hidden lg:flex h-20 max-w-7xl items-center justify-between px-8">
         <div className="flex items-center gap-3">
           <Link
             href="/"
@@ -89,6 +89,14 @@ export default function Header() {
           >
             <Brain size={22} />
             <span className="font-semibold">Adaptapus</span>
+          </Link>
+
+          <Link
+            href="/guias"
+            className={` flex items-center gap-2 rounded-xl px-4 py-2 transition ${ isActive("/guias") ? "bg-white/20" : "hover:bg-white/15" } `}
+          >
+            <BookOpen size={22} />
+            <span className="font-semibold">Guias</span>
           </Link>
 
           <button
@@ -144,7 +152,7 @@ export default function Header() {
 
           {/* Status do usuário */}
           {logado !== null && (
-            <div className="flex items-center gap-2 rounded-xl bg-white/15 px-3 py-2">
+            <div className="hidden xl:flex items-center gap-2 rounded-xl bg-white/15 px-3 py-2">
               <span
                 className={`h-2.5 w-2.5 rounded-full ${
                   logado ? "bg-green-400" : "bg-red-600"

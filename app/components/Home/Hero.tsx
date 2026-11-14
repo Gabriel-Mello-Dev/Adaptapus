@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { ActionCard } from "./index";
 
 import { ModalActions } from "@/app/components";
@@ -5,6 +7,7 @@ import { ModalActions } from "@/app/components";
 import { useState } from "react";
 
 import {
+    ArrowRight,
     Brain,
     LogIn,
     Plus,
@@ -490,6 +493,14 @@ export default function Hero() {
                     Adapte questões, crie salas de estudo e aprenda
                     de forma personalizada e colaborativa.
                 </p>
+
+                <Link
+                    href="/como-funciona"
+                    className="mt-5 inline-flex items-center gap-2 rounded-xl border border-orangeMain/30 px-5 py-2.5 text-sm font-semibold text-orangeMain transition hover:bg-orangeMain/10 sm:text-base"
+                >
+                    Entenda o Adaptapus
+                    <ArrowRight size={18} />
+                </Link>
             </section>
 
             {/* CARDS */}

@@ -5,10 +5,29 @@ import "./globals.css";
 
 import { Analytics } from "@vercel/analytics/next";
 
+import { URL_SITE } from "@/app/institucional/siteInfo";
+
 export const metadata: Metadata = {
-  title: "Adaptapus",
+  metadataBase: new URL(URL_SITE),
+  title: {
+    default: "Adaptapus",
+    template: "%s | Adaptapus",
+  },
   description:
     "Adaptador de questões didáticas para temas de seu interesse utilizando Inteligência Artificial",
+  openGraph: {
+    siteName: "Adaptapus",
+    locale: "pt_BR",
+    type: "website",
+    images: ["/imgs/logoAdaptapus.png"],
+  },
+  twitter: {
+    card: "summary",
+    title: "Adaptapus",
+    description:
+      "Adaptador de questões didáticas para temas de seu interesse utilizando Inteligência Artificial",
+    images: ["/imgs/logoAdaptapus.png"],
+  },
 };
 
 export default function RootLayout({

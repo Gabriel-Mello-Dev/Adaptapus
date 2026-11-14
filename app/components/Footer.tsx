@@ -1,4 +1,15 @@
 import Image from "next/image";
+import Link from "next/link";
+
+const linksInstitucionais = [
+    { href: "/sobre", label: "Sobre" },
+    { href: "/como-funciona", label: "Como funciona" },
+    { href: "/exemplos", label: "Exemplos" },
+    { href: "/guias", label: "Guias" },
+    { href: "/privacidade", label: "Privacidade" },
+    { href: "/termos", label: "Termos" },
+    { href: "/fale-conosco", label: "Fale conosco" },
+];
 
 export default function Footer() {
     return (
@@ -83,6 +94,21 @@ export default function Footer() {
                 <p className="text-sm leading-relaxed">
                     @Copyright - 2026 - Todos os direitos reservados
                 </p>
+
+                <nav
+                    aria-label="Links institucionais"
+                    className="flex max-w-xl flex-wrap items-center justify-center gap-x-4 gap-y-1 text-sm sm:justify-end"
+                >
+                    {linksInstitucionais.map((link) => (
+                        <Link
+                            key={link.href}
+                            href={link.href}
+                            className="transition hover:text-orangeSecond"
+                        >
+                            {link.label}
+                        </Link>
+                    ))}
+                </nav>
 
             </div>
         </footer>

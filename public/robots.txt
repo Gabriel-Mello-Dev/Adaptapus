@@ -1,6 +1,9 @@
 User-agent: *
 Allow: /
 
-Disallow: /pages/Room/Chat/
+Disallow: /api/
 
-Sitemap: https://adaptapus.vercel.app/sitemap.xml
+User-agent: Mediapartners-Google
+Disallow:
+
+Sitemap: https://www.adaptapus.com.br/sitemap.xml

@@ -3,9 +3,6 @@ import Link from "next/link";
 
 const linksInstitucionais = [
     { href: "/sobre", label: "Sobre" },
-    { href: "/como-funciona", label: "Como funciona" },
-    { href: "/exemplos", label: "Exemplos" },
-    { href: "/guias", label: "Guias" },
     { href: "/privacidade", label: "Privacidade" },
     { href: "/termos", label: "Termos" },
     { href: "/fale-conosco", label: "Fale conosco" },

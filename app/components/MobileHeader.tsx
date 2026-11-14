@@ -12,6 +12,7 @@ import {
   User,
   Menu,
   X,
+  BookOpen,
 } from "lucide-react";
 
 interface MobileHeaderProps {
@@ -33,7 +34,7 @@ export default function MobileHeader({
     return (
     <>
       {/* HEADER MOBILE */}
-      <nav className="flex h-16 items-center justify-between px-4 md:hidden">
+      <nav className="flex h-16 items-center justify-between px-4 lg:hidden">
         {/* MENU */}
         <button
           type="button"
@@ -71,7 +72,7 @@ export default function MobileHeader({
 
       {/* MENU MOBILE */}
       {menuAberto && (
-        <div className="absolute z-999 left-0 right-0 top-16 border-t border-orangeSecond/50 bg-orangeMain p-4 shadow-xl md:hidden">
+        <div className="absolute z-999 left-0 right-0 top-16 border-t border-orangeSecond/50 bg-orangeMain p-4 shadow-xl lg:hidden">
           <div className="flex flex-col gap-2">
 
             {/* HOME */}
@@ -109,6 +110,25 @@ export default function MobileHeader({
               <Brain size={20} />
               <span className="font-semibold">
                 Adaptapus
+              </span>
+            </Link>
+
+            {/* GUIAS */}
+            <Link
+              href="/guias"
+              onClick={() => setMenuAberto(false)}
+              className={`
+                flex items-center gap-3 rounded-xl px-4 py-3 transition
+                ${
+                  isActive("/guias")
+                    ? "bg-white/20"
+                    : "hover:bg-white/15"
+                }
+              `}
+            >
+              <BookOpen size={20} />
+              <span className="font-semibold">
+                Guias
               </span>
             </Link>
 
